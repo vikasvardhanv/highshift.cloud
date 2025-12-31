@@ -13,7 +13,7 @@ export default function PrivacyPolicy() {
 
                 <section className="space-y-6 text-gray-300">
                     <p>
-                        At upload-post.com, operated by TONVI TECH SL ("we", "our", or "us"), we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our Services.
+                        At highshift.cloud, operated by TONVI TECH SL ("we", "our", or "us"), we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our Services.
                     </p>
 
                     <h2 className="text-2xl font-bold text-white mt-10 mb-4">1. Information We Collect</h2>
@@ -52,7 +52,7 @@ export default function PrivacyPolicy() {
                     <h2 className="text-2xl font-bold text-white mt-10 mb-4">7. Contact Us</h2>
                     <p>If you have any questions about this Privacy Policy, please contact us:</p>
                     <p>
-                        Email: info@upload-post.com<br />
+                        Email: info@highshift.cloud<br />
                         Address: Calle Puerta del Mar, 18 5th Floor, 29005 Málaga, Spain
                     </p>
                 </section>

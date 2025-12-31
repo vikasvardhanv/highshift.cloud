@@ -9,7 +9,7 @@ export default function Footer() {
                     {/* Brand Column */}
                     <div className="space-y-4">
                         <Link to="/" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400">
-                            Upload-Post.com
+                            HighShift Cloud
                         </Link>
                         <p className="text-gray-400 text-sm">
                             Seamlessly share your videos across multiple platforms. Automate your social media presence with our powerful API.
@@ -43,7 +43,7 @@ export default function Footer() {
                         <ul className="space-y-3 text-sm text-gray-400">
                             <li className="flex items-center gap-2">
                                 <Mail className="w-4 h-4" />
-                                <span>info@upload-post.com</span>
+                                <span>info@highshift.cloud</span>
                             </li>
                             <li className="flex items-start gap-2">
                                 <MapPin className="w-4 h-4 mt-0.5" />
@@ -54,7 +54,7 @@ export default function Footer() {
                 </div>
 
                 <div className="pt-8 border-t border-white/5 text-center text-gray-500 text-xs">
-                    © {new Date().getFullYear()} Upload-Post.com. All rights reserved. Operado por TONVI TECH SL.
+                    © {new Date().getFullYear()} HighShift Cloud. All rights reserved. Operado por TONVI TECH SL.
                 </div>
             </div>
         </footer>

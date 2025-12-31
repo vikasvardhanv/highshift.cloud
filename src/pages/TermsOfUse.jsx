@@ -13,7 +13,7 @@ export default function TermsOfUse() {
 
                 <section className="space-y-6 text-gray-300">
                     <p>
-                        Welcome to upload-post.com ("we", "our", "us"). These Terms of Use ("Terms") govern your access to and use of our website, services, and products (collectively, the "Services"). By accessing or using our Services, you agree to be bound by these Terms. If you do not agree to these Terms, do not use our Services.
+                        Welcome to highshift.cloud ("we", "our", "us"). These Terms of Use ("Terms") govern your access to and use of our website, services, and products (collectively, the "Services"). By accessing or using our Services, you agree to be bound by these Terms. If you do not agree to these Terms, do not use our Services.
                     </p>
 
                     <p>
@@ -82,7 +82,7 @@ export default function TermsOfUse() {
                     <h2 className="text-2xl font-bold text-white mt-10 mb-4">10. Contact Us</h2>
                     <p>If you have any questions about these Terms, please contact us:</p>
                     <p>
-                        Email: info@upload-post.com<br />
+                        Email: info@highshift.cloud<br />
                         Address: Calle Puerta del Mar, 18 5th Floor, 29005 Málaga, Spain
                     </p>
                 </section>
