@@ -18,8 +18,7 @@ api.interceptors.request.use((config) => {
 });
 
 export const getAuthUrl = async (platform, redirectUrl) => {
-    // redirectUrl is optional, backend supports it
-    const res = await axios.get(`${API_URL}/connect/${platform}`, {
+    const res = await api.get(`/connect/${platform}`, {
         params: { redirect: redirectUrl }
     });
     return res.data.authUrl;
