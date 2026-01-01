@@ -31,6 +31,7 @@ export default function Dashboard() {
     const [accounts, setAccounts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [apiKey] = useState(localStorage.getItem('social_api_key'));
+    const [token] = useState(localStorage.getItem('token'));
     const [postText, setPostText] = useState('');
     const [posting, setPosting] = useState(false);
     const [selectedAccounts, setSelectedAccounts] = useState([]);
@@ -55,14 +56,17 @@ export default function Dashboard() {
     const [newProfileName, setNewProfileName] = useState('');
     const [showNewProfile, setShowNewProfile] = useState(false);
 
+    // Check if user is authenticated (either via JWT token or legacy API key)
+    const isAuthenticated = token || apiKey;
+
     useEffect(() => {
-        if (apiKey) {
+        if (isAuthenticated) {
             loadAccounts();
             loadProfiles();
         } else {
             setLoading(false);
         }
-    }, [apiKey]);
+    }, [isAuthenticated]);
 
     const loadProfiles = async () => {
         try {
@@ -246,7 +250,7 @@ export default function Dashboard() {
     }
 
 
-    if (!apiKey) {
+    if (!isAuthenticated) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4 animate-slide-up">
                 <div className="absolute top-0 left-0 w-64 h-64 bg-secondary/20 rounded-full blur-[100px] -z-10 animate-blob mix-blend-screen" />
