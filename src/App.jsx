@@ -13,6 +13,8 @@ import TermsOfUse from './pages/TermsOfUse';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import Pricing from './pages/Pricing';
+import Login from './pages/Login';
 import DashboardLayout from './layouts/DashboardLayout';
 
 // Layout for public pages (Landing, Legal)
@@ -35,7 +37,11 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
         <Route path="/terms" element={<PublicLayout><TermsOfUse /></PublicLayout>} />
+        <Route path="/terms" element={<PublicLayout><TermsOfUse /></PublicLayout>} />
         <Route path="/privacy" element={<PublicLayout><PrivacyPolicy /></PublicLayout>} />
+        <Route path="/pricing" element={<PublicLayout><Pricing /></PublicLayout>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Login />} />
 
         {/* Auth Callback works best in Public Layout usually */}
         <Route path="/auth/callback" element={<PublicLayout><AuthCallback /></PublicLayout>} />

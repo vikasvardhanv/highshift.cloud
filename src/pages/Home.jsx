@@ -23,7 +23,7 @@ export default function Home() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Link to="/dashboard" className="px-8 py-4 rounded-full bg-primary hover:bg-primaryHover text-white font-semibold text-lg transition-all shadow-[0_0_40px_rgba(99,102,241,0.4)] flex items-center gap-2">
+                    <Link to="/pricing" className="px-8 py-4 rounded-full bg-primary hover:bg-primaryHover text-white font-semibold text-lg transition-all shadow-[0_0_40px_rgba(99,102,241,0.4)] flex items-center gap-2">
                         Start Building <ArrowRight className="w-5 h-5" />
                     </Link>
                     <a href="#" className="px-8 py-4 rounded-full bg-white/5 hover:bg-white/10 text-white font-semibold text-lg transition-all border border-white/10 flex items-center gap-2">

@@ -17,7 +17,11 @@ export default function Navbar() {
         }
     };
 
-    const navLinks = [
+    const publicLinks = [
+        { name: 'Pricing', path: '/pricing', icon: Sparkles },
+    ];
+
+    const privateLinks = [
         { name: 'Connections', path: '/dashboard', icon: LayoutDashboard },
         { name: 'Analytics', path: '/analytics', icon: BarChart3 },
         { name: 'Schedule', path: '/schedule', icon: Calendar },
@@ -26,6 +30,8 @@ export default function Navbar() {
         { name: 'Brand Kit', path: '/brand', icon: Palette },
         { name: 'History', path: '/history', icon: History },
     ];
+
+    const currentLinks = apiKey ? privateLinks : publicLinks;
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur-xl">
@@ -43,7 +49,7 @@ export default function Navbar() {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-1">
-                        {navLinks.map((link) => (
+                        {currentLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 to={link.path}
@@ -81,6 +87,15 @@ export default function Navbar() {
                         >
                             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </button>
+
+                        {!apiKey && (
+                            <Link
+                                to="/login"
+                                className="hidden md:flex bg-white text-black hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-bold transition-colors"
+                            >
+                                Sign In
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
@@ -89,7 +104,7 @@ export default function Navbar() {
             {isMenuOpen && (
                 <div className="md:hidden border-t border-white/10 bg-black/90 backdrop-blur-xl absolute w-full left-0 animate-fade-in-down">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                        {navLinks.map((link) => (
+                        {currentLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 to={link.path}
@@ -113,6 +128,16 @@ export default function Navbar() {
                                 <LogOut className="w-5 h-5" />
                                 Logout
                             </button>
+                        )}
+
+                        {!apiKey && (
+                            <Link
+                                to="/login"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="w-full text-left flex items-center gap-3 px-3 py-3 rounded-lg text-base font-bold text-white hover:bg-white/10"
+                            >
+                                Sign In
+                            </Link>
                         )}
                     </div>
                 </div>

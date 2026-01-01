@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { getAccounts, getAuthUrl, postContent, disconnectAccount } from '../services/api';
 import {
     Facebook, Twitter, Instagram, Linkedin, Youtube,
-    Key, Send, Trash2, Check, Copy, Loader2, AlertCircle, CheckCircle, Sparkles, X, Zap
+    Key, Send, Trash2, Check, Copy, Loader2, AlertCircle, CheckCircle, Sparkles, X, Zap,
+    AtSign, Pin, MessageSquare, Cloud, Music
 } from 'lucide-react';
 import { generateContent, schedulePost } from '../services/api'; // Added schedulePost
 
@@ -12,6 +13,11 @@ const PLATFORMS = [
     { id: 'instagram', name: 'Instagram', icon: Instagram },
     { id: 'linkedin', name: 'LinkedIn', icon: Linkedin },
     { id: 'youtube', name: 'YouTube', icon: Youtube },
+    { id: 'threads', name: 'Threads', icon: AtSign },
+    { id: 'pinterest', name: 'Pinterest', icon: Pin },
+    { id: 'reddit', name: 'Reddit', icon: MessageSquare },
+    { id: 'bluesky', name: 'Bluesky', icon: Cloud },
+    { id: 'tiktok', name: 'TikTok', icon: Music },
 ];
 
 export default function Dashboard() {
