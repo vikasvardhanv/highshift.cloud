@@ -358,6 +358,77 @@ export default function Dashboard() {
                 </div>
             </div>
 
+            {/* Connected Accounts Grid (Unified View) */}
+            <div className="w-full max-w-5xl mx-auto">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-display font-bold text-white">Your Network</h3>
+                    <button
+                        onClick={() => setShowConnect(!showConnect)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 text-sm font-medium transition-all"
+                    >
+                        {showConnect ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                        {showConnect ? 'Close' : 'Connect New'}
+                    </button>
+                </div>
+
+                {/* Expandable Connect Area */}
+                {showConnect && (
+                    <div className="mb-8 p-6 rounded-3xl bg-surface/50 border border-white/5 animate-slide-up backdrop-blur-xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+                        <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Select Platform to Connect</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 relative z-10">
+                            {PLATFORMS.map(p => (
+                                <button key={p.id} onClick={() => handleConnect(p.id)} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-black/20 hover:bg-white/10 transition-all group border border-white/5 hover:border-white/20">
+                                    <p.icon className={`w-8 h-8 mb-3 text-gray-400 ${p.color} transition-colors group-hover:scale-110`} />
+                                    <span className="text-xs font-bold text-gray-300 group-hover:text-white">{p.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {loading ? (
+                        <div className="col-span-full py-20 flex justify-center"><Loader2 className="animate-spin text-primary w-8 h-8" /></div>
+                    ) : (
+                        <>
+                            {Array.isArray(accounts) && accounts.map(acc => (
+                                <div key={acc.accountId} className="glass-card p-6 rounded-3xl relative group overflow-hidden hover:bg-white/5 transition-all border border-white/5">
+                                    <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-all">
+                                        <button onClick={() => handleDisconnect(acc.platform, acc.accountId)} className="p-2 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+
+                                    <div className="flex flex-col items-center text-center pt-2">
+                                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-surfaceHighlight to-surface border border-white/10 flex items-center justify-center shadow-lg mb-4">
+                                            {(PLATFORMS.find(p => p.id === acc.platform) || { icon: Zap }).icon({ className: "w-7 h-7 text-gray-200" })}
+                                        </div>
+                                        <h3 className="font-bold text-base truncate w-full px-2">{acc.displayName}</h3>
+                                        <p className="text-xs text-gray-400 mb-4">@{acc.username}</p>
+
+                                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5">
+                                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-green-400">Connected</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {(!accounts || accounts.length === 0) && (
+                                <div className="col-span-full text-center py-20 opacity-50 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                                    <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Cloud className="w-8 h-8 text-gray-500" />
+                                    </div>
+                                    <p className="text-gray-400">No accounts linked yet.</p>
+                                    <button onClick={() => setShowConnect(true)} className="mt-4 text-primary hover:underline">Connect your first account</button>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
+
             {/* AI Modal */}
             {showAiModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
