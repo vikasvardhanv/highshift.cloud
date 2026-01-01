@@ -231,76 +231,10 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="flex flex-col gap-6 relative z-10 w-full max-w-5xl mx-auto">
 
-                {/* Left Column: Accounts list (Takes 4 cols) */}
-                <div className="lg:col-span-4 space-y-6">
-                    <div className="glass-card p-6 rounded-3xl h-full border-t border-white/10 relative overflow-hidden">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="font-bold text-lg">Active Connections</h3>
-                            <button
-                                onClick={() => setShowConnect(!showConnect)}
-                                className="p-2 rounded-full bg-white/5 hover:bg-primary/20 hover:text-primary transition-all"
-                            >
-                                {showConnect ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-                            </button>
-                        </div>
-
-                        {/* Expandable Connect Area */}
-                        {showConnect && (
-                            <div className="mb-6 p-4 rounded-2xl bg-black/20 border border-white/5 animate-slide-up">
-                                <span className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-3 block">Add New Platform</span>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {PLATFORMS.map(p => (
-                                        <button key={p.id} onClick={() => handleConnect(p.id)} className="flex flex-col items-center p-2 rounded-lg hover:bg-white/5 transition-colors group">
-                                            <p.icon className={`w-5 h-5 text-gray-400 ${p.color}`} />
-                                            <span className="text-[10px] mt-1 text-gray-500 group-hover:text-gray-300">{p.name.split(' ')[0]}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {loading ? (
-                            <div className="py-20 flex justify-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
-                        ) : (
-                            <div className="space-y-3">
-                                {Array.isArray(accounts) && accounts.map(acc => (
-                                    <div key={acc.accountId} className="group p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all flex items-center justify-between cursor-default">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-surfaceHighlight to-surface border border-white/10 flex items-center justify-center shrink-0 shadow-lg">
-                                                {/* Dynamic Icon based on platform */}
-                                                {(PLATFORMS.find(p => p.id === acc.platform) || { icon: Zap }).icon({ className: "w-5 h-5 text-gray-300" })}
-                                            </div>
-                                            <div className="overflow-hidden">
-                                                <div className="font-semibold text-sm truncate max-w-[150px]">{acc.displayName}</div>
-                                                <div className="text-xs text-gray-500 truncate">@{acc.username}</div>
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={() => handleDisconnect(acc.platform, acc.accountId)}
-                                            className="opacity-0 group-hover:opacity-100 p-2 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-full transition-all"
-                                            title="Disconnect"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                ))}
-                                {(!accounts || accounts.length === 0) && (
-                                    <div className="text-center py-10 opacity-50">
-                                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3">
-                                            <Cloud className="w-8 h-8 text-gray-600" />
-                                        </div>
-                                        <p className="text-sm">No accounts linked</p>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Right Column: Creation Studio (Takes 8 cols) */}
-                <div className="lg:col-span-8">
+                {/* Creation Studio (Full Width) */}
+                <div className="w-full">
                     <div className="glass-card rounded-3xl p-1 h-full shadow-2xl shadow-primary/5">
                         <div className="h-full bg-surface/50 rounded-[22px] p-6 md:p-8 flex flex-col relative overflow-hidden backdrop-blur-3xl">
                             {/* Subtle Studio Glow */}
@@ -330,30 +264,46 @@ export default function Dashboard() {
                                 </div>
                             </div>
 
-                            {/* Account Selector */}
+                            {/* Account Selector - Horizontal Scroll - Only place to select accounts for posting */}
                             <div className="mb-6 relative z-10">
-                                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                                    {accounts.map(acc => {
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">Post to:</label>
+                                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide items-center">
+                                    {Array.isArray(accounts) && accounts.map(acc => {
                                         const isSelected = selectedAccounts.includes(acc.accountId);
                                         return (
                                             <button
                                                 key={acc.accountId}
                                                 onClick={() => toggleAccountSelection(acc.accountId)}
                                                 className={`
-                                                    shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition-all flex items-center gap-2
+                                                    shrink-0 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all flex items-center gap-3
                                                     ${isSelected
-                                                        ? 'bg-primary text-white border-primary shadow-[0_0_15px_rgba(139,92,246,0.4)] translate-y-[-1px]'
-                                                        : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:border-white/20'}
+                                                        ? 'bg-primary text-white border-primary shadow-[0_4px_15px_rgba(139,92,246,0.4)] translate-y-[-1px]'
+                                                        : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:border-white/20 hover:text-white'}
                                                 `}
                                             >
-                                                {/* Platform Icon Small */}
-                                                {PLATFORMS.find(p => p.id === acc.platform)?.icon({ className: "w-3 h-3" }) || <Zap className="w-3 h-3" />}
-                                                {acc.displayName}
-                                                {isSelected && <Check className="w-3 h-3 ml-1" />}
+                                                {/* Platform Icon */}
+                                                <div className={`p-1 rounded-full ${isSelected ? 'bg-white/20' : 'bg-black/20'}`}>
+                                                    {(PLATFORMS.find(p => p.id === acc.platform) || { icon: Zap }).icon({ className: "w-3 h-3" })}
+                                                </div>
+                                                <div className="flex flex-col items-start leading-none">
+                                                    <span className="text-[10px] opacity-70 mb-0.5 uppercase tracking-wider">{acc.platform}</span>
+                                                    <span className="font-semibold">@{acc.username}</span>
+                                                </div>
+                                                {isSelected && <Check className="w-4 h-4 ml-1" />}
                                             </button>
                                         )
                                     })}
-                                    {accounts.length === 0 && <span className="text-gray-500 text-sm py-2">Link accounts to start posting</span>}
+
+                                    {/* Add New Button (Redirects to Connections) */}
+                                    <a
+                                        href="/connections"
+                                        className="shrink-0 w-10 h-10 rounded-full border border-dashed border-white/20 flex items-center justify-center text-gray-500 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all"
+                                        title="Connect new account"
+                                    >
+                                        <Plus className="w-5 h-5" />
+                                    </a>
+
+                                    {(!accounts || accounts.length === 0) && <span className="text-gray-500 text-sm ml-2">No accounts. Click + to connect.</span>}
                                 </div>
                             </div>
 
@@ -363,7 +313,7 @@ export default function Dashboard() {
                                     value={postText}
                                     onChange={(e) => setPostText(e.target.value)}
                                     placeholder="What's happening today?"
-                                    className="w-full h-full min-h-[250px] bg-black/20 hover:bg-black/30 border border-white/5 focus:border-primary/50 focus:bg-black/40 rounded-2xl p-6 text-lg text-white placeholder-gray-600 focus:outline-none transition-all resize-none shadow-inner"
+                                    className="w-full h-full min-h-[300px] bg-black/20 hover:bg-black/30 border border-white/5 focus:border-primary/50 focus:bg-black/40 rounded-2xl p-6 text-lg text-white placeholder-gray-600 focus:outline-none transition-all resize-none shadow-inner"
                                 ></textarea>
 
                                 {/* Character Count (Simple) */}
