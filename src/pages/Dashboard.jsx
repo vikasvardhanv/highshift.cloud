@@ -293,7 +293,7 @@ export default function Dashboard() {
                             <div className="flex items-center justify-between mb-3">
                                 <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Content</label>
                                 <button
-                                    onClick={() => setShowAiModal(true)}
+                                    onClick={openAiModal}
                                     className="flex items-center gap-1.5 text-xs font-medium text-purple-400 hover:text-purple-300 transition-colors bg-purple-500/10 px-3 py-1.5 rounded-full border border-purple-500/20 hover:bg-purple-500/20"
                                 >
                                     <Sparkles className="w-3 h-3" />
