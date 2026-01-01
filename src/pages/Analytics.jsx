@@ -31,7 +31,7 @@ const StatCard = ({ title, value, change, isPositive, icon: Icon }) => (
 
 export default function Analytics() {
     const [data, setData] = useState(MOCK_DATA);
-    const [stats, setStats] = useState({ impressions: 0, engagement: 0, followers: 0 });
+    const [stats, setStats] = useState({ impressions: 0, engagement: 0, followers: 0, changes: { impressions: 0, engagement: 0, followers: 0 } });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -40,14 +40,15 @@ export default function Analytics() {
 
     const loadAnalytics = async () => {
         try {
-            const accounts = await getAccounts();
-            if (accounts && accounts.length > 0) {
+            const accountsData = await getAccounts();
+            const accounts = accountsData?.accounts || [];
+            if (accounts.length > 0) {
                 // Fetch for the first account as demo
                 const analytics = await getAnalytics(accounts[0].accountId);
                 // Transform backend data to chart format if needed, or just use what is returned if it matches
                 // For now, assuming backend returns { daily: [], total: {} }
                 if (analytics.daily) setData(analytics.daily);
-                if (analytics.total) setStats(analytics.total);
+                if (analytics.total) setStats(prev => ({ ...prev, ...analytics.total }));
             }
         } catch (err) {
             console.error("Failed to load analytics", err);
@@ -64,9 +65,9 @@ export default function Analytics() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatCard title="Total Impressions" value={stats.impressions.toLocaleString()} change={12.5} isPositive={true} icon={Eye} />
-                <StatCard title="Total Engagement" value={stats.engagement.toLocaleString()} change={8.2} isPositive={true} icon={MousePointer} />
-                <StatCard title="Total Followers" value={stats.followers.toLocaleString()} change={-2.4} isPositive={false} icon={Users} />
+                <StatCard title="Total Impressions" value={stats.impressions.toLocaleString()} change={stats.changes?.impressions || 0} isPositive={(stats.changes?.impressions || 0) >= 0} icon={Eye} />
+                <StatCard title="Total Engagement" value={stats.engagement.toLocaleString()} change={stats.changes?.engagement || 0} isPositive={(stats.changes?.engagement || 0) >= 0} icon={MousePointer} />
+                <StatCard title="Total Followers" value={stats.followers.toLocaleString()} change={stats.changes?.followers || 0} isPositive={(stats.changes?.followers || 0) >= 0} icon={Users} />
             </div>
 
             {/* Charts Area */}
