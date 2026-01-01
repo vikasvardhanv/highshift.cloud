@@ -245,49 +245,93 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        <div className="mb-6 flex-1">
-                            <div className="mb-6 flex-1 relative">
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Content</label>
-                                    <button
-                                        onClick={() => setShowAiModal(true)}
-                                        className="flex items-center gap-1.5 text-xs font-medium text-purple-400 hover:text-purple-300 transition-colors bg-purple-500/10 px-3 py-1.5 rounded-full border border-purple-500/20 hover:bg-purple-500/20"
-                                    >
-                                        <Sparkles className="w-3 h-3" />
-                                        AI Optimize
-                                    </button>
-                                </div>
-                                <textarea
-                                    value={postText}
-                                    onChange={(e) => setPostText(e.target.value)}
-                                    placeholder="What's on your mind? Type your post content here..."
-                                    className="w-full h-48 bg-black/20 border border-white/10 rounded-xl p-4 text-white placeholder-gray-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all resize-none"
-                                ></textarea>
-                            </div>
-
-                            <div className="flex items-center justify-end mt-auto pt-4 border-t border-white/5">
+                        <div className="mb-6 flex-1 relative">
+                            <div className="flex items-center justify-between mb-3">
+                                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Content</label>
                                 <button
-                                    onClick={handlePost}
-                                    disabled={posting || !postText || selectedAccounts.length === 0}
-                                    className="px-8 py-3 rounded-full bg-primary hover:bg-primaryHover disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all shadow-lg flex items-center gap-2 hover:translate-y-[-1px]"
+                                    onClick={() => setShowAiModal(true)}
+                                    className="flex items-center gap-1.5 text-xs font-medium text-purple-400 hover:text-purple-300 transition-colors bg-purple-500/10 px-3 py-1.5 rounded-full border border-purple-500/20 hover:bg-purple-500/20"
                                 >
-                                    {posting ? <Loader2 className="animate-spin w-5 h-5" /> : <Send className="w-4 h-4" />}
-                                    Publish Now
+                                    <Sparkles className="w-3 h-3" />
+                                    AI Optimize
                                 </button>
                             </div>
-
-                            {postResult && (
-                                <div className={`mt-6 p-4 rounded-xl flex items-start gap-3 border ${postResult.success ? 'bg-green-500/5 border-green-500/20 text-green-400' : 'bg-red-500/5 border-red-500/20 text-red-400'}`}>
-                                    {postResult.success ? <CheckCircle className="w-5 h-5 mt-0.5 shrink-0" /> : <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />}
-                                    <div>
-                                        <h4 className="font-bold text-sm">{postResult.success ? 'Published Successfully' : 'Failed to Publish'}</h4>
-                                        {postResult.error && <p className="text-xs opacity-80 mt-1">{postResult.error}</p>}
-                                    </div>
-                                </div>
-                            )}
+                            <textarea
+                                value={postText}
+                                onChange={(e) => setPostText(e.target.value)}
+                                placeholder="What's on your mind? Type your post content here..."
+                                className="w-full h-48 bg-black/20 border border-white/10 rounded-xl p-4 text-white placeholder-gray-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all resize-none"
+                            ></textarea>
                         </div>
+
+                        <div className="flex items-center justify-end mt-auto pt-4 border-t border-white/5">
+                            <button
+                                onClick={handlePost}
+                                disabled={posting || !postText || selectedAccounts.length === 0}
+                                className="px-8 py-3 rounded-full bg-primary hover:bg-primaryHover disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all shadow-lg flex items-center gap-2 hover:translate-y-[-1px]"
+                            >
+                                {posting ? <Loader2 className="animate-spin w-5 h-5" /> : <Send className="w-4 h-4" />}
+                                Publish Now
+                            </button>
+                        </div>
+
+                        {postResult && (
+                            <div className={`mt-6 p-4 rounded-xl flex items-start gap-3 border ${postResult.success ? 'bg-green-500/5 border-green-500/20 text-green-400' : 'bg-red-500/5 border-red-500/20 text-red-400'}`}>
+                                {postResult.success ? <CheckCircle className="w-5 h-5 mt-0.5 shrink-0" /> : <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />}
+                                <div>
+                                    <h4 className="font-bold text-sm">{postResult.success ? 'Published Successfully' : 'Failed to Publish'}</h4>
+                                    {postResult.error && <p className="text-xs opacity-80 mt-1">{postResult.error}</p>}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
-            );
+
+            {/* AI Modal */}
+            {showAiModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+                    <div className="glass-card w-full max-w-md p-6 rounded-2xl relative">
+                        <button
+                            onClick={() => setShowAiModal(false)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2.5 bg-purple-500/20 rounded-xl">
+                                <Sparkles className="w-6 h-6 text-purple-400" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold">AI Ghostwriter</h3>
+                                <p className="text-xs text-gray-400">Generate optimized content instantly</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">What should I write about?</label>
+                                <textarea
+                                    value={aiPrompt}
+                                    onChange={(e) => setAiPrompt(e.target.value)}
+                                    placeholder="e.g. A thread about the future of SaaS..."
+                                    className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-purple-500/50 transition-all resize-none"
+                                ></textarea>
+                            </div>
+
+                            <button
+                                onClick={handleAiGenerate}
+                                disabled={generating || !aiPrompt}
+                                className="w-full py-3 bg-purple-600 hover:bg-purple-500 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {generating ? <Loader2 className="animate-spin w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
+                                Generate Content
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }
