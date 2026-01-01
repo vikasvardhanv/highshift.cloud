@@ -2,22 +2,22 @@ import { useEffect, useState } from 'react';
 import { getAccounts, getAuthUrl, postContent, disconnectAccount } from '../services/api';
 import {
     Facebook, Twitter, Instagram, Linkedin, Youtube,
-    Key, Send, Trash2, Check, Copy, Loader2, AlertCircle, CheckCircle, Sparkles, X, Zap,
-    AtSign, Pin, MessageSquare, Cloud, Music
+    Send, Trash2, Check, Sparkles, X, Zap,
+    AtSign, Pin, MessageSquare, Cloud, Music, Plus
 } from 'lucide-react';
-import { generateContent, schedulePost } from '../services/api'; // Added schedulePost
+import { generateContent, schedulePost } from '../services/api';
 
 const PLATFORMS = [
-    { id: 'twitter', name: 'Twitter / X', icon: Twitter },
-    { id: 'facebook', name: 'Facebook', icon: Facebook },
-    { id: 'instagram', name: 'Instagram', icon: Instagram },
-    { id: 'linkedin', name: 'LinkedIn', icon: Linkedin },
-    { id: 'youtube', name: 'YouTube', icon: Youtube },
-    { id: 'threads', name: 'Threads', icon: AtSign },
-    { id: 'pinterest', name: 'Pinterest', icon: Pin },
-    { id: 'reddit', name: 'Reddit', icon: MessageSquare },
-    { id: 'bluesky', name: 'Bluesky', icon: Cloud },
-    { id: 'tiktok', name: 'TikTok', icon: Music },
+    { id: 'twitter', name: 'Twitter / X', icon: Twitter, color: 'hover:text-sky-400' },
+    { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'hover:text-blue-500' },
+    { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'hover:text-pink-500' },
+    { id: 'linkedin', name: 'LinkedIn', icon: Linkedin, color: 'hover:text-blue-600' },
+    { id: 'youtube', name: 'YouTube', icon: Youtube, color: 'hover:text-red-500' },
+    { id: 'threads', name: 'Threads', icon: AtSign, color: 'hover:text-white' },
+    { id: 'pinterest', name: 'Pinterest', icon: Pin, color: 'hover:text-red-600' },
+    { id: 'reddit', name: 'Reddit', icon: MessageSquare, color: 'hover:text-orange-500' },
+    { id: 'bluesky', name: 'Bluesky', icon: Cloud, color: 'hover:text-blue-400' },
+    { id: 'tiktok', name: 'TikTok', icon: Music, color: 'hover:text-pink-400' },
 ];
 
 export default function Dashboard() {
@@ -31,6 +31,7 @@ export default function Dashboard() {
     const [aiPrompt, setAiPrompt] = useState('');
     const [showAiModal, setShowAiModal] = useState(false);
     const [generating, setGenerating] = useState(false);
+    const [showConnect, setShowConnect] = useState(false); // New state for connect modal
 
     useEffect(() => {
         if (apiKey) {
@@ -53,7 +54,6 @@ export default function Dashboard() {
 
     const handleConnect = async (platformId) => {
         try {
-            // Pass redirect param so backend redirects back to us
             const url = await getAuthUrl(platformId, import.meta.env.VITE_CLIENT_REDIRECT || 'http://localhost:5173/auth/callback');
             window.location.href = url;
         } catch (err) {
@@ -62,6 +62,7 @@ export default function Dashboard() {
     };
 
     const handleDisconnect = async (platform, accountId) => {
+        if (!confirm("Are you sure you want to disconnect this account?")) return;
         try {
             await disconnectAccount(platform, accountId);
             await loadAccounts();
@@ -78,8 +79,6 @@ export default function Dashboard() {
         setPostResult(null);
 
         const targetAccounts = accounts.filter(a => selectedAccounts.includes(a.accountId))
-            // The backend expects an array of objects for 'accounts' in /post/multi or similar logic
-            // Based on backend source, /post/multi expects body: { accounts: [{platform, accountId}], content }
             .map(a => ({ platform: a.platform, accountId: a.accountId }));
 
         try {
@@ -87,6 +86,7 @@ export default function Dashboard() {
             setPostResult({ success: true, data: res });
             setPostText('');
             setSelectedAccounts([]);
+            setTimeout(() => setPostResult(null), 5000); // clear msg
         } catch (err) {
             setPostResult({ success: false, error: err.response?.data?.message || err.message });
         } finally {
@@ -102,19 +102,10 @@ export default function Dashboard() {
         }
     };
 
-    const copyKey = () => {
-        navigator.clipboard.writeText(apiKey);
-        alert('Copied API Key');
-    };
-
     const handleAiGenerate = async () => {
         if (!aiPrompt) return;
         setGenerating(true);
         try {
-            // If we are optimizing existing text, we might want to change the prompt sent to backend
-            // For now, we still rely on the user's prompt in the modal.
-            // If the user clicked "AI Optimize" with text selected, we'll prefix it.
-
             const result = await generateContent(aiPrompt, 'twitter', 'Professional');
             setPostText(result);
             setShowAiModal(false);
@@ -127,11 +118,7 @@ export default function Dashboard() {
     };
 
     const openAiModal = () => {
-        if (postText) {
-            setAiPrompt(`Optimize this post for better engagement:\n\n"${postText}"`);
-        } else {
-            setAiPrompt('');
-        }
+        setAiPrompt(postText ? `Optimize this post for better engagement:\n\n"${postText}"` : '');
         setShowAiModal(true);
     };
 
@@ -142,13 +129,7 @@ export default function Dashboard() {
             const targetAccounts = accounts.filter(a => selectedAccounts.includes(a.accountId))
                 .map(a => ({ platform: a.platform, accountId: a.accountId }));
 
-            // "Magic" schedule - backend decides time (e.g. tomorrow 9am or smart calc)
-            // Passing a flag 'auto' or leaving scheduledFor null if backend supports it. 
-            // Let's assume we send a 'auto: true' flag or special time.
-            // For now, I'll calculate 24h from now as a placeholder for "Smart" logic if backend doesn't support 'auto' yet.
-            // But user asked for "highly inteligece", so ideally backend does it.
-            // I will implement a quick client-side "Best Time" (e.g. tomorrow at 10am) for MVP or call backend.
-
+            // Assume 24h from now for MVP "Smart"
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             tomorrow.setHours(10, 0, 0, 0);
@@ -157,6 +138,7 @@ export default function Dashboard() {
             setPostResult({ success: true, message: 'Auto-scheduled for optimal time (Tomorrow 10AM)' });
             setPostText('');
             setSelectedAccounts([]);
+            setTimeout(() => setPostResult(null), 5000); // clear msg
         } catch (err) {
             setPostResult({ success: false, error: err.message });
         } finally {
@@ -166,18 +148,25 @@ export default function Dashboard() {
 
     if (!apiKey) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
-                <h2 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Let's Get Started</h2>
-                <p className="text-gray-400 mb-10 max-w-md mx-auto">Connect your first account to generate your API Key and start automating your social media presence.</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-lg">
-                    {PLATFORMS.map(p => (
+            <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4 animate-slide-up">
+                <div className="absolute top-0 left-0 w-64 h-64 bg-secondary/20 rounded-full blur-[100px] -z-10 animate-blob mix-blend-screen" />
+                <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[100px] -z-10 animate-blob animation-delay-2000 mix-blend-screen" />
+
+                <h2 className="text-4xl md:text-5xl font-bold mb-6 aurora-text">Welcome to HighShift</h2>
+                <p className="text-gray-400 mb-10 max-w-md mx-auto text-lg leading-relaxed">
+                    The unified operating system for your social presence.
+                    <br />Connect an account to begin.
+                </p>
+
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-2xl">
+                    {PLATFORMS.slice(0, 6).map(p => (
                         <button
                             key={p.id}
                             onClick={() => handleConnect(p.id)}
-                            className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl glass-card hover:bg-white/10 transition-all font-semibold group"
+                            className="group glass-card hover:bg-surfaceHighlight p-6 rounded-2xl flex flex-col items-center justify-center gap-4 transition-all hover:-translate-y-1"
                         >
-                            <p.icon className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-                            <span>Connect {p.name}</span>
+                            <p.icon className={`w-8 h-8 text-gray-400 transition-colors ${p.color} group-hover:scale-110`} />
+                            <span className="font-medium">{p.name}</span>
                         </button>
                     ))}
                 </div>
@@ -186,182 +175,230 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="space-y-8 animate-fade-in">
-            {/* Header / API Key - REMOVED and moved to /apikeys */}
-            {/* <div className="glass-card rounded-2xl p-8 ..."> ... </div> */}
+        <div className="space-y-8 animate-fade-in relative z-10">
+            {/* Ambient Background Elements */}
+            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] pointer-events-none" />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left Column: Accounts */}
-                <div className="lg:col-span-1 space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-xl font-bold">Connected Accounts</h3>
-                    </div>
-
-                    {loading ? <div className="flex justify-center"><Loader2 className="animate-spin text-primary" /></div> : (
-                        <div className="space-y-3">
-                            {accounts.map(acc => (
-                                <div key={acc.accountId} className="glass-card p-4 rounded-lg flex items-center justify-between group hover:border-white/20 transition-all">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-white/10 text-white border border-white/10`}>
-                                            <span className="text-xs uppercase font-bold">{acc.platform[0]}</span>
-                                        </div>
-                                        <div className="overflow-hidden">
-                                            <div className="overflow-hidden">
-                                                <div className="font-semibold text-sm truncate w-32">{acc.displayName}</div>
-                                                <div className="text-xs text-gray-400">@{acc.username}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button onClick={() => handleDisconnect(acc.platform, acc.accountId)} className="text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-2">
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            ))}
-                            {accounts.length === 0 && <p className="text-gray-500 text-sm italic py-4 text-center border dashed border-white/10 rounded-lg">No accounts linked yet.</p>}
-                        </div>
-                    )}
-
-                    <div className="pt-6 border-t border-white/5">
-                        <h4 className="text-sm font-semibold text-gray-400 mb-4 uppercase tracking-wider text-xs">Link New Account</h4>
-                        <div className="grid grid-cols-2 gap-2">
-                            {PLATFORMS.map(p => {
-                                const isLinked = accounts.some(acc => acc.platform === p.id);
-                                return (
-                                    <button
-                                        key={p.id}
-                                        onClick={() => handleConnect(p.id)}
-                                        className={`flex items-center gap-2 px-3 py-2.5 rounded-lg transition-colors text-xs font-medium border bg-surface hover:bg-surfaceHighlight border-white/5 hover:border-primary/30 hover:text-primary`}
-                                    >
-                                        <p.icon className="w-3.5 h-3.5" />
-                                        {p.name}
-                                        <span className="ml-auto opacity-50 text-[10px] uppercase font-bold tracking-wider">
-                                            {isLinked ? 'Add Another' : 'Connect'}
-                                        </span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
+            {/* Header Area */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="text-3xl font-display font-bold text-white mb-1">Command Center</h1>
+                    <p className="text-gray-400 text-sm">Overview of your social ecosystem</p>
                 </div>
 
-                {/* Right Column: Post Creator */}
-                <div className="lg:col-span-2">
-                    <div className="glass-card p-6 rounded-2xl h-full flex flex-col">
-                        <h3 className="text-xl font-bold mb-6 flex items-center gap-2 border-b border-white/5 pb-4">
-                            <Send className="w-5 h-5 text-primary" /> Create New Post
-                        </h3>
+                {/* Quick Actions (Future) */}
+            </div>
 
-                        <div className="mb-6">
-                            <label className="block text-xs font-semibold text-gray-400 mb-3 uppercase tracking-wider">Target Channels</label>
-                            <div className="flex flex-wrap gap-2">
-                                {accounts.map(acc => (
-                                    <button
-                                        key={acc.accountId}
-                                        onClick={() => toggleAccountSelection(acc.accountId)}
-                                        className={`px-4 py-2 rounded-full text-sm font-medium border transition-all flex items-center gap-2
-                                        ${selectedAccounts.includes(acc.accountId)
-                                                ? 'bg-primary text-white border-primary shadow-[0_0_15px_rgba(99,102,241,0.3)]'
-                                                : 'bg-white/5 text-gray-400 border-white/10 hover:border-white/20 hover:bg-white/10'}`}
-                                    >
-                                        {selectedAccounts.includes(acc.accountId) && <Check className="w-3 h-3" />}
-                                        {acc.displayName || acc.username}
-                                    </button>
-                                ))}
-                                {accounts.length === 0 && <span className="text-sm text-gray-600 italic">Connect accounts to post</span>}
-                            </div>
-                        </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-                        <div className="mb-6 flex-1 relative">
-                            <div className="flex items-center justify-between mb-3">
-                                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Content</label>
-                                <button
-                                    onClick={openAiModal}
-                                    className="flex items-center gap-1.5 text-xs font-medium text-purple-400 hover:text-purple-300 transition-colors bg-purple-500/10 px-3 py-1.5 rounded-full border border-purple-500/20 hover:bg-purple-500/20"
-                                >
-                                    <Sparkles className="w-3 h-3" />
-                                    AI Optimize
-                                </button>
-                            </div>
-                            <textarea
-                                value={postText}
-                                onChange={(e) => setPostText(e.target.value)}
-                                placeholder="What's on your mind? Type your post content here..."
-                                className="w-full h-48 bg-black/20 border border-white/10 rounded-xl p-4 text-white placeholder-gray-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all resize-none"
-                            ></textarea>
-                        </div>
-
-                        <div className="flex items-center justify-end mt-auto pt-4 border-t border-white/5">
+                {/* Left Column: Accounts list (Takes 4 cols) */}
+                <div className="lg:col-span-4 space-y-6">
+                    <div className="glass-card p-6 rounded-3xl h-full border-t border-white/10 relative overflow-hidden">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="font-bold text-lg">Active Connections</h3>
                             <button
-                                onClick={handleAutoSchedule}
-                                disabled={posting || !postText || selectedAccounts.length === 0}
-                                className="px-6 py-3 rounded-full bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 font-semibold transition-all flex items-center gap-2 mr-3"
+                                onClick={() => setShowConnect(!showConnect)}
+                                className="p-2 rounded-full bg-white/5 hover:bg-primary/20 hover:text-primary transition-all"
                             >
-                                <Zap className="w-4 h-4" />
-                                Smart Schedule
-                            </button>
-                            <button
-                                onClick={handlePost}
-                                disabled={posting || !postText || selectedAccounts.length === 0}
-                                className="px-8 py-3 rounded-full bg-primary hover:bg-primaryHover disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all shadow-lg flex items-center gap-2 hover:translate-y-[-1px]"
-                            >
-                                {posting ? <Loader2 className="animate-spin w-5 h-5" /> : <Send className="w-4 h-4" />}
-                                Publish Now
+                                {showConnect ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                             </button>
                         </div>
 
-                        {postResult && (
-                            <div className={`mt-6 p-4 rounded-xl flex items-start gap-3 border ${postResult.success ? 'bg-green-500/5 border-green-500/20 text-green-400' : 'bg-red-500/5 border-red-500/20 text-red-400'}`}>
-                                {postResult.success ? <CheckCircle className="w-5 h-5 mt-0.5 shrink-0" /> : <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />}
-                                <div>
-                                    <h4 className="font-bold text-sm">{postResult.success ? 'Success' : 'Failed'}</h4>
-                                    <p className="text-xs opacity-80 mt-1">{postResult.message || postResult.error || 'Operation completed'}</p>
+                        {/* Expandable Connect Area */}
+                        {showConnect && (
+                            <div className="mb-6 p-4 rounded-2xl bg-black/20 border border-white/5 animate-slide-up">
+                                <span className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-3 block">Add New Platform</span>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {PLATFORMS.map(p => (
+                                        <button key={p.id} onClick={() => handleConnect(p.id)} className="flex flex-col items-center p-2 rounded-lg hover:bg-white/5 transition-colors group">
+                                            <p.icon className={`w-5 h-5 text-gray-400 ${p.color}`} />
+                                            <span className="text-[10px] mt-1 text-gray-500 group-hover:text-gray-300">{p.name.split(' ')[0]}</span>
+                                        </button>
+                                    ))}
                                 </div>
+                            </div>
+                        )}
+
+                        {loading ? (
+                            <div className="py-20 flex justify-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
+                        ) : (
+                            <div className="space-y-3">
+                                {accounts.map(acc => (
+                                    <div key={acc.accountId} className="group p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all flex items-center justify-between cursor-default">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-surfaceHighlight to-surface border border-white/10 flex items-center justify-center shrink-0 shadow-lg">
+                                                {/* Dynamic Icon based on platform */}
+                                                {PLATFORMS.find(p => p.id === acc.platform)?.icon({ className: "w-5 h-5 text-gray-300" }) || <Zap className="w-5 h-5" />}
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <div className="font-semibold text-sm truncate max-w-[150px]">{acc.displayName}</div>
+                                                <div className="text-xs text-gray-500 truncate">@{acc.username}</div>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => handleDisconnect(acc.platform, acc.accountId)}
+                                            className="opacity-0 group-hover:opacity-100 p-2 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-full transition-all"
+                                            title="Disconnect"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
+                                {accounts.length === 0 && (
+                                    <div className="text-center py-10 opacity-50">
+                                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <Cloud className="w-8 h-8 text-gray-600" />
+                                        </div>
+                                        <p className="text-sm">No accounts linked</p>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
                 </div>
+
+                {/* Right Column: Creation Studio (Takes 8 cols) */}
+                <div className="lg:col-span-8">
+                    <div className="glass-card rounded-3xl p-1 h-full shadow-2xl shadow-primary/5">
+                        <div className="h-full bg-surface/50 rounded-[22px] p-6 md:p-8 flex flex-col relative overflow-hidden backdrop-blur-3xl">
+                            {/* Subtle Studio Glow */}
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/5 rounded-full blur-[80px] pointer-events-none" />
+
+                            <div className="flex justify-between items-center mb-8 relative z-10">
+                                <h3 className="text-xl font-bold flex items-center gap-3">
+                                    <span className="p-2 rounded-lg bg-primary/20 text-primary"><Send className="w-5 h-5" /></span>
+                                    Creation Studio
+                                </h3>
+
+                                <button
+                                    onClick={openAiModal}
+                                    className="group flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-600/20 to-fuchsia-600/20 border border-violet-500/30 hover:border-violet-500/50 transition-all text-xs font-bold uppercase tracking-wider text-violet-300 hover:text-white hover:shadow-[0_0_20px_-5px_rgba(139,92,246,0.5)]"
+                                >
+                                    <Sparkles className="w-4 h-4 group-hover:animate-pulse" />
+                                    AI Assist
+                                </button>
+                            </div>
+
+                            {/* Account Selector */}
+                            <div className="mb-6 relative z-10">
+                                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                                    {accounts.map(acc => {
+                                        const isSelected = selectedAccounts.includes(acc.accountId);
+                                        return (
+                                            <button
+                                                key={acc.accountId}
+                                                onClick={() => toggleAccountSelection(acc.accountId)}
+                                                className={`
+                                                    shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition-all flex items-center gap-2
+                                                    ${isSelected
+                                                        ? 'bg-primary text-white border-primary shadow-[0_0_15px_rgba(139,92,246,0.4)] translate-y-[-1px]'
+                                                        : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:border-white/20'}
+                                                `}
+                                            >
+                                                {/* Platform Icon Small */}
+                                                {PLATFORMS.find(p => p.id === acc.platform)?.icon({ className: "w-3 h-3" }) || <Zap className="w-3 h-3" />}
+                                                {acc.displayName}
+                                                {isSelected && <Check className="w-3 h-3 ml-1" />}
+                                            </button>
+                                        )
+                                    })}
+                                    {accounts.length === 0 && <span className="text-gray-500 text-sm py-2">Link accounts to start posting</span>}
+                                </div>
+                            </div>
+
+                            {/* Editor Area */}
+                            <div className="flex-1 relative mb-6 group">
+                                <textarea
+                                    value={postText}
+                                    onChange={(e) => setPostText(e.target.value)}
+                                    placeholder="What's happening today?"
+                                    className="w-full h-full min-h-[250px] bg-black/20 hover:bg-black/30 border border-white/5 focus:border-primary/50 focus:bg-black/40 rounded-2xl p-6 text-lg text-white placeholder-gray-600 focus:outline-none transition-all resize-none shadow-inner"
+                                ></textarea>
+
+                                {/* Character Count (Simple) */}
+                                <div className="absolute bottom-4 right-4 text-xs text-gray-600 font-mono">
+                                    {postText.length} chars
+                                </div>
+                            </div>
+
+                            {/* Actions Footer */}
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-white/5">
+                                <div className="text-xs text-gray-500 font-medium">
+                                    {postResult && (
+                                        <span className={`flex items-center gap-2 ${postResult.success ? 'text-green-400' : 'text-red-400'}`}>
+                                            {postResult.success ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                                            {postResult.message || (postResult.success ? 'Distributed successfully' : 'Failed to post')}
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center gap-3 w-full sm:w-auto">
+                                    <button
+                                        onClick={handleAutoSchedule}
+                                        disabled={posting || !postText || selectedAccounts.length === 0}
+                                        className="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-medium transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                                    >
+                                        <Zap className="w-4 h-4" />
+                                        Smart Queue
+                                    </button>
+                                    <button
+                                        onClick={handlePost}
+                                        disabled={posting || !postText || selectedAccounts.length === 0}
+                                        className="flex-1 sm:flex-none px-8 py-3.5 rounded-xl bg-gradient-to-r from-primary to-secondary hover:brightness-110 text-white font-bold shadow-[0_0_20px_-5px_rgba(139,92,246,0.5)] transition-all hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    >
+                                        {posting ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Send className="w-4 h-4" />}
+                                        Publish Now
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {/* AI Modal */}
+            {/* AI Modal (Keeping functional but styling match) */}
             {showAiModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                    <div className="glass-card w-full max-w-md p-6 rounded-2xl relative">
-                        <button
-                            onClick={() => setShowAiModal(false)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+                    <div className="glass-card w-full max-w-lg p-1 rounded-3xl relative animate-slide-up shadow-[0_0_50px_-10px_rgba(139,92,246,0.3)]">
+                        <div className="bg-surface/90 rounded-[20px] p-8 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-[50px] -z-10" />
 
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2.5 bg-purple-500/20 rounded-xl">
-                                <Sparkles className="w-6 h-6 text-purple-400" />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-bold">AI Ghostwriter</h3>
-                                <p className="text-xs text-gray-400">Generate optimized content instantly</p>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">What should I write about?</label>
-                                <textarea
-                                    value={aiPrompt}
-                                    onChange={(e) => setAiPrompt(e.target.value)}
-                                    placeholder="e.g. A thread about the future of SaaS..."
-                                    className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-purple-500/50 transition-all resize-none"
-                                ></textarea>
-                            </div>
-
-                            <button
-                                onClick={handleAiGenerate}
-                                disabled={generating || !aiPrompt}
-                                className="w-full py-3 bg-purple-600 hover:bg-purple-500 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {generating ? <Loader2 className="animate-spin w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
-                                Generate Content
+                            <button onClick={() => setShowAiModal(false)} className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors">
+                                <X className="w-5 h-5" />
                             </button>
+
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="p-3 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-2xl shadow-lg">
+                                    <Sparkles className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white">Ghostwriter AI</h3>
+                                    <p className="text-sm text-gray-400">Your personal content strategist</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Prompt</label>
+                                    <textarea
+                                        value={aiPrompt}
+                                        onChange={(e) => setAiPrompt(e.target.value)}
+                                        placeholder="e.g. Write a thread about the benefits of automation..."
+                                        className="w-full h-32 bg-black/30 border border-white/10 rounded-xl p-4 text-sm focus:border-primary/50 outline-none resize-none transition-all placeholder-gray-600"
+                                    ></textarea>
+                                </div>
+
+                                <button
+                                    onClick={handleAiGenerate}
+                                    disabled={generating || !aiPrompt}
+                                    className="w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    {generating ? <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                                    Generate Magic
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -25,7 +25,7 @@ api.interceptors.request.use((config) => {
 });
 
 export const getAuthUrl = async (platform, redirectUrl) => {
-    const res = await api.get(`/connect/${platform}`, {
+    const res = await api.get(`/auth/connect/${platform}`, {
         params: { redirect: redirectUrl }
     });
     return res.data.authUrl;
