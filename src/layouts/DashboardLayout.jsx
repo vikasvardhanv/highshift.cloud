@@ -62,13 +62,28 @@ export default function DashboardLayout({ children }) {
         return titles[path] || 'Dashboard';
     };
 
+    // Get theme colors based on route
+    const getPageTheme = () => {
+        const path = location.pathname;
+        if (path.includes('/schedule') || path.includes('/calendar')) return 'from-emerald-900/20 to-teal-900/20';
+        if (path.includes('/analytics')) return 'from-violet-900/20 to-indigo-900/20';
+        if (path.includes('/media')) return 'from-rose-900/20 to-orange-900/20';
+        if (path.includes('/ai')) return 'from-cyan-900/20 to-blue-900/20';
+        if (path.includes('/brand')) return 'from-amber-900/20 to-yellow-900/20';
+        if (path.includes('/history')) return 'from-gray-800/20 to-slate-800/20';
+        return 'from-primary/5 to-secondary/5'; // Default Dashboard
+    };
+
     return (
-        <div className="min-h-screen bg-background text-white font-sans flex">
+        <div className="min-h-screen bg-background text-white font-sans flex relative overflow-hidden">
+            {/* Ambient Background Gradient */}
+            <div className={`absolute top-0 right-0 w-[800px] h-[600px] bg-gradient-to-bl ${getPageTheme()} blur-3xl rounded-full pointer-events-none opacity-50 z-0`} />
+
             {/* Sidebar */}
             <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
 
             {/* Main Content Area */}
-            <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 
+            <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 relative z-10
                 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
 
                 {/* Top Bar */}

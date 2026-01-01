@@ -66,7 +66,7 @@ export default function Schedule() {
                     </div>
                 </div>
                 <button
-                    onClick={() => navigate('/dashboard')}
+                    onClick={() => navigate('/dashboard', { state: { openSchedule: true } })}
                     className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primaryHover rounded-lg text-sm font-semibold transition-colors"
                 >
                     <Plus className="w-4 h-4" /> Schedule Post

@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { getAccounts, getAuthUrl, postContent, disconnectAccount, uploadAndPost, getProfiles, createProfile } from '../services/api';
 import {
     Facebook, Twitter, Instagram, Linkedin, Youtube,
@@ -28,6 +29,7 @@ const UPLOAD_METHODS = [
 ];
 
 export default function Dashboard() {
+    const location = useLocation();
     const [accounts, setAccounts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [apiKey] = useState(localStorage.getItem('social_api_key'));
@@ -63,6 +65,13 @@ export default function Dashboard() {
         if (isAuthenticated) {
             loadAccounts();
             loadProfiles();
+
+            // Check if we should open the schedule modal
+            if (location.state?.openSchedule) {
+                setShowScheduleModal(true);
+                // Clear state to prevent reopening on refresh
+                window.history.replaceState({}, document.title);
+            }
         } else {
             setLoading(false);
         }
