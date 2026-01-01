@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Analytics from './pages/Analytics';
@@ -12,29 +12,42 @@ import TermsOfUse from './pages/TermsOfUse';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import DashboardLayout from './layouts/DashboardLayout';
+
+// Layout for public pages (Landing, Legal)
+function PublicLayout({ children }) {
+  return (
+    <div className="min-h-screen bg-background text-white selection:bg-primary/30 font-sans flex flex-col">
+      <Navbar />
+      <main className="container mx-auto px-4 py-8 flex-1">
+        {children}
+      </main>
+      <Footer />
+    </div>
+  );
+}
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-background text-white selection:bg-primary/30 font-sans">
-        <Navbar />
-        <main className="container mx-auto px-4 py-8">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/schedule" element={<Schedule />} />
-            <Route path="/brand" element={<BrandKit />} />
-            <Route path="/ai" element={<Ghostwriter />} />
-            <Route path="/media" element={<MediaLibrary />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/terms" element={<TermsOfUse />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+        <Route path="/terms" element={<PublicLayout><TermsOfUse /></PublicLayout>} />
+        <Route path="/privacy" element={<PublicLayout><PrivacyPolicy /></PublicLayout>} />
+
+        {/* Auth Callback works best in Public Layout usually */}
+        <Route path="/auth/callback" element={<PublicLayout><AuthCallback /></PublicLayout>} />
+
+        {/* Protected Dashboard Routes */}
+        <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
+        <Route path="/analytics" element={<DashboardLayout><Analytics /></DashboardLayout>} />
+        <Route path="/schedule" element={<DashboardLayout><Schedule /></DashboardLayout>} />
+        <Route path="/brand" element={<DashboardLayout><BrandKit /></DashboardLayout>} />
+        <Route path="/ai" element={<DashboardLayout><Ghostwriter /></DashboardLayout>} />
+        <Route path="/media" element={<DashboardLayout><MediaLibrary /></DashboardLayout>} />
+        <Route path="/history" element={<DashboardLayout><History /></DashboardLayout>} />
+      </Routes>
     </Router>
   );
 }
