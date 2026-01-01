@@ -11,6 +11,13 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
     const apiKey = localStorage.getItem('social_api_key');
+    const token = localStorage.getItem('token');
+
+    if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Legacy / API Key support (Backend checks Bearer first)
     if (apiKey) {
         config.headers['X-API-Key'] = apiKey;
     }

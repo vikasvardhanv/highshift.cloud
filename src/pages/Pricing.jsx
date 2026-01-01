@@ -3,59 +3,61 @@ import { Check, X, Zap, Shield, Globe } from 'lucide-react';
 
 const TIERS = [
     {
-        name: 'Free Forever',
-        price: '$0',
+        name: 'Starter',
+        price: '$15',
         period: '/month',
-        description: 'Perfect for individuals just starting out',
+        description: 'For solopreneurs and new creators',
         features: [
-            '3 Social Accounts',
-            '10 AI-Optimized Posts/mo',
-            'Basic Analytics (24h)',
+            '5 Social Accounts',
+            'Unlimited Scheduling',
+            'AI Caption Generator',
+            'Basic Analytics (30 days)',
             '1 User Seat',
         ],
         notIncluded: [
-            'Smart Scheduling',
             'Team Collaboration',
+            'White Label Reports',
             'Priority Support'
         ],
-        cta: 'Get Started Free',
+        cta: 'Get Started',
         highlight: false
     },
     {
-        name: 'Starter',
-        price: '$10',
+        name: 'Growth',
+        price: '$49',
         period: '/month',
-        description: 'For creators and solopreneurs',
+        description: 'Perfect for growing brands and small teams',
         features: [
-            '10 Social Accounts',
-            '300 AI-Optimized Posts/mo',
-            'Smart Scheduling',
-            '30 Days Analytics',
+            '15 Social Accounts',
+            'Everything in Starter',
+            'Advanced Analytics (1 Year)',
+            'Team Collaboration (3 Seats)',
+            'AI Image Generation (Beta)',
             'Priority Support'
         ],
         notIncluded: [
-            'Team Collaboration',
-            'White Label Reports'
+            'White Label Reports',
+            'API Access'
         ],
         cta: 'Start Free Trial',
         highlight: true,
         tag: 'Most Popular'
     },
     {
-        name: 'Pro Agency',
-        price: '$29',
+        name: 'Agency',
+        price: '$99',
         period: '/month',
-        description: 'Power for teams and agencies',
+        description: 'For agencies managing multiple clients',
         features: [
-            '50 Social Accounts',
-            'Unlimited AI Ghostwriter',
-            '5 Team Seats',
-            '1 Year Analytics',
-            'Priority API Access',
-            'White Label Reports'
+            '50+ Social Accounts',
+            'Everything in Growth',
+            'White Label Reports & Client Portals',
+            'Unlimited Team Seats',
+            'Approval Workflows',
+            'Dedicated Account Manager'
         ],
         notIncluded: [],
-        cta: 'Contact Sales', // or Get Started
+        cta: 'Contact Sales',
         highlight: false
     }
 ];

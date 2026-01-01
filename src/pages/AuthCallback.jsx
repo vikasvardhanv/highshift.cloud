@@ -8,6 +8,18 @@ export default function AuthCallback() {
     const [status, setStatus] = useState('processing');
 
     useEffect(() => {
+        // 1. Check for JWT Token (Login/Register via Google)
+        const token = searchParams.get('token');
+        if (token) {
+            localStorage.setItem('token', token);
+            setStatus('success');
+            setTimeout(() => {
+                navigate('/dashboard');
+            }, 1000); // Faster redirect for login
+            return;
+        }
+
+        // 2. Check for Social API Key (Legacy/Platform Connection)
         const apiKey = searchParams.get('apiKey');
 
         if (apiKey) {
@@ -28,8 +40,16 @@ export default function AuthCallback() {
             if (error) {
                 setStatus('error');
             } else {
-                // Fallback/Timeout or unknown state
-                setStatus('error');
+                // Determine if we just have apiKey (successful registration via google potentially?)
+                if (apiKey && !platform && !accountId) {
+                    setStatus('success');
+                    setTimeout(() => {
+                        navigate('/dashboard');
+                    }, 1500);
+                } else {
+                    // Fallback/Timeout or unknown state
+                    setStatus('error');
+                }
             }
         }
     }, [searchParams, navigate]);

@@ -1,21 +1,51 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, ArrowRight, Github } from 'lucide-react';
+import { Mail, ArrowRight, Loader2 } from 'lucide-react';
+import axios from 'axios';
+
+// Get API URL from env or default
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : '');
 
 export default function Login() {
     const navigate = useNavigate();
+    const [isLogin, setIsLogin] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [formData, setFormData] = useState({ email: '', password: '' });
 
     const handleGoogleLogin = () => {
-        // In a real implementation, this would redirect to backend /auth/login/google
-        // For this demo/MVP, we'll simulate the dashboard access or link to existing auth.
-        // Since we are building the "Auth Layer", let's redirect to the dashboard for now
-        // BUT ideally this should call a backend endpoint.
+        // Redirect to backend endpoint for Google Auth
+        const googleAuthUrl = `${API_URL}/auth/google`;
+        window.location.href = googleAuthUrl;
+    };
 
-        // Let's use the 'connect' flow logic but for 'login' scope if needed.
-        // Or simpler: Just enter the app for the demo, assuming user will connect accounts inside.
-        // Actually, the user asked for "Login or Sign Up".
+    const handleEmailSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setIsLoading(true);
 
-        // Redirect to Dashboard
-        navigate('/dashboard');
+        try {
+            const endpoint = isLogin ? '/auth/login' : '/auth/register';
+            const res = await axios.post(`${API_URL}${endpoint}`, formData);
+
+            const { access_token, api_key } = res.data;
+
+            // Store tokens
+            if (access_token) {
+                localStorage.setItem('token', access_token);
+            }
+            // If registering, we might get an API key too
+            if (api_key) {
+                localStorage.setItem('social_api_key', api_key);
+            }
+
+            navigate('/dashboard');
+        } catch (err) {
+            console.error("Auth Error:", err);
+            setError(err.response?.data?.detail || "Authentication successfuly failed. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -31,11 +61,30 @@ export default function Login() {
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary mx-auto flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
                         <span className="font-bold text-xl text-white">H</span>
                     </div>
-                    <h1 className="text-2xl font-bold mb-2">Welcome Back</h1>
-                    <p className="text-gray-400 text-sm">Sign in to continue to HighShift Cloud</p>
+                    <h1 className="text-2xl font-bold mb-2">{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
+                    <p className="text-gray-400 text-sm">
+                        {isLogin ? 'Sign in to continue to HighShift Cloud' : 'Get started with HighShift Cloud today'}
+                    </p>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex p-1 bg-white/5 rounded-xl mb-6">
+                    <button
+                        onClick={() => { setIsLogin(true); setError(''); }}
+                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${isLogin ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                    >
+                        Login
+                    </button>
+                    <button
+                        onClick={() => { setIsLogin(false); setError(''); }}
+                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${!isLogin ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                    >
+                        Sign Up
+                    </button>
                 </div>
 
                 <div className="space-y-4">
+                    {/* Google Button */}
                     <button
                         onClick={handleGoogleLogin}
                         className="w-full py-3 px-4 bg-white text-black hover:bg-gray-100 rounded-xl font-bold transition-all flex items-center justify-center gap-3"
@@ -46,13 +95,60 @@ export default function Login() {
                             <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                             <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                         </svg>
-                        Continue with Google
+                        {isLogin ? 'Sign in with Google' : 'Sign up with Google'}
                     </button>
 
-                    <button className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-semibold transition-all flex items-center justify-center gap-3">
-                        <Mail className="w-5 h-5 text-gray-400" />
-                        Continue with Email
-                    </button>
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-white/10"></div>
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-[#0a0a0a] px-2 text-gray-500">Or continue with email</span>
+                        </div>
+                    </div>
+
+                    {/* Email Form */}
+                    <form onSubmit={handleEmailSubmit} className="space-y-4">
+                        {error && (
+                            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">
+                                {error}
+                            </div>
+                        )}
+
+                        <div className="space-y-2">
+                            <input
+                                type="email"
+                                placeholder="Email address"
+                                required
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary/50 focus:bg-white/10 transition-all text-white placeholder:text-gray-500"
+                            />
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                required
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary/50 focus:bg-white/10 transition-all text-white placeholder:text-gray-500"
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full py-3 px-4 bg-primary hover:bg-primaryHover text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isLoading ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <>
+                                    {isLogin ? 'Sign In' : 'Create Account'}
+                                    <ArrowRight className="w-5 h-5" />
+                                </>
+                            )}
+                        </button>
+                    </form>
                 </div>
 
                 <div className="mt-8 text-center text-xs text-gray-500">

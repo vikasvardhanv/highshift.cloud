@@ -12,14 +12,14 @@ export default function Home() {
                 className="text-center max-w-4xl"
             >
                 <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider border border-primary/20 mb-6 inline-block">
-                    Social Media Automation
+                    The Unified Social OS
                 </span>
                 <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-500 mb-6 leading-tight">
-                    One API to <br /> <span className="text-primary">Rule Them All</span>
+                    Manage Everything. <br /> <span className="text-primary">Without the Clutter.</span>
                 </h1>
                 <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-                    Upload your content to TikTok, Instagram, YouTube, and 7 more platforms with a single API request.
-                    Automate your social media presence today.
+                    The power of Sprout's analytics, the speed of Planable's collaboration, and the agency tools of SocialPilot.
+                    All in one beautiful, developer-friendly platform.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -61,23 +61,50 @@ export default function Home() {
                 </div>
             </motion.div>
 
-            {/* Features Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-32 max-w-6xl w-full">
-                <FeatureCard
-                    icon={<CheckCircle className="text-green-400 w-6 h-6" />}
-                    title="Multi-Platform"
-                    desc="Support for Twitter, Instagram, YouTube, LinkedIn, and more."
-                />
-                <FeatureCard
-                    icon={<Code className="text-blue-400 w-6 h-6" />}
-                    title="Developer First"
-                    desc="Designed for developers with clean REST API and clear documentation."
-                />
-                <FeatureCard
-                    icon={<Terminal className="text-purple-400 w-6 h-6" />}
-                    title="Secure OAuth"
-                    desc="We handle the complex OAuth flows so you don't have to."
-                />
+            {/* Comparison / Superiority Section */}
+            <div className="mt-32 w-full max-w-6xl">
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl font-bold mb-4">The Best of All Worlds</h2>
+                    <p className="text-gray-400">We took the pros from every platform and fixed the cons.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <FeatureCard
+                        icon={<CheckCircle className="text-green-400 w-6 h-6" />}
+                        title="Unified Inbox"
+                        desc="Manage comments, DMs, and mentions from one single stream. No more tab switching."
+                    />
+                    <FeatureCard
+                        icon={<Terminal className="text-blue-400 w-6 h-6" />}
+                        title="Agency Power"
+                        desc="White label reporting and client portals built-in. Scale without the enterprise price tag."
+                    />
+                    <FeatureCard
+                        icon={<Code className="text-purple-400 w-6 h-6" />}
+                        title="Seamless Collab"
+                        desc="Approval workflows and team seats included. Works just like Planable, but integrated."
+                    />
+                </div>
+            </div>
+
+            {/* Additional Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16 max-w-6xl w-full">
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all">
+                    <h3 className="font-bold mb-2 text-lg">Visual Planner</h3>
+                    <p className="text-sm text-gray-400">Drag-and-drop calendar for easy scheduling across 7+ platforms.</p>
+                </div>
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all">
+                    <h3 className="font-bold mb-2 text-lg">Smart Analytics</h3>
+                    <p className="text-sm text-gray-400">Deep insights without the 'add-on' fees. Know what works instantly.</p>
+                </div>
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all">
+                    <h3 className="font-bold mb-2 text-lg">Developer API</h3>
+                    <p className="text-sm text-gray-400">Built via API first. Automate your workflow with code if you prefer.</p>
+                </div>
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all">
+                    <h3 className="font-bold mb-2 text-lg">Fair Pricing</h3>
+                    <p className="text-sm text-gray-400">No hidden fees. Enterprise features at startup friendly prices.</p>
+                </div>
             </div>
         </div>
     );
