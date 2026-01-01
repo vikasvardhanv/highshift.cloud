@@ -18,7 +18,7 @@ import { useState } from 'react';
 
 const MENU_ITEMS = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { label: 'Connections', path: '/dashboard', icon: MessageSquare }, // Re-using dashboard for connections for now
+    { label: 'Connections', path: '/connections', icon: MessageSquare }, // Separate Connections page
     { label: 'Analytics', path: '/analytics', icon: BarChart2 },
     { label: 'Schedule', path: '/schedule', icon: Calendar },
     { label: 'Media', path: '/media', icon: Image },

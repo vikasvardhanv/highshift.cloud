@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
+import Connections from './pages/Connections';
+import Settings from './pages/Settings';
 import Analytics from './pages/Analytics';
 import Schedule from './pages/Schedule';
 import BrandKit from './pages/BrandKit';
@@ -48,6 +50,8 @@ function App() {
 
         {/* Protected Dashboard Routes */}
         <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
+        <Route path="/connections" element={<DashboardLayout><Connections /></DashboardLayout>} />
+        <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
         <Route path="/analytics" element={<DashboardLayout><Analytics /></DashboardLayout>} />
         <Route path="/schedule" element={<DashboardLayout><Schedule /></DashboardLayout>} />
         <Route path="/brand" element={<DashboardLayout><BrandKit /></DashboardLayout>} />
