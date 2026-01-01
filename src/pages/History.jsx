@@ -1,14 +1,27 @@
-import { Search, Filter, MoreHorizontal, CheckCircle, Clock } from 'lucide-react';
-
-const MOCK_HISTORY = [
-    { id: 1, content: "🚀 Launching our new feature today! Check it out.", platforms: ['twitter', 'linkedin'], date: "Oct 24, 2024", time: "10:00 AM", status: "published" },
-    { id: 2, content: "Behind the scenes at our annual retreat 📸", platforms: ['instagram'], date: "Oct 23, 2024", time: "2:30 PM", status: "published" },
-    { id: 3, content: "5 Tips for better productivity (Thread) 🧵", platforms: ['twitter'], date: "Oct 25, 2024", time: "9:00 AM", status: "scheduled" },
-    { id: 4, content: "We are hiring! Join our team.", platforms: ['linkedin', 'facebook'], date: "Oct 22, 2024", time: "11:15 AM", status: "published" },
-    { id: 5, content: "New blog post is live: The Future of AI.", platforms: ['facebook', 'twitter'], date: "Oct 20, 2024", time: "4:45 PM", status: "published" },
-];
+import { useState, useEffect } from 'react';
+import { Search, Filter, MoreHorizontal, CheckCircle, Clock, Loader2 } from 'lucide-react';
+import { getScheduledPosts } from '../services/api';
 
 export default function History() {
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadHistory = async () => {
+            try {
+                const data = await getScheduledPosts();
+                setPosts(data || []);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadHistory();
+    }, []);
+
+    if (loading) return <div className="flex justify-center p-12"><Loader2 className="animate-spin text-primary" /></div>;
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -42,22 +55,22 @@ export default function History() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
-                            {MOCK_HISTORY.map((post) => (
-                                <tr key={post.id} className="hover:bg-white/[0.02] transition-colors">
+                            {posts.map((post) => (
+                                <tr key={post.id || post._id} className="hover:bg-white/[0.02] transition-colors">
                                     <td className="p-6 max-w-sm truncate text-sm font-medium">
                                         {post.content}
                                     </td>
                                     <td className="p-6">
                                         <div className="flex -space-x-2">
-                                            {post.platforms.map(p => (
-                                                <div key={p} className="w-6 h-6 rounded-full bg-gray-800 border-2 border-background flex items-center justify-center text-[10px] capitalize text-gray-400">
-                                                    {p[0]}
+                                            {(post.target_accounts || []).map(acc => (
+                                                <div key={acc.accountId} className="w-6 h-6 rounded-full bg-gray-800 border-2 border-background flex items-center justify-center text-[10px] capitalize text-gray-400">
+                                                    {(acc.platform || 'social')[0]}
                                                 </div>
                                             ))}
                                         </div>
                                     </td>
                                     <td className="p-6 text-sm text-gray-400">
-                                        {post.date} <span className="text-xs opacity-50">• {post.time}</span>
+                                        {new Date(post.scheduled_time || post.created_at).toLocaleDateString()}
                                     </td>
                                     <td className="p-6">
                                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
