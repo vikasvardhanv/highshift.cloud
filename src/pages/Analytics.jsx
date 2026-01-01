@@ -1,14 +1,16 @@
+import { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { ArrowUpRight, ArrowDownRight, Users, Eye, MousePointer } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Users, Eye, MousePointer, Loader2 } from 'lucide-react';
+import { getAccounts, getAnalytics } from '../services/api';
 
 const MOCK_DATA = [
-    { name: 'Mon', views: 4000, likes: 2400, amt: 2400 },
-    { name: 'Tue', views: 3000, likes: 1398, amt: 2210 },
-    { name: 'Wed', views: 2000, likes: 9800, amt: 2290 },
-    { name: 'Thu', views: 2780, likes: 3908, amt: 2000 },
-    { name: 'Fri', views: 1890, likes: 4800, amt: 2181 },
-    { name: 'Sat', views: 2390, likes: 3800, amt: 2500 },
-    { name: 'Sun', views: 3490, likes: 4300, amt: 2100 },
+    { name: 'Mon', views: 0, likes: 0 },
+    { name: 'Tue', views: 0, likes: 0 },
+    { name: 'Wed', views: 0, likes: 0 },
+    { name: 'Thu', views: 0, likes: 0 },
+    { name: 'Fri', views: 0, likes: 0 },
+    { name: 'Sat', views: 0, likes: 0 },
+    { name: 'Sun', views: 0, likes: 0 },
 ];
 
 const StatCard = ({ title, value, change, isPositive, icon: Icon }) => (
@@ -28,15 +30,43 @@ const StatCard = ({ title, value, change, isPositive, icon: Icon }) => (
 );
 
 export default function Analytics() {
+    const [data, setData] = useState(MOCK_DATA);
+    const [stats, setStats] = useState({ impressions: 0, engagement: 0, followers: 0 });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadAnalytics();
+    }, []);
+
+    const loadAnalytics = async () => {
+        try {
+            const accounts = await getAccounts();
+            if (accounts && accounts.length > 0) {
+                // Fetch for the first account as demo
+                const analytics = await getAnalytics(accounts[0].accountId);
+                // Transform backend data to chart format if needed, or just use what is returned if it matches
+                // For now, assuming backend returns { daily: [], total: {} }
+                if (analytics.daily) setData(analytics.daily);
+                if (analytics.total) setStats(analytics.total);
+            }
+        } catch (err) {
+            console.error("Failed to load analytics", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) return <div className="flex justify-center p-12"><Loader2 className="animate-spin text-primary" /></div>;
+
     return (
         <div className="space-y-6">
             <h1 className="text-2xl font-bold">Analytics Overview</h1>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatCard title="Total Impressions" value="2.4M" change={12.5} isPositive={true} icon={Eye} />
-                <StatCard title="Total Engagement" value="45.2K" change={8.2} isPositive={true} icon={MousePointer} />
-                <StatCard title="New Followers" value="1,204" change={-2.4} isPositive={false} icon={Users} />
+                <StatCard title="Total Impressions" value={stats.impressions.toLocaleString()} change={12.5} isPositive={true} icon={Eye} />
+                <StatCard title="Total Engagement" value={stats.engagement.toLocaleString()} change={8.2} isPositive={true} icon={MousePointer} />
+                <StatCard title="Total Followers" value={stats.followers.toLocaleString()} change={-2.4} isPositive={false} icon={Users} />
             </div>
 
             {/* Charts Area */}
@@ -46,7 +76,7 @@ export default function Analytics() {
                     <h3 className="text-lg font-semibold mb-6">Growth Trends</h3>
                     <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={MOCK_DATA}>
+                            <AreaChart data={data}>
                                 <defs>
                                     <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
@@ -70,7 +100,7 @@ export default function Analytics() {
                     <h3 className="text-lg font-semibold mb-6">Engagement Source</h3>
                     <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={MOCK_DATA}>
+                            <BarChart data={data}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                                 <XAxis dataKey="name" stroke="#666" />
                                 <YAxis stroke="#666" />

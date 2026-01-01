@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Send, Sparkles, Bot, User, Copy, ThumbsUp, RefreshCw } from 'lucide-react';
+import { Send, Sparkles, Bot, User, Copy, ThumbsUp, RefreshCw, Loader2 } from 'lucide-react';
+import { generateContent } from '../services/api';
 
 export default function Ghostwriter() {
     const [messages, setMessages] = useState([
