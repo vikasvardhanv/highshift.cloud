@@ -119,9 +119,9 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="max-w-5xl mx-auto animate-fade-in">
+        <div className="space-y-8 animate-fade-in">
             {/* Header / API Key */}
-            <div className="glass-card rounded-2xl p-8 mb-10 overflow-hidden relative border-primary/20">
+            <div className="glass-card rounded-2xl p-8 overflow-hidden relative border-primary/20">
                 <div className="absolute -top-10 -right-10 p-4 opacity-50 blur-3xl">
                     <div className="w-64 h-64 bg-primary/20 rounded-full"></div>
                 </div>
@@ -129,16 +129,20 @@ export default function Dashboard() {
                     <Key className="w-24 h-24 rotate-12" />
                 </div>
 
-                <h2 className="text-2xl font-bold mb-4 relative z-10">Your API Credentials</h2>
-                <div className="flex items-center gap-2 bg-black/40 p-4 rounded-lg border border-white/5 max-w-2xl relative z-10">
-                    <code className="text-primary font-mono text-sm break-all flex-1">{apiKey}</code>
-                    <button onClick={copyKey} className="p-2 hover:bg-white/10 rounded-md transition-colors text-gray-400 hover:text-white" title="Copy Key">
-                        <Copy className="w-4 h-4" />
-                    </button>
+                <div className="relative z-10">
+                    <h2 className="text-2xl font-bold mb-2">Connect Channels</h2>
+                    <p className="text-gray-400 mb-6 max-w-xl">Link your social media accounts to start automating your content. Your single API key works across all connected platforms.</p>
+
+                    <div className="flex items-center gap-2 bg-black/40 p-4 rounded-lg border border-white/5 max-w-2xl">
+                        <div className="flex-1">
+                            <div className="text-xs text-gray-500 uppercase font-semibold mb-1">Your Master API Key</div>
+                            <code className="text-primary font-mono text-sm break-all">{apiKey}</code>
+                        </div>
+                        <button onClick={copyKey} className="p-2 hover:bg-white/10 rounded-md transition-colors text-gray-400 hover:text-white" title="Copy Key">
+                            <Copy className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
-                <p className="mt-4 text-sm text-gray-500 relative z-10">
-                    Include this as <code className="text-gray-300">X-API-Key</code> header in your requests.
-                </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
