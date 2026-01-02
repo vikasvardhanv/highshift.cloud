@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { getAccounts } from '../services/api';
-import { User, ChevronDown, LogOut } from 'lucide-react';
+import { User, ChevronDown, LogOut, Menu } from 'lucide-react';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function DashboardLayout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -94,42 +95,45 @@ export default function DashboardLayout({ children }) {
                             HighShift Cloud &gt; <span className="text-white font-medium">{getPageTitle()}</span>
                         </div>
 
-                        {/* User Profile */}
-                        <div className="relative">
-                            <button
-                                onClick={() => setShowDropdown(!showDropdown)}
-                                className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 transition-colors"
-                            >
-                                {user?.avatar ? (
-                                    <img
-                                        src={user.avatar}
-                                        alt={user.name}
-                                        className="w-8 h-8 rounded-full border border-primary/30"
-                                    />
-                                ) : (
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-xs font-bold text-white">
-                                        {user?.initials || 'U'}
+                        {/* Theme Toggle & User Profile */}
+                        <div className="flex items-center gap-4">
+                            <ThemeToggle />
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowDropdown(!showDropdown)}
+                                    className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 transition-colors"
+                                >
+                                    {user?.avatar ? (
+                                        <img
+                                            src={user.avatar}
+                                            alt={user.name}
+                                            className="w-8 h-8 rounded-full border border-primary/30"
+                                        />
+                                    ) : (
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-xs font-bold text-white">
+                                            {user?.initials || 'U'}
+                                        </div>
+                                    )}
+                                    <span className="text-sm font-medium hidden sm:block">{user?.name || 'User'}</span>
+                                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                {showDropdown && (
+                                    <div className="absolute right-0 top-full mt-2 w-48 bg-surface border border-white/10 rounded-xl shadow-2xl py-2 animate-fade-in">
+                                        <div className="px-4 py-2 border-b border-white/5">
+                                            <p className="text-sm font-medium">{user?.name}</p>
+                                            {user?.email && <p className="text-xs text-gray-400">{user.email}</p>}
+                                        </div>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2"
+                                        >
+                                            <LogOut className="w-4 h-4" /> Logout
+                                        </button>
                                     </div>
                                 )}
-                                <span className="text-sm font-medium hidden sm:block">{user?.name || 'User'}</span>
-                                <ChevronDown className="w-4 h-4 text-gray-400" />
-                            </button>
-
-                            {/* Dropdown Menu */}
-                            {showDropdown && (
-                                <div className="absolute right-0 top-full mt-2 w-48 bg-surface border border-white/10 rounded-xl shadow-2xl py-2 animate-fade-in">
-                                    <div className="px-4 py-2 border-b border-white/5">
-                                        <p className="text-sm font-medium">{user?.name}</p>
-                                        {user?.email && <p className="text-xs text-gray-400">{user.email}</p>}
-                                    </div>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2"
-                                    >
-                                        <LogOut className="w-4 h-4" /> Logout
-                                    </button>
-                                </div>
-                            )}
+                            </div>
                         </div>
                     </div>
                 </div>

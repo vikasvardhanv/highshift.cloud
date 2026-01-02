@@ -3,50 +3,110 @@
 @tailwind utilities;
 
 :root {
+  /* Light Mode - Luminous Clay */
+  --background: 248 250 252;
+  /* Slate 50 */
+  --surface: 255 255 255;
+  /* White */
+  --surface-highlight: 241 245 249;
+  /* Slate 100 */
+  --primary: 13 148 136;
+  /* Teal 600 */
+  --primary-hover: 17 94 89;
+  /* Teal 800 */
+  --secondary: 14 165 233;
+  /* Sky 500 */
+  --accent: 236 72 153;
+  /* Pink 500 */
+  --success: 34 197 94;
+  /* Green 500 */
+  --error: 239 68 68;
+  /* Red 500 */
+  color-scheme: light;
+}
+
+.dark {
+  /* Dark Mode - Green Soulful */
+  --background: 2 9 7;
+  /* Deep Forest */
+  --surface: 10 26 22;
+  /* Dark Emerald */
+  --surface-highlight: 19 47 40;
+  --primary: 0 237 100;
+  /* Bright Green */
+  --primary-hover: 0 198 83;
+  --secondary: 45 212 191;
+  /* Teal */
+  --accent: 244 114 182;
+  --success: 16 185 129;
+  --error: 239 68 68;
   color-scheme: dark;
 }
 
 body {
-  @apply bg-background text-white antialiased font-sans overflow-x-hidden;
+  @apply bg-background text-slate-800 dark:text-white antialiased font-sans overflow-x-hidden transition-colors duration-300;
+  /* Light Mode Background */
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(13, 148, 136, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 100% 0%, rgba(14, 165, 233, 0.05) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+
+.dark body {
+  /* Dark Mode Background */
   background-image:
     radial-gradient(circle at 50% 0%, #064e3b 0%, transparent 50%),
-    /* Deep Emerald Top */
     radial-gradient(circle at 0% 50%, #022c22 0%, transparent 40%),
-    /* Dark Green Left */
     radial-gradient(circle at 100% 50%, #0f172a 0%, transparent 40%);
-  /* Slate Right */
-  background-attachment: fixed;
 }
 
 @layer utilities {
   .glass-card {
-    @apply bg-surface/40 backdrop-blur-xl border border-white/5 transition-all duration-300;
+    @apply bg-surface/60 backdrop-blur-xl border border-slate-200 dark:border-white/5 transition-all duration-300;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    /* Light Shadow */
+  }
+
+  .dark .glass-card {
+    @apply bg-surface/40;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    /* Dark Shadow */
   }
 
   .glass-card:hover {
-    @apply border-primary/20 bg-surface/60;
+    @apply border-primary/20 bg-surface/80;
+    box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.1);
+    /* Teal Glow Light */
+  }
+
+  .dark .glass-card:hover {
+    @apply bg-surface/60;
     box-shadow: 0 8px 32px 0 rgba(16, 185, 129, 0.15);
+    /* Green Glow Dark */
   }
 
   .glass-button {
-    @apply bg-white/5 hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/30 transition-all duration-300;
+    @apply bg-white/50 dark:bg-white/5 hover:bg-primary/10 dark:hover:bg-emerald-500/10 border border-slate-200 dark:border-white/5 hover:border-primary/30 dark:hover:border-emerald-500/30 transition-all duration-300;
   }
 
   .aurora-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-success via-primary to-secondary;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-600 via-primary to-sky-600 dark:from-success dark:via-primary dark:to-secondary;
   }
 
   .input-futuristic {
-    @apply bg-surface/30 border border-white/10 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 rounded-xl transition-all outline-none text-white placeholder-gray-500 backdrop-blur-sm;
+    @apply bg-surface/50 dark:bg-surface/30 border border-slate-200 dark:border-white/10 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 rounded-xl transition-all outline-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 backdrop-blur-sm;
   }
 
   .nav-link {
-    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5;
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5;
   }
 
   .nav-link.active {
     @apply bg-primary/10 text-primary border border-primary/20;
+    box-shadow: 0 0 15px -3px rgba(13, 148, 136, 0.2);
+  }
+
+  .dark .nav-link.active {
     box-shadow: 0 0 15px -3px rgba(16, 185, 129, 0.3);
   }
 }

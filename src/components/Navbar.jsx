@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, BarChart3, Calendar, Palette, Sparkles, LogOut, Menu, X, Image as ImageIcon, History } from 'lucide-react';
 import { useState } from 'react';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function Navbar() {
     const location = useLocation();
@@ -70,6 +71,7 @@ export default function Navbar() {
 
                     {/* Right Side / Mobile Menu Button */}
                     <div className="flex items-center gap-4">
+                        <ThemeToggle />
                         {apiKey && (
                             <button
                                 onClick={handleLogout}

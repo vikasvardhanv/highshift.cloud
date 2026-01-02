@@ -4,18 +4,19 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        background: "#020907", // Deep Forest Black
-        surface: "#0A1A16",    // Dark Emerald Charcoal
-        surfaceHighlight: "#132F28",
-        primary: "#00ED64",    // Soulful Bright Green (Spotify/Eco style)
-        primaryHover: "#00C653",
-        secondary: "#2DD4BF",  // Teal for depth
-        accent: "#F472B6",     // Pink accent (kept for contrast)
-        success: "#10B981",    // Emerald
-        error: "#EF4444",      // Red
+        background: "rgb(var(--background) / <alpha-value>)",
+        surface: "rgb(var(--surface) / <alpha-value>)",
+        surfaceHighlight: "rgb(var(--surface-highlight) / <alpha-value>)",
+        primary: "rgb(var(--primary) / <alpha-value>)",
+        primaryHover: "rgb(var(--primary-hover) / <alpha-value>)",
+        secondary: "rgb(var(--secondary) / <alpha-value>)",
+        accent: "rgb(var(--accent) / <alpha-value>)",
+        success: "rgb(var(--success) / <alpha-value>)",
+        error: "rgb(var(--error) / <alpha-value>)",
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
