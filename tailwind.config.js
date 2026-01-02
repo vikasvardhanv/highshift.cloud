@@ -20,7 +20,7 @@ export default {
       },
       fontFamily: {
         atmosphere: ['Water Brush', 'cursive'],
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Kalam', 'cursive', 'sans-serif'],
         heading: ['Outfit', 'sans-serif'],
       },
       animation: {

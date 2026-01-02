@@ -88,11 +88,11 @@ export default function DashboardLayout({ children }) {
                 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
 
                 {/* Top Bar */}
-                <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/5">
+                <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5 transition-colors duration-300">
                     <div className="container mx-auto px-6 h-16 flex items-center justify-between">
                         {/* Breadcrumbs */}
-                        <div className="text-sm text-gray-400">
-                            HighShift Cloud &gt; <span className="text-white font-medium">{getPageTitle()}</span>
+                        <div className="text-sm text-slate-500 dark:text-gray-400 font-sans">
+                            HighShift Cloud &gt; <span className="text-slate-900 dark:text-white font-bold font-atmosphere tracking-wide text-lg ml-1">{getPageTitle()}</span>
                         </div>
 
                         {/* Theme Toggle & User Profile */}
@@ -146,8 +146,8 @@ export default function DashboardLayout({ children }) {
                 </main>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-white/5">
-                    <p className="text-center text-gray-500 text-xs">
+                <div className="p-6 border-t border-slate-200 dark:border-white/5">
+                    <p className="text-center text-slate-400 dark:text-gray-500 text-xs">
                         © {new Date().getFullYear()} HighShift Cloud. All rights reserved.
                     </p>
                 </div>

@@ -35,7 +35,7 @@ export default function Navbar() {
     const currentLinks = apiKey ? privateLinks : publicLinks;
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur-xl">
+        <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 dark:border-white/10 bg-white/90 dark:bg-black/80 backdrop-blur-xl transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
@@ -44,7 +44,7 @@ export default function Navbar() {
                             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                                 <span className="font-bold text-white">H</span>
                             </div>
-                            <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">HighShift Cloud</span>
+                            <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-gray-400 font-atmosphere tracking-wider">HighShift Cloud</span>
                         </Link>
                     </div>
 
@@ -56,8 +56,8 @@ export default function Navbar() {
                                 to={link.path}
                                 className={`px-3 py-2 rounded-lg text-xs font-medium transition-all flex items-center gap-2 group relative overflow-hidden
                                 ${location.pathname === link.path
-                                        ? 'text-white bg-white/10 shadow-[inner_0_0_10px_rgba(255,255,255,0.05)]'
-                                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                        ? 'text-primary bg-primary/10 border border-primary/20 shadow-sm font-bold'
+                                        : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
                                     }`}
                             >
                                 <link.icon className={`w-4 h-4 ${location.pathname === link.path ? 'text-primary' : 'text-gray-500 group-hover:text-primary transition-colors'}`} />
@@ -87,7 +87,7 @@ export default function Navbar() {
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             className="md:hidden p-2 text-gray-400 hover:text-white"
                         >
-                            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                            {isMenuOpen ? <X className="w-6 h-6 text-slate-800 dark:text-white" /> : <Menu className="w-6 h-6 text-slate-800 dark:text-white" />}
                         </button>
 
                         {!apiKey && (
