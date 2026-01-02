@@ -20,12 +20,13 @@ body {
 
 @layer utilities {
   .glass-card {
-    @apply bg-surface/40 backdrop-blur-xl border border-white/5 shadow-[0_8px_32px_0_rgba(0, 0, 0, 0.3)] transition-all duration-300;
+    @apply bg-surface/40 backdrop-blur-xl border border-white/5 transition-all duration-300;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
   }
 
   .glass-card:hover {
-    @apply border-primary/20 bg-surface/60 shadow-[0_8px_32px_0_rgba(16, 185, 129, 0.15)];
-    /* Green Glow */
+    @apply border-primary/20 bg-surface/60;
+    box-shadow: 0 8px 32px 0 rgba(16, 185, 129, 0.15);
   }
 
   .glass-button {
@@ -45,6 +46,7 @@ body {
   }
 
   .nav-link.active {
-    @apply bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_-3px_rgba(16, 185, 129, 0.3)];
+    @apply bg-primary/10 text-primary border border-primary/20;
+    box-shadow: 0 0 15px -3px rgba(16, 185, 129, 0.3);
   }
 }
