@@ -44,7 +44,7 @@ export default function Navbar() {
                             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                                 <span className="font-bold text-white">H</span>
                             </div>
-                            <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-gray-400 font-atmosphere tracking-wider">HighShift Cloud</span>
+                            <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-gray-400 tracking-tight">HighShift Cloud</span>
                         </Link>
                     </div>
 

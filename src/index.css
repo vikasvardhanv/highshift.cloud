@@ -10,7 +10,7 @@
   h4,
   h5,
   h6 {
-    @apply font-atmosphere font-bold tracking-wide;
+    @apply font-sans font-bold tracking-tight;
   }
 }
 
@@ -94,13 +94,12 @@ body {
   }
 
   .glass-button {
-    @apply bg-primary/10 dark:bg-white/5 hover:bg-primary/20 dark:hover:bg-emerald-500/10 border border-primary/20 dark:border-white/5 transition-all duration-300 rounded-xl font-atmosphere text-xl tracking-wider;
+    @apply bg-primary/10 dark:bg-white/5 hover:bg-primary/20 dark:hover:bg-emerald-500/10 border border-primary/20 dark:border-white/5 transition-all duration-300 rounded-xl font-semibold;
   }
 
-  /* Added font-atmosphere to buttons for the vibe */
 
   .aurora-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-500 via-primary to-sky-500 dark:from-success dark:via-primary dark:to-secondary font-atmosphere tracking-wide;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-600 via-primary to-sky-600 dark:from-success dark:via-primary dark:to-secondary font-bold;
   }
 
   .input-futuristic {

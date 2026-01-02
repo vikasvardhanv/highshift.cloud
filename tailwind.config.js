@@ -19,9 +19,8 @@ export default {
         error: "rgb(var(--error) / <alpha-value>)",
       },
       fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
-        atmosphere: ['Caveat', 'cursive'],
-        heading: ['Outfit', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
+        heading: ['Inter', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',

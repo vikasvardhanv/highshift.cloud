@@ -92,7 +92,7 @@ export default function DashboardLayout({ children }) {
                     <div className="container mx-auto px-6 h-16 flex items-center justify-between">
                         {/* Breadcrumbs */}
                         <div className="text-sm text-slate-500 dark:text-gray-400 font-sans">
-                            HighShift Cloud &gt; <span className="text-slate-900 dark:text-white font-bold font-atmosphere tracking-wide text-lg ml-1">{getPageTitle()}</span>
+                            HighShift Cloud &gt; <span className="text-slate-900 dark:text-white font-bold tracking-tight text-lg ml-1">{getPageTitle()}</span>
                         </div>
 
                         {/* Theme Toggle & User Profile */}
