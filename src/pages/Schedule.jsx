@@ -3,6 +3,7 @@ import { format, startOfWeek, addDays, startOfMonth, endOfMonth, endOfWeek, isSa
 import { ChevronLeft, ChevronRight, Plus, Loader2, Twitter, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
 import { getScheduledPosts } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const PLATFORM_COLORS = {
     twitter: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
@@ -151,6 +152,7 @@ export default function Schedule() {
         return <div className="space-y-px">{rows}</div>;
     };
 
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[50vh]">
@@ -160,14 +162,23 @@ export default function Schedule() {
     }
 
     return (
-        <div className="glass-card p-6 rounded-2xl">
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="glass-card p-6 rounded-2xl"
+        >
             {renderHeader()}
             {renderDays()}
             {renderCells()}
 
             {/* Selected day details */}
             {selectedDate && postsByDate[format(selectedDate, 'yyyy-MM-dd')]?.length > 0 && (
-                <div className="mt-6 p-4 bg-white/5 rounded-xl">
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-6 p-4 bg-white/5 rounded-xl"
+                >
                     <h3 className="font-semibold mb-3">Posts on {format(selectedDate, 'MMMM d, yyyy')}</h3>
                     <div className="space-y-2">
                         {postsByDate[format(selectedDate, 'yyyy-MM-dd')].map((post, idx) => (
@@ -180,9 +191,9 @@ export default function Schedule() {
                             </div>
                         ))}
                     </div>
-                </div>
+                </motion.div>
             )}
-        </div>
+        </motion.div>
     );
 }
 

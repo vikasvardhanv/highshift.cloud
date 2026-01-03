@@ -41,6 +41,7 @@ export default function Agencies() {
             subtitle="Manage more clients with less chaos. The operating system for modern social media agencies."
             heroGradient="from-indigo-500 to-purple-500"
             features={features}
+            targetRoute="/publishing"
         />
     );
 }

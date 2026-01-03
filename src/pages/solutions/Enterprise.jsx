@@ -41,6 +41,7 @@ export default function Enterprise() {
             subtitle="Security, scale, and sophistication. The social suite built for the world's largest organizations."
             heroGradient="from-slate-700 to-slate-900"
             features={features}
+            targetRoute="/publishing"
         />
     );
 }

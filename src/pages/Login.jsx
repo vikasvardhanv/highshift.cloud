@@ -43,7 +43,7 @@ export default function Login() {
             }
 
             // Redirect to requested page or dashboard
-            const redirectPath = searchParams.get('redirect') || '/dashboard';
+            const redirectPath = searchParams.get('redirect') || '/publishing';
             navigate(redirectPath);
         } catch (err) {
             console.error("Auth Error:", err);

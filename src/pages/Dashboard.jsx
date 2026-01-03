@@ -1,32 +1,10 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { getAccounts, getAuthUrl, postContent, disconnectAccount, uploadAndPost, getProfiles, createProfile } from '../services/api';
-import {
-    Facebook, Twitter, Instagram, Linkedin, Youtube,
-    Send, Trash2, Check, Sparkles, X, Zap,
-    AtSign, Pin, MessageSquare, Cloud, Music, Plus, Calendar, Clock, Loader2, AlertCircle, CheckCircle,
-    Upload, Link2, FileText, Image as ImageIcon, ChevronDown, User
-} from 'lucide-react';
-import { generateContent, schedulePost } from '../services/api';
-
-const PLATFORMS = [
-    { id: 'twitter', name: 'Twitter / X', icon: Twitter, color: 'hover:text-sky-400' },
-    { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'hover:text-blue-500' },
-    { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'hover:text-pink-500' },
-    { id: 'linkedin', name: 'LinkedIn', icon: Linkedin, color: 'hover:text-blue-600' },
-    { id: 'youtube', name: 'YouTube', icon: Youtube, color: 'hover:text-red-500' },
-    { id: 'threads', name: 'Threads', icon: AtSign, color: 'hover:text-white' },
-    { id: 'pinterest', name: 'Pinterest', icon: Pin, color: 'hover:text-red-600' },
-    { id: 'reddit', name: 'Reddit', icon: MessageSquare, color: 'hover:text-orange-500' },
-    { id: 'bluesky', name: 'Bluesky', icon: Cloud, color: 'hover:text-blue-400' },
-    { id: 'tiktok', name: 'TikTok', icon: Music, color: 'hover:text-pink-400' },
-];
-
-const UPLOAD_METHODS = [
-    { id: 'text', label: 'Text Only', icon: FileText },
-    { id: 'url', label: 'Media URL', icon: Link2 },
-    { id: 'file', label: 'Upload File', icon: Upload },
-];
+import { getAccounts, getProfiles, createProfile } from '../services/api';
+import { Plus, Loader2, RefreshCw, BarChart3, Users, Zap, Calendar } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Composer from '../components/dashboard/Composer';
+import Onboarding from '../components/dashboard/Onboarding';
 
 export default function Dashboard() {
     const location = useLocation();
@@ -34,75 +12,34 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [apiKey] = useState(localStorage.getItem('social_api_key'));
     const [token] = useState(localStorage.getItem('token'));
-    const [postText, setPostText] = useState('');
-    const [posting, setPosting] = useState(false);
+
+    // Account Selection State
     const [selectedAccounts, setSelectedAccounts] = useState([]);
-    const [postResult, setPostResult] = useState(null);
-    const [aiPrompt, setAiPrompt] = useState('');
-    const [showAiModal, setShowAiModal] = useState(false);
-    const [generating, setGenerating] = useState(false);
-    const [showConnect, setShowConnect] = useState(false);
-    const [showScheduleModal, setShowScheduleModal] = useState(false);
-    const [scheduledTime, setScheduledTime] = useState('');
 
-    // NEW: Upload method state
-    const [uploadMethod, setUploadMethod] = useState('text');
-    const [mediaUrls, setMediaUrls] = useState('');
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    const fileInputRef = useRef(null);
-
-    // NEW: Profile state
+    // Profile state
     const [profiles, setProfiles] = useState([]);
     const [selectedProfile, setSelectedProfile] = useState('all');
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-    const [newProfileName, setNewProfileName] = useState('');
-    const [showNewProfile, setShowNewProfile] = useState(false);
 
-    // Check if user is authenticated (either via JWT token or legacy API key)
+    // Check if user is authenticated
     const isAuthenticated = token || apiKey;
 
     useEffect(() => {
         if (isAuthenticated) {
             loadAccounts();
             loadProfiles();
-
-            // Check if we should open the schedule modal
-            if (location.state?.openSchedule) {
-                setShowScheduleModal(true);
-                // Clear state to prevent reopening on refresh
-                window.history.replaceState({}, document.title);
-            }
         } else {
             setLoading(false);
         }
     }, [isAuthenticated]);
-
-    const loadProfiles = async () => {
-        try {
-            const data = await getProfiles();
-            setProfiles(data || []);
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleCreateProfile = async () => {
-        if (!newProfileName.trim()) return;
-        try {
-            await createProfile(newProfileName.trim());
-            setNewProfileName('');
-            setShowNewProfile(false);
-            await loadProfiles();
-        } catch (err) {
-            alert(err.response?.data?.detail || 'Failed to create profile');
-        }
-    };
 
     const loadAccounts = async () => {
         try {
             const data = await getAccounts();
             if (data && Array.isArray(data.accounts)) {
                 setAccounts(data.accounts);
+                // Select all by default
+                setSelectedAccounts(data.accounts.map(a => a.accountId));
             } else {
                 setAccounts([]);
             }
@@ -113,60 +50,12 @@ export default function Dashboard() {
         }
     };
 
-    const handleConnect = async (platformId) => {
+    const loadProfiles = async () => {
         try {
-            const url = await getAuthUrl(platformId, import.meta.env.VITE_CLIENT_REDIRECT || 'http://localhost:5173/auth/callback');
-            window.location.href = url;
+            const data = await getProfiles();
+            setProfiles(data || []);
         } catch (err) {
-            alert('Failed to get auth URL: ' + err.message);
-        }
-    };
-
-    const handleDisconnect = async (platform, accountId) => {
-        if (!confirm("Are you sure you want to disconnect this account?")) return;
-        try {
-            await disconnectAccount(platform, accountId);
-            await loadAccounts();
-        } catch (err) {
-            alert('Failed to disconnect');
-        }
-    }
-
-    const handlePost = async () => {
-        if (!postText) return;
-        if (selectedAccounts.length === 0) return alert('Select at least one account');
-
-        setPosting(true);
-        setPostResult(null);
-
-        const targetAccounts = accounts.filter(a => selectedAccounts.includes(a.accountId))
-            .map(a => ({ platform: a.platform, accountId: a.accountId }));
-
-        try {
-            let res;
-
-            if (uploadMethod === 'file' && selectedFiles.length > 0) {
-                // Use file upload endpoint
-                res = await uploadAndPost(targetAccounts, postText, selectedFiles, []);
-            } else if (uploadMethod === 'url' && mediaUrls.trim()) {
-                // Use URL-based upload
-                const urls = mediaUrls.split(',').map(u => u.trim()).filter(u => u);
-                res = await uploadAndPost(targetAccounts, postText, [], urls);
-            } else {
-                // Text-only post
-                res = await postContent(targetAccounts, postText);
-            }
-
-            setPostResult({ success: true, data: res });
-            setPostText('');
-            setSelectedAccounts([]);
-            setMediaUrls('');
-            setSelectedFiles([]);
-            setTimeout(() => setPostResult(null), 5000);
-        } catch (err) {
-            setPostResult({ success: false, error: err.response?.data?.message || err.message });
-        } finally {
-            setPosting(false);
+            console.error(err);
         }
     };
 
@@ -178,557 +67,180 @@ export default function Dashboard() {
         }
     };
 
-    const handleAiGenerate = async () => {
-        if (!aiPrompt) return;
-        setGenerating(true);
-        try {
-            const result = await generateContent(aiPrompt, 'twitter', 'Professional');
-            setPostText(result);
-            setShowAiModal(false);
-            setAiPrompt('');
-        } catch (err) {
-            alert('Failed to generate content: ' + err.message);
-        } finally {
-            setGenerating(false);
-        }
-    };
-
-    const openAiModal = () => {
-        setAiPrompt(postText ? `Optimize this post for better engagement:\n\n"${postText}"` : '');
-        setShowAiModal(true);
-    };
-
-    const calculateSmartTime = () => {
-        // Simple "Smart" Logic: Tomorrow at 10 AM, or next weekday if weekend?
-        const now = new Date();
-        const tomorrow = new Date(now);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(10, 0, 0, 0);
-
-        // Format for datetime-local: YYYY-MM-DDTHH:mm
-        const yyyy = tomorrow.getFullYear();
-        const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-        const dd = String(tomorrow.getDate()).padStart(2, '0');
-        const hh = String(tomorrow.getHours()).padStart(2, '0');
-        const min = String(tomorrow.getMinutes()).padStart(2, '0');
-
-        return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
-    }
-
-    const openScheduleModal = (isSmart = false) => {
-        if (!postText) return alert('Please add content first');
-        if (selectedAccounts.length === 0) return alert('Select at least one account');
-
-        if (isSmart) {
-            setScheduledTime(calculateSmartTime());
-        } else {
-            // Default to now + 1 hour
-            const now = new Date();
-            now.setHours(now.getHours() + 1);
-            // Format...
-            const yyyy = now.getFullYear();
-            const mm = String(now.getMonth() + 1).padStart(2, '0');
-            const dd = String(now.getDate()).padStart(2, '0');
-            const hh = String(now.getHours()).padStart(2, '0');
-            const min = String(now.getMinutes()).padStart(2, '0');
-            setScheduledTime(`${yyyy}-${mm}-${dd}T${hh}:${min}`);
-        }
-        setShowScheduleModal(true);
-    }
-
-    const confirmSchedule = async () => {
-        setPosting(true);
-        try {
-            const targetAccounts = accounts.filter(a => selectedAccounts.includes(a.accountId))
-                .map(a => ({ platform: a.platform, accountId: a.accountId }));
-
-            // Convert local time to ISO with timezone if possible, or just send ISO
-            const dateObj = new Date(scheduledTime);
-
-            await schedulePost(targetAccounts, postText, dateObj.toISOString());
-            setPostResult({ success: true, message: `Scheduled for ${dateObj.toLocaleString()}` });
-            setPostText('');
-            setSelectedAccounts([]);
-            setShowScheduleModal(false);
-            setTimeout(() => setPostResult(null), 5000);
-        } catch (err) {
-            setPostResult({ success: false, error: err.message });
-        } finally {
-            setPosting(false);
-        }
-    }
-
-
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[50vh]">
-                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
-    }
-
-    // ONBOARDING VIEW: If authenticated but no accounts connected
-    if (!loading && isAuthenticated && (!accounts || accounts.length === 0)) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4 animate-slide-up">
-                <div className="glass-card max-w-3xl w-full p-10 rounded-[2rem] border border-slate-200 dark:border-white/5 bg-white dark:bg-surface/50 shadow-2xl">
-                    <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                        <Sparkles className="w-10 h-10 text-primary" />
-                    </div>
-
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">Let's Get Started</h2>
-                    <p className="text-slate-500 dark:text-gray-400 mb-10 max-w-lg mx-auto text-lg leading-relaxed">
-                        Connect your first social media account to start managing your presence with HighShift Cloud.
-                    </p>
-
-                    <h4 className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider mb-6">Select Platform to Connect</h4>
-
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {PLATFORMS.slice(0, 8).map(p => (
-                            <button
-                                key={p.id}
-                                onClick={() => handleConnect(p.id)}
-                                className="group flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 dark:bg-black/20 hover:bg-white dark:hover:bg-white/10 transition-all border border-slate-100 dark:border-white/5 hover:border-primary/50 hover:shadow-lg hover:-translate-y-1"
-                            >
-                                <p.icon className={`w-8 h-8 mb-3 text-slate-400 dark:text-gray-400 transition-colors ${p.color} group-hover:scale-110`} />
-                                <span className="font-bold text-slate-700 dark:text-gray-300 group-hover:text-slate-900 dark:group-hover:text-white">{p.name}</span>
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="mt-8 pt-8 border-t border-slate-100 dark:border-white/5 text-sm text-slate-400 dark:text-gray-500">
-                        Need help? <a href="/docs" className="text-primary hover:underline">Read the documentation</a>
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="relative">
+                    <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <Zap className="w-6 h-6 text-primary animate-pulse" />
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 
-    if (!isAuthenticated) {
-        // Redirect to Login if not authenticated
-        // In a real app, use a Navigate component, but for now we render a "Please Login" state or null
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
-                <p className="text-slate-500">Please log in to continue.</p>
-            </div>
-        );
+    // Animation Variants
+    const container = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    };
+
+    const item = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+    };
+
+    // If no accounts connected, show ONBOARDING
+    if (accounts.length === 0) {
+        return <Onboarding onComplete={loadAccounts} />;
     }
 
     return (
-        <div className="space-y-8 animate-fade-in relative z-10">
-            {/* Ambient Background Elements */}
-            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] pointer-events-none" />
+        <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="space-y-10 pb-20"
+        >
+            {/* Header with Premium Feel */}
+            <motion.div variants={item} className="relative p-8 rounded-[2rem] bg-slate-900 border border-white/5 overflow-hidden shadow-2xl">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] -mr-48 -mt-48 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px] -ml-32 -mb-32 pointer-events-none"></div>
 
-            {/* Header Area */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-display font-bold text-white mb-1">Command Center</h1>
-                    <p className="text-gray-400 text-sm">Overview of your social ecosystem</p>
-                </div>
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                        <span className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest mb-3">
+                            Publishing Workspace
+                        </span>
+                        <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Command Center</h1>
+                        <p className="text-slate-400 max-w-lg leading-relaxed">
+                            Orchestrate your social strategy across all connected nodes with unified publishing and smart automation.
+                        </p>
+                    </div>
 
-                {/* Profile Selector */}
-                <div className="relative">
-                    <button
-                        onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                        className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
-                    >
-                        <User className="w-4 h-4 text-secondary" />
-                        <span className="font-medium">{selectedProfile === 'all' ? 'All Accounts' : selectedProfile}</span>
-                        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
-                    </button>
-
-                    {showProfileDropdown && (
-                        <div className="absolute right-0 mt-2 w-56 bg-surface border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden animate-fade-in">
+                    <div className="flex items-center gap-3">
+                        <div className="relative">
                             <button
-                                onClick={() => { setSelectedProfile('all'); setShowProfileDropdown(false); }}
-                                className={`w-full text-left px-4 py-3 hover:bg-white/5 transition-colors ${selectedProfile === 'all' ? 'bg-primary/10 text-primary' : ''}`}
+                                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                                className="flex items-center gap-3 px-5 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all text-sm font-bold backdrop-blur-md"
                             >
-                                All Accounts
-                            </button>
-                            {profiles.map(p => (
-                                <button
-                                    key={p.name}
-                                    onClick={() => { setSelectedProfile(p.name); setShowProfileDropdown(false); }}
-                                    className={`w-full text-left px-4 py-3 hover:bg-white/5 transition-colors ${selectedProfile === p.name ? 'bg-primary/10 text-primary' : ''}`}
-                                >
-                                    {p.name}
-                                </button>
-                            ))}
-                            <div className="border-t border-white/10">
-                                {showNewProfile ? (
-                                    <div className="p-3 flex gap-2">
-                                        <input
-                                            type="text"
-                                            value={newProfileName}
-                                            onChange={(e) => setNewProfileName(e.target.value)}
-                                            placeholder="Profile name"
-                                            className="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary"
-                                            autoFocus
-                                            onKeyDown={(e) => e.key === 'Enter' && handleCreateProfile()}
-                                        />
-                                        <button onClick={handleCreateProfile} className="px-3 py-1.5 bg-primary rounded-lg text-sm font-medium">
-                                            Add
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <button
-                                        onClick={() => setShowNewProfile(true)}
-                                        className="w-full text-left px-4 py-3 hover:bg-white/5 text-secondary flex items-center gap-2"
-                                    >
-                                        <Plus className="w-4 h-4" />
-                                        New Profile
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-6 relative z-10 w-full max-w-5xl mx-auto">
-
-                {/* Creation Studio (Full Width) */}
-                <div className="w-full">
-                    <div className="glass-card rounded-3xl p-1 h-full shadow-2xl shadow-primary/5">
-                        <div className="h-full bg-surface/50 rounded-[22px] p-6 md:p-8 flex flex-col relative overflow-hidden backdrop-blur-3xl">
-                            {/* Subtle Studio Glow */}
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/5 rounded-full blur-[80px] pointer-events-none" />
-
-                            <div className="flex justify-between items-center mb-8 relative z-10">
-                                <h3 className="text-xl font-bold flex items-center gap-3">
-                                    <span className="p-2 rounded-lg bg-primary/20 text-primary"><Send className="w-5 h-5" /></span>
-                                    Creation Studio
-                                </h3>
-
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => openScheduleModal(false)}
-                                        className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/5 hover:bg-white/10 transition-all text-xs font-bold uppercase tracking-wider text-gray-300 hover:text-white"
-                                    >
-                                        <Clock className="w-4 h-4" />
-                                        Schedule
-                                    </button>
-                                    <button
-                                        onClick={openAiModal}
-                                        className="group flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 hover:border-primary/50 transition-all text-xs font-bold uppercase tracking-wider text-primary hover:text-white hover:shadow-[0_0_20px_-5px_rgba(16,185,129,0.3)]"
-                                    >
-                                        <Sparkles className="w-4 h-4 group-hover:animate-pulse" />
-                                        AI Assist
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Account Selector - Horizontal Scroll - Only place to select accounts for posting */}
-                            <div className="mb-6 relative z-10">
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">Post to:</label>
-                                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide items-center">
-                                    {Array.isArray(accounts) && accounts.map(acc => {
-                                        const isSelected = selectedAccounts.includes(acc.accountId);
-                                        return (
-                                            <button
-                                                key={acc.accountId}
-                                                onClick={() => toggleAccountSelection(acc.accountId)}
-                                                className={`
-                                                    shrink-0 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all flex items-center gap-3
-                                                    ${isSelected
-                                                        ? 'bg-primary text-white border-primary shadow-[0_4px_15px_rgba(139,92,246,0.4)] translate-y-[-1px]'
-                                                        : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:border-white/20 hover:text-white'}
-                                                `}
-                                            >
-                                                {/* Platform Icon */}
-                                                <div className={`p-1 rounded-full ${isSelected ? 'bg-white/20' : 'bg-black/20'}`}>
-                                                    {(() => {
-                                                        const platform = PLATFORMS.find(p => p.id === acc.platform);
-                                                        const IconComponent = platform ? platform.icon : Zap;
-                                                        return <IconComponent className="w-3 h-3" />;
-                                                    })()}
-                                                </div>
-                                                <div className="flex flex-col items-start leading-none">
-                                                    <span className="text-[10px] opacity-70 mb-0.5 uppercase tracking-wider">{acc.platform}</span>
-                                                    <span className="font-semibold">@{acc.username}</span>
-                                                </div>
-                                                {isSelected && <Check className="w-4 h-4 ml-1" />}
-                                            </button>
-                                        )
-                                    })}
-
-                                    {/* Add New Button (Redirects to Connections) */}
-                                    <a
-                                        href="/connections"
-                                        className="shrink-0 w-10 h-10 rounded-full border border-dashed border-white/20 flex items-center justify-center text-gray-500 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all"
-                                        title="Connect new account"
-                                    >
-                                        <Plus className="w-5 h-5" />
-                                    </a>
-
-                                    {(!accounts || accounts.length === 0) && <span className="text-gray-500 text-sm ml-2">No accounts. Click + to connect.</span>}
-                                </div>
-                            </div>
-
-                            {/* Upload Method Toggle */}
-                            <div className="mb-6 relative z-10">
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">Content Type:</label>
-                                <div className="flex gap-2">
-                                    {UPLOAD_METHODS.map(method => (
-                                        <button
-                                            key={method.id}
-                                            onClick={() => setUploadMethod(method.id)}
-                                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${uploadMethod === method.id
-                                                ? 'bg-secondary/20 text-secondary border-secondary/50'
-                                                : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10'
-                                                }`}
-                                        >
-                                            <method.icon className="w-4 h-4" />
-                                            {method.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Conditional Media Inputs */}
-                            {uploadMethod === 'url' && (
-                                <div className="mb-6 relative z-10">
-                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">Media URL(s):</label>
-                                    <input
-                                        type="text"
-                                        value={mediaUrls}
-                                        onChange={(e) => setMediaUrls(e.target.value)}
-                                        placeholder="https://example.com/image.jpg (comma-separate for multiple)"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:border-secondary/50 focus:outline-none transition-all"
-                                    />
-                                </div>
-                            )}
-
-                            {uploadMethod === 'file' && (
-                                <div className="mb-6 relative z-10">
-                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">Upload Media:</label>
-                                    <div
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className="border-2 border-dashed border-white/20 rounded-2xl p-8 text-center cursor-pointer hover:border-white/40 hover:bg-white/5 transition-all"
-                                    >
-                                        <input
-                                            ref={fileInputRef}
-                                            type="file"
-                                            multiple
-                                            accept="image/*,video/*"
-                                            onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))}
-                                            className="hidden"
-                                        />
-                                        {selectedFiles.length > 0 ? (
-                                            <div className="flex flex-wrap gap-2 justify-center">
-                                                {selectedFiles.map((file, idx) => (
-                                                    <div key={idx} className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full text-sm">
-                                                        <ImageIcon className="w-4 h-4 text-secondary" />
-                                                        {file.name}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <Upload className="w-8 h-8 text-gray-500 mx-auto mb-3" />
-                                                <p className="text-gray-400">Click to upload photos or videos</p>
-                                                <p className="text-xs text-gray-600 mt-1">Supports JPG, PNG, GIF, MP4, MOV</p>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Editor Area */}
-                            <div className="flex-1 relative mb-6 group">
-                                <textarea
-                                    value={postText}
-                                    onChange={(e) => setPostText(e.target.value)}
-                                    placeholder="What's happening today?"
-                                    className="w-full h-full min-h-[200px] bg-black/20 hover:bg-black/30 border border-white/5 focus:border-primary/50 focus:bg-black/40 rounded-2xl p-6 text-lg text-white placeholder-gray-600 focus:outline-none transition-all resize-none shadow-inner"
-                                ></textarea>
-
-                                {/* Character Count (Simple) */}
-                                <div className="absolute bottom-4 right-4 text-xs text-gray-600 font-mono">
-                                    {postText.length} chars
-                                </div>
-                            </div>
-
-                            {/* Actions Footer */}
-                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-white/5">
-                                <div className="text-xs text-gray-500 font-medium">
-                                    {postResult && (
-                                        <span className={`flex items-center gap-2 ${postResult.success ? 'text-green-400' : 'text-red-400'}`}>
-                                            {postResult.success ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
-                                            {postResult.message || (postResult.success ? 'Distributed successfully' : 'Failed to post')}
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div className="flex items-center gap-3 w-full sm:w-auto">
-                                    <button
-                                        onClick={() => openScheduleModal(true)}
-                                        disabled={posting || !postText || selectedAccounts.length === 0}
-                                        className="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-medium transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-                                    >
-                                        <Zap className="w-4 h-4" />
-                                        Smart Queue
-                                    </button>
-                                    <button
-                                        onClick={handlePost}
-                                        disabled={posting || !postText || selectedAccounts.length === 0}
-                                        className="flex-1 sm:flex-none px-8 py-3.5 rounded-xl bg-gradient-to-r from-primary to-secondary hover:brightness-110 text-white font-bold shadow-[0_0_20px_-5px_rgba(139,92,246,0.5)] transition-all hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                    >
-                                        {posting ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Send className="w-4 h-4" />}
-                                        Publish Now
-                                    </button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Connected Accounts Grid (Unified View) */}
-            <div className="w-full max-w-5xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-display font-bold text-white">Your Network</h3>
-                    <button
-                        onClick={() => setShowConnect(!showConnect)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 text-sm font-medium transition-all"
-                    >
-                        {showConnect ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                        {showConnect ? 'Close' : 'Connect New'}
-                    </button>
-                </div>
-
-                {/* Expandable Connect Area */}
-                {showConnect && (
-                    <div className="mb-8 p-6 rounded-3xl bg-surface/50 border border-white/5 animate-slide-up backdrop-blur-xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
-                        <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Select Platform to Connect</h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 relative z-10">
-                            {PLATFORMS.map(p => (
-                                <button key={p.id} onClick={() => handleConnect(p.id)} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-black/20 hover:bg-white/10 transition-all group border border-white/5 hover:border-white/20">
-                                    <p.icon className={`w-8 h-8 mb-3 text-gray-400 ${p.color} transition-colors group-hover:scale-110`} />
-                                    <span className="text-xs font-bold text-gray-300 group-hover:text-white">{p.name}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {loading ? (
-                        <div className="col-span-full py-20 flex justify-center"><Loader2 className="animate-spin text-primary w-8 h-8" /></div>
-                    ) : (
-                        <>
-                            {Array.isArray(accounts) && accounts.map(acc => (
-                                <div key={acc.accountId} className="glass-card p-6 rounded-3xl relative group overflow-hidden hover:bg-white/5 transition-all border border-white/5">
-                                    <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-all">
-                                        <button onClick={() => handleDisconnect(acc.platform, acc.accountId)} className="p-2 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all">
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </div>
-
-                                    <div className="flex flex-col items-center text-center pt-2">
-                                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-surfaceHighlight to-surface border border-white/10 flex items-center justify-center shadow-lg mb-4">
-                                            {(() => {
-                                                const platform = PLATFORMS.find(p => p.id === acc.platform);
-                                                const IconComponent = platform ? platform.icon : Zap;
-                                                return <IconComponent className="w-7 h-7 text-gray-200" />;
-                                            })()}
-                                        </div>
-                                        <h3 className="font-bold text-base truncate w-full px-2">{acc.displayName}</h3>
-                                        <p className="text-xs text-gray-400 mb-4">@{acc.username}</p>
-
-                                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5">
-                                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-green-400">Connected</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-
-                            {(!accounts || accounts.length === 0) && (
-                                <div className="col-span-full text-center py-20 opacity-50 bg-white/5 rounded-3xl border border-dashed border-white/10">
-                                    <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <Cloud className="w-8 h-8 text-gray-500" />
-                                    </div>
-                                    <p className="text-gray-400">No accounts linked yet.</p>
-                                    <button onClick={() => setShowConnect(true)} className="mt-4 text-primary hover:underline">Connect your first account</button>
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
-            </div>
-
-            {/* AI Modal */}
-            {showAiModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                    <div className="glass-card w-full max-w-md p-6 rounded-2xl relative">
-                        <button onClick={() => setShowAiModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
-                            <X className="w-5 h-5" />
-                        </button>
-                        <div className="flex items-center gap-3 mb-6">
-                            <Sparkles className="w-6 h-6 text-primary" />
-                            <h3 className="text-lg font-bold">Ghostwriter</h3>
-                        </div>
-                        <textarea
-                            value={aiPrompt}
-                            onChange={(e) => setAiPrompt(e.target.value)}
-                            placeholder="Describe what you want to write..."
-                            className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-sm focus:outline-none mb-4"
-                        ></textarea>
-                        <button
-                            onClick={handleAiGenerate}
-                            disabled={generating || !aiPrompt}
-                            className="w-full py-3 bg-purple-600 hover:bg-purple-500 rounded-xl font-bold text-white flex items-center justify-center gap-2"
-                        >
-                            {generating ? <Loader2 className="animate-spin w-4 h-4" /> : "Generate"}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Schedule Modal */}
-            {showScheduleModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-                    <div className="glass-card w-full max-w-sm p-6 rounded-3xl relative animate-slide-up">
-                        <button onClick={() => setShowScheduleModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
-                            <X className="w-5 h-5" />
-                        </button>
-
-                        <div className="mb-6">
-                            <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
-                                <Calendar className="w-5 h-5 text-secondary" /> Schedule Post
-                            </h3>
-                            <p className="text-sm text-gray-400">
-                                Pick a time or use our AI recommended slot.
-                            </p>
-                        </div>
-
-                        <div className="space-y-6">
-                            <div>
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Publish Date & Time</label>
-                                <input
-                                    type="datetime-local"
-                                    value={scheduledTime}
-                                    onChange={(e) => setScheduledTime(e.target.value)}
-                                    className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-secondary/50 outline-none transition-all"
-                                />
-                            </div>
-
-                            <button
-                                onClick={confirmSchedule}
-                                disabled={posting}
-                                className="w-full py-3.5 bg-gradient-to-r from-secondary to-blue-600 rounded-xl font-bold text-white shadow-lg hover:shadow-cyan-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                            >
-                                {posting ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Clock className="w-5 h-5" />}
-                                Confirm Schedule
+                                <Users className="w-4 h-4 text-primary" />
+                                <span>{selectedProfile === 'all' ? 'All Accounts' : 'Specific Profile'}</span>
+                                <RefreshCw className="w-4 h-4 text-slate-500" />
                             </button>
                         </div>
+                        <button className="p-3 bg-primary hover:bg-primaryHover text-white rounded-xl shadow-lg shadow-primary/20 transition-all transform active:scale-95">
+                            <Plus className="w-6 h-6" />
+                        </button>
                     </div>
                 </div>
-            )}
+            </motion.div>
+
+            {/* Quick Stats Grid */}
+            <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard
+                    title="Total Audience"
+                    value="12.4k"
+                    change="+2.4%"
+                    icon={Users}
+                    color="text-blue-400"
+                    bg="bg-blue-400/10"
+                />
+                <StatCard
+                    title="Engagement Rate"
+                    value="5.8%"
+                    change="+1.2%"
+                    icon={Zap}
+                    color="text-emerald-400"
+                    bg="bg-emerald-400/10"
+                />
+                <StatCard
+                    title="Published Posts"
+                    value="142"
+                    change="+12"
+                    icon={Send}
+                    color="text-violet-400"
+                    bg="bg-violet-400/10"
+                />
+                <StatCard
+                    title="Scheduled"
+                    value="28"
+                    change="Next: 2h"
+                    icon={Calendar}
+                    color="text-amber-400"
+                    bg="bg-amber-400/10"
+                />
+            </motion.div>
+
+            {/* Creation Studio (Composer) */}
+            <motion.div variants={item} className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+                <Composer
+                    accounts={accounts}
+                    selectedAccounts={selectedAccounts}
+                    onAccountToggle={toggleAccountSelection}
+                    onSuccess={loadAccounts}
+                />
+            </motion.div>
+
+            {/* activity Placeholders */}
+            <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 p-8 rounded-3xl bg-slate-900 border border-white/5 h-[400px] flex items-center justify-center relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="text-center relative z-10">
+                        <BarChart3 className="w-12 h-12 text-slate-700 mx-auto mb-4" />
+                        <p className="text-slate-500 font-medium">Predictive Growth Model (AI)</p>
+                        <p className="text-slate-600 text-xs mt-2 italic">Synthesizing data from connected nodes...</p>
+                    </div>
+                </div>
+                <div className="p-8 rounded-3xl bg-slate-900 border border-white/5 h-[400px] flex flex-col relative overflow-hidden">
+                    <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-emerald-400" />
+                        Activity Pulse
+                    </h3>
+                    <div className="space-y-6">
+                        <PulseItem label="LinkedIn Post Scheduled" time="2h ago" type="schedule" />
+                        <PulseItem label="X Account Connected" time="5h ago" type="account" />
+                        <PulseItem label="Weekly Report Generated" time="1d ago" type="report" />
+                        <PulseItem label="New Post Published" time="2d ago" type="publish" />
+                    </div>
+                </div>
+            </motion.div>
+        </motion.div>
+    );
+}
+
+// Sub-components for cleaner code
+function StatCard({ title, value, change, icon: Icon, color, bg }) {
+    return (
+        <div className="p-6 rounded-[1.5rem] bg-slate-900 border border-white/5 hover:border-white/10 transition-all shadow-xl group">
+            <div className={`w-12 h-12 ${bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                <Icon className={`w-6 h-6 ${color}`} />
+            </div>
+            <h3 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">{title}</h3>
+            <div className="flex items-baseline gap-2">
+                <p className="text-2xl font-bold text-white">{value}</p>
+                <span className={`text-[10px] font-bold ${change.includes('+') ? 'text-emerald-400' : 'text-slate-400'}`}>
+                    {change}
+                </span>
+            </div>
         </div>
     );
 }
+
+function PulseItem({ label, time, type }) {
+    return (
+        <div className="flex items-start gap-4 group">
+            <div className="mt-1 w-2 h-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors"></div>
+            <div>
+                <p className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">{label}</p>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{time}</p>
+            </div>
+        </div>
+    );
+}
+

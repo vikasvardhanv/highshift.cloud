@@ -89,13 +89,19 @@ function App() {
         {/* Auth Callback */}
         <Route path="/auth/callback" element={<PublicLayout><AuthCallback /></PublicLayout>} />
 
-        {/* Protected Dashboard Routes */}
-        <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
+        {/* Protected Dashboard Routes - Now Platform Routes */}
+        <Route path="/publishing" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
+        <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} /> {/* Legacy redirect/alias */}
         <Route path="/connections" element={<DashboardLayout><Connections /></DashboardLayout>} />
         <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
         <Route path="/analytics" element={<DashboardLayout><Analytics /></DashboardLayout>} />
         <Route path="/schedule" element={<DashboardLayout><Schedule /></DashboardLayout>} />
-        <Route path="/schedule/calendar" element={<DashboardLayout><ScheduleCalendar /></DashboardLayout>} />
+
+        {/* New Placeholders */}
+        <Route path="/inbox" element={<DashboardLayout><div className="p-10 text-center text-gray-400">Inbox Feature Coming Soon</div></DashboardLayout>} />
+        <Route path="/listening" element={<DashboardLayout><div className="p-10 text-center text-gray-400">Social Listening Feature Coming Soon</div></DashboardLayout>} />
+        <Route path="/ads" element={<DashboardLayout><div className="p-10 text-center text-gray-400">Social Ads Feature Coming Soon</div></DashboardLayout>} />
+
         <Route path="/brand" element={<DashboardLayout><BrandKit /></DashboardLayout>} />
         <Route path="/ai" element={<DashboardLayout><Ghostwriter /></DashboardLayout>} />
         <Route path="/media" element={<DashboardLayout><MediaLibrary /></DashboardLayout>} />

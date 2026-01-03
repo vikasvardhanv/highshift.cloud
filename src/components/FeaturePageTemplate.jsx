@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function FeaturePageTemplate({
@@ -12,57 +12,143 @@ export default function FeaturePageTemplate({
     ctaText = "Join thousands of brands using HighShift to grow.",
     targetRoute = "/dashboard" // Default route after login
 }) {
-    // Stagger container for grid
+    // Stagger container for grid with enhanced timing
     const container = {
         hidden: { opacity: 0 },
         show: {
             opacity: 1,
-            transition: { staggerChildren: 0.1 }
+            transition: {
+                staggerChildren: 0.15,
+                delayChildren: 0.2
+            }
         }
     };
 
-    // Item animation
+    // Enhanced item animation with rotation and scale
     const item = {
-        hidden: { opacity: 0, y: 30 },
-        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50 } }
+        hidden: { opacity: 0, y: 50, scale: 0.9, rotateX: -15 },
+        show: {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            rotateX: 0,
+            transition: {
+                type: "spring",
+                stiffness: 80,
+                damping: 15
+            }
+        }
+    };
+
+    // Floating animation for decorative elements
+    const float = {
+        initial: { y: 0 },
+        animate: {
+            y: [-10, 10, -10],
+            transition: {
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut"
+            }
+        }
     };
 
     const loginUrl = `/login?redirect=${encodeURIComponent(targetRoute)}`;
 
     return (
-        <div className="bg-white dark:bg-black font-sans">
+        <div className="bg-white dark:bg-black font-sans overflow-hidden">
             {/* HERO */}
             <div className="relative pt-32 pb-20 overflow-hidden bg-slate-950">
-                <div className={`absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-br ${heroGradient} opacity-20 blur-[100px] pointer-events-none`}></div>
+                {/* Animated Gradient */}
+                <motion.div
+                    className={`absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-br ${heroGradient} opacity-20 blur-[100px] pointer-events-none`}
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.2, 0.3, 0.2]
+                    }}
+                    transition={{
+                        duration: 8,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                />
+
+                {/* Floating Sparkles */}
+                <motion.div
+                    variants={float}
+                    initial="initial"
+                    animate="animate"
+                    className="absolute top-1/4 left-1/4 opacity-20"
+                >
+                    <Sparkles className="w-8 h-8 text-primary" />
+                </motion.div>
+                <motion.div
+                    variants={float}
+                    initial="initial"
+                    animate="animate"
+                    transition={{ delay: 2 }}
+                    className="absolute top-1/3 right-1/4 opacity-20"
+                >
+                    <Sparkles className="w-6 h-6 text-secondary" />
+                </motion.div>
 
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
+                        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
                     >
-                        <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+                        <motion.span
+                            className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm"
+                            whileHover={{ scale: 1.05, borderColor: "rgba(255,255,255,0.4)" }}
+                        >
                             Feature Spotlight
-                        </span>
-                        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight max-w-4xl mx-auto leading-tight">
+                        </motion.span>
+                        <motion.h1
+                            className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight max-w-4xl mx-auto leading-tight"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2, duration: 0.8 }}
+                        >
                             {title}
-                        </h1>
-                        <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                        </motion.h1>
+                        <motion.p
+                            className="text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.4, duration: 0.8 }}
+                        >
                             {subtitle}
-                        </p>
-                        <div className="flex justify-center gap-4">
-                            <Link to={loginUrl} className="px-8 py-4 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl text-lg transition-all shadow-lg hover:shadow-primary/25 flex items-center gap-2 transform hover:-translate-y-1">
-                                Start Free Trial
-                                <ArrowRight className="w-5 h-5" />
-                            </Link>
-                        </div>
+                        </motion.p>
+                        <motion.div
+                            className="flex justify-center gap-4"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6, duration: 0.8 }}
+                        >
+                            <motion.div
+                                whileHover={{ scale: 1.05, y: -5 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <Link to={loginUrl} className="px-8 py-4 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl text-lg transition-all shadow-lg shadow-primary/25 flex items-center gap-2 relative overflow-hidden group">
+                                    {/* Shimmer effect */}
+                                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                                    <span className="relative z-10">Start Free Trial</span>
+                                    <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                            </motion.div>
+                        </motion.div>
                     </motion.div>
                 </div>
             </div>
 
             {/* FEATURES GRID */}
-            <div className="py-24 bg-white dark:bg-black">
-                <div className="container mx-auto px-4">
+            <div className="py-24 bg-white dark:bg-black relative">
+                {/* Background decoration */}
+                <div className="absolute top-1/2 left-0 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
+
+                <div className="container mx-auto px-4 relative z-10">
                     <motion.div
                         variants={container}
                         initial="hidden"
@@ -74,15 +160,37 @@ export default function FeaturePageTemplate({
                             <motion.div
                                 key={idx}
                                 variants={item}
-                                className="group p-8 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 hover:border-primary/50 transition-all hover:shadow-xl hover:bg-white dark:hover:bg-white/10"
+                                whileHover={{
+                                    y: -10,
+                                    scale: 1.03,
+                                    transition: { type: "spring", stiffness: 300 }
+                                }}
+                                className="group relative p-8 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 hover:border-primary/50 transition-all hover:shadow-2xl hover:bg-white dark:hover:bg-white/10 overflow-hidden"
                             >
-                                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                                    {feature.icon && <feature.icon className="w-7 h-7 text-primary" />}
+                                {/* Animated background gradient on hover */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                                {/* Shimmer effect */}
+                                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+                                <div className="relative z-10">
+                                    <motion.div
+                                        className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 shadow-sm group-hover:bg-primary/20 transition-colors"
+                                        whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
+                                        transition={{ duration: 0.5 }}
+                                    >
+                                        {feature.icon && <feature.icon className="w-7 h-7 text-primary group-hover:scale-110 transition-transform" />}
+                                    </motion.div>
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 group-hover:text-primary dark:group-hover:text-primary transition-colors">
+                                        {feature.title}
+                                    </h3>
+                                    <p className="text-slate-500 dark:text-gray-400 leading-relaxed">
+                                        {feature.description}
+                                    </p>
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">{feature.title}</h3>
-                                <p className="text-slate-500 dark:text-gray-400 leading-relaxed">
-                                    {feature.description}
-                                </p>
+
+                                {/* Corner accent */}
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             </motion.div>
                         ))}
                     </motion.div>
@@ -90,22 +198,68 @@ export default function FeaturePageTemplate({
             </div>
 
             {/* CTA */}
-            <div className="py-24 bg-slate-50 dark:bg-white/5 border-t border-slate-200 dark:border-white/5">
-                <div className="container mx-auto px-4 text-center">
+            <div className="py-24 bg-slate-50 dark:bg-white/5 border-t border-slate-200 dark:border-white/5 relative overflow-hidden">
+                {/* Animated background circles */}
+                <motion.div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-primary/10"
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.3, 0.1, 0.3]
+                    }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <motion.div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-secondary/10"
+                    animate={{
+                        scale: [1.2, 1, 1.2],
+                        opacity: [0.1, 0.3, 0.1]
+                    }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                />
+
+                <div className="container mx-auto px-4 text-center relative z-10">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5 }}
+                        initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ duration: 0.7, ease: "easeOut" }}
                         viewport={{ once: true }}
                     >
-                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6">{ctaTitle}</h2>
-                        <p className="text-slate-500 mb-8 max-w-xl mx-auto">{ctaText}</p>
-                        <Link to={loginUrl} className="inline-flex items-center gap-2 px-10 py-4 bg-slate-900 dark:bg-white text-white dark:text-black font-bold rounded-xl hover:opacity-90 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1">
-                            Get Started Now
-                        </Link>
+                        <motion.h2
+                            className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            viewport={{ once: true }}
+                        >
+                            {ctaTitle}
+                        </motion.h2>
+                        <motion.p
+                            className="text-slate-500 text-lg mb-8 max-w-xl mx-auto"
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            transition={{ delay: 0.3 }}
+                            viewport={{ once: true }}
+                        >
+                            {ctaText}
+                        </motion.p>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                            viewport={{ once: true }}
+                            whileHover={{ scale: 1.05, y: -5 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <Link to={loginUrl} className="inline-flex items-center gap-2 px-10 py-4 bg-slate-900 dark:bg-white text-white dark:text-black font-bold rounded-xl hover:opacity-90 transition-all shadow-xl hover:shadow-2xl relative overflow-hidden group">
+                                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                                <span className="relative z-10">Get Started Now</span>
+                                <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        </motion.div>
                     </motion.div>
                 </div>
             </div>
         </div>
     );
 }
+

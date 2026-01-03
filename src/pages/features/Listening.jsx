@@ -41,6 +41,7 @@ export default function Listening() {
             subtitle="Understand the conversation behind the noise. Turn social data into actionable business intelligence."
             heroGradient="from-orange-500 to-red-500"
             features={features}
+            targetRoute="/listening"
         />
     );
 }

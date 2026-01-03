@@ -41,6 +41,7 @@ export default function SmallBusiness() {
             subtitle="Look like a big brand without the big budget. Tools to help you grow your audience faster."
             heroGradient="from-yellow-500 to-orange-500"
             features={features}
+            targetRoute="/publishing"
         />
     );
 }

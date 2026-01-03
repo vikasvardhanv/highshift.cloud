@@ -41,6 +41,7 @@ export default function Engagement() {
             subtitle="Build stronger relationships with your audience. Never miss a comment, message, or review again."
             heroGradient="from-purple-500 to-pink-500"
             features={features}
+            targetRoute="/inbox"
         />
     );
 }

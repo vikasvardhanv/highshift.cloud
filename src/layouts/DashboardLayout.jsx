@@ -49,10 +49,12 @@ export default function DashboardLayout({ children }) {
     const getPageTitle = () => {
         const path = location.pathname;
         const titles = {
-            '/dashboard': 'Dashboard',
+            '/publishing': 'Publishing',
             '/analytics': 'Analytics',
-            '/schedule': 'Schedule',
-            '/calendar': 'Calendar View',
+            '/schedule': 'Calendar',
+            '/inbox': 'Inbox & Messaging',
+            '/listening': 'Social Listening',
+            '/ads': 'Social Advertising',
             '/media': 'Media Library',
             '/ai': 'Ghostwriter',
             '/brand': 'Brand Kit',
@@ -60,7 +62,7 @@ export default function DashboardLayout({ children }) {
             '/api-keys': 'API Keys',
             '/settings': 'Settings',
         };
-        return titles[path] || 'Dashboard';
+        return titles[path] || 'Publishing';
     };
 
     // Get theme colors based on route
@@ -85,7 +87,7 @@ export default function DashboardLayout({ children }) {
 
             {/* Main Content Area */}
             <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 relative z-10
-                ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
+                ${sidebarOpen ? 'ml-80' : 'ml-20'}`}>
 
                 {/* Top Bar */}
                 <div className="sticky top-0 z-40 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5 transition-colors duration-300">

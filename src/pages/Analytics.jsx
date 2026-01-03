@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { ArrowUpRight, ArrowDownRight, Users, Eye, MousePointer, Loader2 } from 'lucide-react';
 import { getAccounts, getAnalytics } from '../services/api';
+import { motion } from 'framer-motion';
 
 const MOCK_DATA = [
     { name: 'Mon', views: 0, likes: 0 },
@@ -14,7 +15,7 @@ const MOCK_DATA = [
 ];
 
 const StatCard = ({ title, value, change, isPositive, icon: Icon }) => (
-    <div className="glass-card p-6 rounded-2xl">
+    <div className="glass-card p-6 rounded-2xl h-full">
         <div className="flex items-center justify-between mb-4">
             <div className="p-2 bg-white/5 rounded-lg">
                 <Icon className="w-5 h-5 text-primary" />
@@ -59,19 +60,37 @@ export default function Analytics() {
 
     if (loading) return <div className="flex justify-center p-12"><Loader2 className="animate-spin text-primary" /></div>;
 
+    const container = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    };
+
+    const item = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0 }
+    };
+
     return (
-        <div className="space-y-6">
-            <h1 className="text-2xl font-bold">Analytics Overview</h1>
+        <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="space-y-6"
+        >
+            <motion.h1 variants={item} className="text-2xl font-bold">Analytics Overview</motion.h1>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <StatCard title="Total Impressions" value={stats.impressions.toLocaleString()} change={stats.changes?.impressions || 0} isPositive={(stats.changes?.impressions || 0) >= 0} icon={Eye} />
                 <StatCard title="Total Engagement" value={stats.engagement.toLocaleString()} change={stats.changes?.engagement || 0} isPositive={(stats.changes?.engagement || 0) >= 0} icon={MousePointer} />
                 <StatCard title="Total Followers" value={stats.followers.toLocaleString()} change={stats.changes?.followers || 0} isPositive={(stats.changes?.followers || 0) >= 0} icon={Users} />
-            </div>
+            </motion.div>
 
             {/* Charts Area */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Growth Chart */}
                 <div className="glass-card p-6 rounded-2xl">
                     <h3 className="text-lg font-semibold mb-6">Growth Trends</h3>
@@ -113,7 +132,7 @@ export default function Analytics() {
                         </ResponsiveContainer>
                     </div>
                 </div>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 }
