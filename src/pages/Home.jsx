@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import {
     Calendar, TrendingUp, Sparkles, Users, ArrowRight,
-    Globe, CheckCircle, Clock, BarChart3, MessageSquare, Zap, Shield, Code, ChevronRight, Briefcase
+    Globe, CheckCircle, Clock, BarChart3, MessageSquare, Zap, Shield, Code, ChevronRight, Briefcase,
+    Radio, Megaphone, Lock, Layout, Workflow
 } from 'lucide-react';
 import HowItWorks from '../components/HowItWorks';
 import { SentimentCard, SocialPostCard, AiAssistCard, StatsCard } from '../components/FloatingWidgets';
@@ -69,78 +70,119 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* PRODUCTS SECTION */}
+            {/* USE CASES SECTION (Image 1 Style) */}
             <div className="py-24 bg-white dark:bg-black">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-20">
-                        <span className="text-primary font-bold tracking-widest uppercase text-sm mb-2 block">Our Suite</span>
-                        <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">Everything you need to grow.</h2>
-                        <p className="text-xl text-slate-500 dark:text-gray-400 max-w-2xl mx-auto">
-                            A complete suite of social media tools built for modern teams.
-                        </p>
+                <div className="container mx-auto px-4 max-w-6xl">
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-bold text-slate-500 uppercase tracking-widest mb-2 border-b-2 border-slate-100 dark:border-white/10 pb-4 inline-block">By use case</h2>
                     </div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        <ProductCard
-                            icon={Calendar}
-                            color="text-blue-500"
-                            title="Publishing"
-                            desc="Plan, schedule, and publish content across all networks from one calendar."
+                    <div className="grid md:grid-cols-2 gap-x-16 gap-y-12">
+                        <UserCaseItem
+                            title="Manage social media"
+                            desc="Bolster your marketing efforts with intuitive, assistive tools."
                         />
-                        <ProductCard
-                            icon={BarChart3}
-                            color="text-emerald-500"
-                            title="Analytics"
-                            desc="Deep insights into your performance with exportable reports and custom dashboards."
+                        <UserCaseItem
+                            title="Drive more sales"
+                            desc="Sell more efficiently with product and customer information in one place."
                         />
-                        <ProductCard
-                            icon={MessageSquare}
-                            color="text-purple-500"
-                            title="Engagement"
-                            desc="A unified inbox to reply to comments, DMs, and mentions in real-time."
+                        <UserCaseItem
+                            title="Gather deeper insights"
+                            desc="Leverage AI to distill listening and performance data into strategic insights."
                         />
-                        <ProductCard
-                            icon={Users}
-                            color="text-pink-500"
-                            title="Advocacy"
-                            desc="Empower your employees to share curated content and amplify your brand reach."
+                        <UserCaseItem
+                            title="Amplify brand awareness"
+                            desc="Maximize the impact and reach of your social efforts to drive better business results."
                         />
+                        <UserCaseItem
+                            title="Streamline workflows"
+                            desc="Reduce complexity by managing multiple processes in a single tool."
+                        />
+                        <UserCaseItem
+                            title="Personalize customer care"
+                            desc="Create positive brand experiences with quick, tailored responses."
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* PLATFORM OVERVIEW (Image 2 Style) */}
+            <div className="py-24 bg-slate-50 dark:bg-white/5 border-y border-slate-200 dark:border-white/5">
+                <div className="container mx-auto px-4 max-w-7xl">
+                    <div className="grid lg:grid-cols-4 gap-12">
+
+                        {/* Column 1: Core Features */}
+                        <div className="lg:col-span-1">
+                            <h3 className="text-lg font-bold text-slate-500 uppercase tracking-wide mb-8">Core features</h3>
+                            <div className="space-y-10">
+                                <FeatureItem
+                                    icon={MessageSquare}
+                                    title="Engagement"
+                                    desc="Streamline and scale your customer care and community management."
+                                />
+                                <FeatureItem
+                                    icon={Calendar}
+                                    title="Publishing"
+                                    desc="Effortlessly plan, create, manage and deliver social content and campaigns."
+                                />
+                                <FeatureItem
+                                    icon={BarChart3}
+                                    title="Analytics"
+                                    desc="Drive strategic decision making across your entire business."
+                                />
+                            </div>
+                        </div>
+
+                        {/* Column 2: Premium Solutions */}
+                        <div className="lg:col-span-1">
+                            <h3 className="text-lg font-bold text-slate-500 uppercase tracking-wide mb-8">Premium solutions</h3>
+                            <div className="space-y-10">
+                                <FeatureItem
+                                    icon={TrendingUp}
+                                    title="Premium Analytics"
+                                    desc="Prove your social media ROI with customized data and reports."
+                                />
+                                <FeatureItem
+                                    icon={Radio}
+                                    title="Listening"
+                                    desc="Uncover trends and actionable insights from social conversations."
+                                />
+                                <FeatureItem
+                                    icon={Users}
+                                    title="Influencer Marketing"
+                                    desc="Build and manage partnerships with influencers and content creators."
+                                />
+                                <FeatureItem
+                                    icon={Megaphone}
+                                    title="Employee Advocacy"
+                                    desc="Amplify your social reach by empowering employees to become brand advocates."
+                                />
+                            </div>
+                        </div>
+
+                        {/* Column 3: Platform Links (Sidebar) */}
+                        <div className="lg:col-span-1 lg:col-start-4 bg-slate-100 dark:bg-white/5 p-8 rounded-2xl h-fit">
+                            <h3 className="text-lg font-bold text-slate-500 uppercase tracking-wide mb-6">Platform</h3>
+                            <div className="space-y-6">
+                                <PlatformLink title="Product tour" />
+                                <PlatformLink title="AI and automation" />
+                                <PlatformLink title="Integrations" />
+                                <PlatformLink title="Data and security" />
+                            </div>
+
+                            <div className="mt-8 pt-8 border-t border-slate-200 dark:border-white/10">
+                                <Link to="/login" className="block w-full py-3 bg-primary hover:bg-primaryHover text-white text-center font-bold rounded-xl transition-colors">
+                                    Request Demo
+                                </Link>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
             {/* HOW IT WORKS (Animated) */}
             <HowItWorks />
-
-            {/* SOLUTIONS / BUSINESSES */}
-            <div className="py-24 bg-slate-50 dark:bg-white/5 border-y border-slate-200 dark:border-white/5">
-                <div className="container mx-auto px-4">
-                    <div className="flex flex-col lg:flex-row items-center gap-16">
-                        <div className="flex-1 space-y-8">
-                            <h2 className="text-4xl font-bold text-slate-900 dark:text-white">Built for every business.</h2>
-                            <p className="text-lg text-slate-500 dark:text-gray-400">
-                                Whether you're a scaling startup or a global enterprise, HighShift Cloud adapts to your workflow.
-                            </p>
-
-                            <div className="space-y-4">
-                                <SolutionRow icon={Zap} title="Small Business" desc="Grow your audience with ease." />
-                                <SolutionRow icon={Briefcase} title="Agencies" desc="Manage multiple clients seamlessly." />
-                                <SolutionRow icon={Shield} title="Enterprise" desc="Security, governance, and scale." />
-                            </div>
-                        </div>
-                        <div className="flex-1 grid grid-cols-2 gap-4">
-                            <div className="bg-white dark:bg-black p-6 rounded-2xl shadow-xl border border-slate-100 dark:border-white/10 h-64 flex flex-col justify-end">
-                                <span className="text-4xl font-bold text-primary mb-2">10x</span>
-                                <span className="text-slate-500">Faster Workflow</span>
-                            </div>
-                            <div className="bg-slate-900 p-6 rounded-2xl shadow-xl h-64 flex flex-col justify-end mt-12">
-                                <span className="text-4xl font-bold text-white mb-2">24/7</span>
-                                <span className="text-slate-400">Global Support</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {/* RESOURCES & API */}
             <div className="py-24 bg-white dark:bg-black">
@@ -217,28 +259,32 @@ export default function Home() {
 }
 
 // Helpers
-function ProductCard({ icon: Icon, title, desc, color }) {
+function UserCaseItem({ title, desc }) {
     return (
-        <div className="group p-8 rounded-3xl bg-slate-50 dark:bg-white/5 hover:bg-white dark:hover:bg-black hover:shadow-xl transition-all border border-transparent hover:border-slate-100 dark:hover:border-white/10">
-            <div className={`w-14 h-14 rounded-2xl bg-white dark:bg-white/10 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform ${color}`}>
-                <Icon className="w-7 h-7" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{title}</h3>
-            <p className="text-slate-500 dark:text-gray-400 leading-relaxed text-sm">{desc}</p>
+        <div>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">{title}</h3>
+            <p className="text-lg text-slate-600 dark:text-gray-400 leading-relaxed font-light">{desc}</p>
         </div>
     )
 }
 
-function SolutionRow({ icon: Icon, title, desc }) {
+function FeatureItem({ icon: Icon, title, desc }) {
     return (
-        <div className="flex items-start gap-4 p-4 rounded-xl hover:bg-white/50 dark:hover:bg-white/5 transition-colors">
-            <div className="mt-1 p-2 bg-primary/10 rounded-lg text-primary">
-                <Icon className="w-5 h-5" />
+        <div className="group">
+            <div className="flex items-center gap-3 mb-2">
+                <Icon className="w-6 h-6 text-slate-900 dark:text-white" />
+                <h4 className="text-xl font-bold text-slate-900 dark:text-white">{title}</h4>
             </div>
-            <div>
-                <h4 className="font-bold text-slate-900 dark:text-white text-lg">{title}</h4>
-                <p className="text-slate-500 dark:text-gray-400 text-sm">{desc}</p>
-            </div>
+            <p className="text-slate-600 dark:text-gray-400 leading-relaxed">{desc}</p>
         </div>
+    )
+}
+
+function PlatformLink({ title }) {
+    return (
+        <a href="#" className="flex items-center justify-between group cursor-pointer hover:bg-white dark:hover:bg-white/10 p-2 -mx-2 rounded-lg transition-colors">
+            <span className="text-lg font-bold text-slate-900 dark:text-white">{title}</span>
+            <ChevronRight className="w-5 h-5 text-primary opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
+        </a>
     )
 }
