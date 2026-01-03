@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import HowItWorks from '../components/HowItWorks';
 import { SentimentCard, SocialPostCard, AiAssistCard, StatsCard } from '../components/FloatingWidgets';
-import heroImage from '../assets/hero-person.png';
+import heroImage from '../assets/hero-person-wide.png';
 
 export default function Home() {
     return (
@@ -43,12 +43,13 @@ export default function Home() {
 
                         {/* Hero Image & Widgets */}
                         <div className="flex-1 relative w-full max-w-xl lg:max-w-none">
-                            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900 aspect-[4/3] group">
+                            {/* Updated Container: Removed border, flexible aspect ratio */}
+                            <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group">
                                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent opacity-50 mix-blend-overlay z-10"></div>
                                 <img
                                     src={heroImage}
                                     alt="Social Media Manager working"
-                                    className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"
+                                    className="w-full h-auto object-cover opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"
                                 />
 
                                 {/* Floating Widgets Overlay */}
@@ -263,7 +264,7 @@ function UserCaseItem({ title, desc }) {
     return (
         <div>
             <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">{title}</h3>
-            <p className="text-lg text-slate-600 dark:text-gray-400 leading-relaxed font-light">{desc}</p>
+            <p className="text-lg text-slate-600 dark:text-gray-400 leading-relaxed font-light text-base">{desc}</p>
         </div>
     )
 }
@@ -275,7 +276,7 @@ function FeatureItem({ icon: Icon, title, desc }) {
                 <Icon className="w-6 h-6 text-slate-900 dark:text-white" />
                 <h4 className="text-xl font-bold text-slate-900 dark:text-white">{title}</h4>
             </div>
-            <p className="text-slate-600 dark:text-gray-400 leading-relaxed">{desc}</p>
+            <p className="text-slate-600 dark:text-gray-400 leading-relaxed text-sm">{desc}</p>
         </div>
     )
 }
