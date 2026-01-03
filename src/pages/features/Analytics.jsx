@@ -41,6 +41,7 @@ export default function Analytics() {
             subtitle="Prove the value of your social media efforts with data that drives strategy and demonstrates ROI."
             heroGradient="from-emerald-500 to-green-500"
             features={features}
+            targetRoute="/analytics"
         />
     );
 }

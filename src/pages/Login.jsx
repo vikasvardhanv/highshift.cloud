@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, ArrowRight, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
@@ -8,6 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://l
 
 export default function Login() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [isLogin, setIsLogin] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -16,6 +17,8 @@ export default function Login() {
     const handleGoogleLogin = () => {
         // Redirect to backend endpoint for Google Auth
         const googleAuthUrl = `${API_URL}/auth/google`;
+        // Note: Preserving redirect state across Google Auth requires backend support (state param).
+        // For now, standard dashboard redirect is used for Google.
         window.location.href = googleAuthUrl;
     };
 
@@ -39,7 +42,9 @@ export default function Login() {
                 localStorage.setItem('social_api_key', api_key);
             }
 
-            navigate('/dashboard');
+            // Redirect to requested page or dashboard
+            const redirectPath = searchParams.get('redirect') || '/dashboard';
+            navigate(redirectPath);
         } catch (err) {
             console.error("Auth Error:", err);
             setError(err.response?.data?.detail || "Authentication successfuly failed. Please try again.");

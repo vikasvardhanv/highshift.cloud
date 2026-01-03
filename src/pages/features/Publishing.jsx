@@ -41,6 +41,7 @@ export default function Publishing() {
             subtitle="Plan, collaborate, and publish content that drives meaningful engagement. All from one intuitive calendar."
             heroGradient="from-blue-500 to-cyan-500"
             features={features}
+            targetRoute="/schedule"
         />
     );
 }

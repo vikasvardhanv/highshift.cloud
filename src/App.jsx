@@ -25,6 +25,7 @@ import FeatureAnalytics from './pages/features/Analytics';
 import FeatureEngagement from './pages/features/Engagement';
 import FeatureListening from './pages/features/Listening';
 import FeatureAdvocacy from './pages/features/Advocacy';
+import FeatureGhostwriter from './pages/features/Ghostwriter';
 import SolutionEnterprise from './pages/solutions/Enterprise';
 import SolutionAgencies from './pages/solutions/Agencies';
 import SolutionSmallBusiness from './pages/solutions/SmallBusiness';
@@ -69,6 +70,7 @@ function App() {
         <Route path="/features/engagement" element={<LandingLayout><FeatureEngagement /></LandingLayout>} />
         <Route path="/features/listening" element={<LandingLayout><FeatureListening /></LandingLayout>} />
         <Route path="/features/advocacy" element={<LandingLayout><FeatureAdvocacy /></LandingLayout>} />
+        <Route path="/features/ghostwriter" element={<LandingLayout><FeatureGhostwriter /></LandingLayout>} />
 
         <Route path="/solutions/enterprise" element={<LandingLayout><SolutionEnterprise /></LandingLayout>} />
         <Route path="/solutions/agencies" element={<LandingLayout><SolutionAgencies /></LandingLayout>} />
