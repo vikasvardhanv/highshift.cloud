@@ -174,17 +174,28 @@ export default function FeaturePageTemplate({
                                 <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
                                 <div className="relative z-10">
-                                    <motion.div
-                                        className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 shadow-sm group-hover:bg-primary/20 transition-colors"
-                                        whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
-                                        transition={{ duration: 0.5 }}
-                                    >
-                                        {feature.icon && <feature.icon className="w-7 h-7 text-primary group-hover:scale-110 transition-transform" />}
-                                    </motion.div>
-                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 group-hover:text-primary dark:group-hover:text-primary transition-colors">
-                                        {feature.title}
-                                    </h3>
-                                    <p className="text-slate-500 dark:text-gray-400 leading-relaxed">
+                                    {/* Animation Container - NEW! */}
+                                    {feature.animation && (
+                                        <div className="h-48 bg-slate-100 dark:bg-black/20 rounded-t-2xl -m-8 mb-6 overflow-hidden relative">
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                {feature.animation}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <motion.div
+                                            className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shadow-sm group-hover:bg-primary/20 transition-colors"
+                                            whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
+                                            transition={{ duration: 0.5 }}
+                                        >
+                                            {feature.icon && <feature.icon className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />}
+                                        </motion.div>
+                                        <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary transition-colors">
+                                            {feature.title}
+                                        </h3>
+                                    </div>
+                                    <p className="text-slate-500 dark:text-gray-400 leading-relaxed text-sm">
                                         {feature.description}
                                     </p>
                                 </div>
