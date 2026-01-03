@@ -30,8 +30,11 @@ export default function Home() {
                             </p>
 
                             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                                <Link to="/login" className="px-8 py-4 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl text-lg transition-all shadow-lg hover:shadow-primary/25 flex items-center gap-2">
-                                    Start Free Trial
+                                <Link
+                                    to={localStorage.getItem('token') || localStorage.getItem('social_api_key') ? "/publishing" : "/login"}
+                                    className="px-8 py-4 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl text-lg transition-all shadow-lg hover:shadow-primary/25 flex items-center gap-2"
+                                >
+                                    {localStorage.getItem('token') || localStorage.getItem('social_api_key') ? 'Enter Command Center' : 'Start Free Trial'}
                                     <ArrowRight className="w-5 h-5" />
                                 </Link>
                                 <button className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-lg transition-all border border-white/10">
@@ -65,7 +68,7 @@ export default function Home() {
 
                             {/* Glow effects */}
                             <div className="absolute -top-20 -right-20 w-96 h-96 bg-primary/20 rounded-full blur-[100px] pointer-events-none -z-10"></div>
-                            <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+                            <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-violet-500/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
                         </div>
                     </div>
                 </div>

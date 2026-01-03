@@ -95,7 +95,7 @@ function App() {
         <Route path="/connections" element={<DashboardLayout><Connections /></DashboardLayout>} />
         <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
         <Route path="/analytics" element={<DashboardLayout><Analytics /></DashboardLayout>} />
-        <Route path="/schedule" element={<DashboardLayout><Schedule /></DashboardLayout>} />
+        <Route path="/schedule" element={<DashboardLayout><ScheduleCalendar /></DashboardLayout>} />
 
         {/* New Placeholders */}
         <Route path="/inbox" element={<DashboardLayout><div className="p-10 text-center text-gray-400">Inbox Feature Coming Soon</div></DashboardLayout>} />

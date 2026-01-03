@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getScheduleCalendar, cancelScheduledPost } from '../services/api';
-import { Calendar, Clock, Loader2, Trash2, ChevronLeft, ChevronRight, Twitter, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
+import { Calendar, Clock, Loader2, Trash2, ChevronLeft, ChevronRight, Twitter, Facebook, Instagram, Linkedin, Youtube, Zap } from 'lucide-react';
 
 const PLATFORM_ICONS = {
     twitter: Twitter,
@@ -65,78 +65,86 @@ export default function ScheduleCalendar() {
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[50vh]">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
-        );
-    }
+    if (loading) return (
+        <div className="flex flex-col items-center justify-center p-24 gap-4">
+            <Loader2 className="animate-spin text-primary w-12 h-12" />
+            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Synchronizing Temporal Grid...</p>
+        </div>
+    );
 
     return (
-        <div className="space-y-8 animate-fade-in">
-            <div className="flex justify-between items-center">
+        <div className="space-y-10 pb-20 animate-fade-in relative z-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold mb-1 flex items-center gap-3">
-                        <Calendar className="w-8 h-8 text-secondary" />
-                        Schedule Calendar
-                    </h1>
-                    <p className="text-gray-400">View and manage your scheduled posts</p>
+                    <h1 className="text-4xl font-extrabold tracking-tight mb-2">Temporal Command</h1>
+                    <p className="text-slate-500 font-medium leading-relaxed max-w-xl">
+                        Orchestrate your future transmissions across the global network with precision timing.
+                    </p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Calendar Grid */}
-                <div className="lg:col-span-2 glass-card p-6 rounded-3xl">
-                    <div className="flex justify-between items-center mb-6">
-                        <button onClick={prevMonth} className="p-2 rounded-full hover:bg-white/10 transition-colors">
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-                        <h2 className="text-xl font-bold">{monthNames[month]} {year}</h2>
-                        <button onClick={nextMonth} className="p-2 rounded-full hover:bg-white/10 transition-colors">
-                            <ChevronRight className="w-5 h-5" />
-                        </button>
+                <div className="lg:col-span-8 glass-card p-10 rounded-[2.5rem] bg-white/[0.02] border-white/5 shadow-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 transition-transform duration-1000 group-hover:scale-110"></div>
+
+                    <div className="flex justify-between items-center mb-10">
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-2xl font-black tracking-tighter uppercase">{monthNames[month]} <span className="text-slate-700">{year}</span></h2>
+                        </div>
+                        <div className="flex gap-2">
+                            <button onClick={prevMonth} className="w-10 h-10 rounded-xl bg-slate-900 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center">
+                                <ChevronLeft className="w-5 h-5 text-slate-400" />
+                            </button>
+                            <button onClick={nextMonth} className="w-10 h-10 rounded-xl bg-slate-900 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center">
+                                <ChevronRight className="w-5 h-5 text-slate-400" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Day Headers */}
-                    <div className="grid grid-cols-7 gap-2 mb-4">
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                            <div key={day} className="text-center text-xs font-bold text-gray-500 uppercase">{day}</div>
+                    <div className="grid grid-cols-7 gap-4 mb-6">
+                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
+                            <div key={day} className={`text-center text-[10px] font-black uppercase tracking-[0.2em] ${idx === 0 || idx === 6 ? 'text-slate-700' : 'text-slate-500'}`}>{day}</div>
                         ))}
                     </div>
 
                     {/* Calendar Days */}
-                    <div className="grid grid-cols-7 gap-2">
-                        {/* Empty cells for starting day offset */}
+                    <div className="grid grid-cols-7 gap-4">
                         {Array.from({ length: startingDay }).map((_, i) => (
-                            <div key={`empty-${i}`} className="aspect-square" />
+                            <div key={`empty-${i}`} className="aspect-square opacity-20 bg-slate-900/40 rounded-2xl" />
                         ))}
 
-                        {/* Actual days */}
                         {Array.from({ length: daysInMonth }).map((_, i) => {
                             const day = i + 1;
                             const dateKey = formatDateKey(year, month, day);
                             const posts = calendarData[dateKey] || [];
                             const hasItems = posts.length > 0;
                             const isSelected = selectedDate === dateKey;
-                            const isToday = new Date().toDateString() === new Date(year, month, day).toDateString();
+                            const today = new Date();
+                            const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
 
                             return (
                                 <button
                                     key={day}
                                     onClick={() => setSelectedDate(dateKey)}
                                     className={`
-                                        aspect-square rounded-xl flex flex-col items-center justify-center text-sm transition-all relative
-                                        ${isSelected ? 'bg-primary text-white' : 'hover:bg-white/10'}
-                                        ${isToday && !isSelected ? 'ring-2 ring-secondary' : ''}
+                                        aspect-square rounded-[1.25rem] flex flex-col items-center justify-center transition-all duration-300 relative group/day
+                                        ${isSelected
+                                            ? 'bg-primary text-white shadow-xl shadow-primary/20 scale-105 z-10 border border-primary/50'
+                                            : hasItems
+                                                ? 'bg-white/5 border border-white/10 hover:border-white/30 text-slate-200'
+                                                : 'bg-white/[0.02] border border-transparent hover:border-white/5 text-slate-600 hover:text-slate-400'}
+                                        ${isToday && !isSelected ? 'ring-2 ring-primary ring-offset-4 ring-offset-slate-950' : ''}
                                     `}
                                 >
-                                    <span className={`font-medium ${hasItems && !isSelected ? 'text-white' : ''}`}>{day}</span>
+                                    <span className="text-sm font-black">{day}</span>
                                     {hasItems && (
-                                        <div className="flex gap-0.5 mt-1">
+                                        <div className="flex gap-1 mt-2">
                                             {posts.slice(0, 3).map((_, idx) => (
-                                                <div key={idx} className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white/50' : 'bg-secondary'}`} />
+                                                <div key={idx} className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-primary'}`} />
                                             ))}
+                                            {posts.length > 3 && <div className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white/40' : 'bg-primary/40'}`} />}
                                         </div>
                                     )}
                                 </button>
@@ -146,40 +154,62 @@ export default function ScheduleCalendar() {
                 </div>
 
                 {/* Selected Day Details */}
-                <div className="glass-card p-6 rounded-3xl">
-                    <h3 className="font-bold mb-4 flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-primary" />
-                        {selectedDate ? new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) : 'Select a date'}
-                    </h3>
+                <div className="lg:col-span-4 flex flex-col gap-6">
+                    <div className="glass-card p-10 rounded-[2.5rem] bg-white/[0.02] border-white/5 flex-1 shadow-2xl relative overflow-hidden">
+                        <div className="absolute bottom-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -mb-20 -mr-20"></div>
 
-                    {selectedDate && calendarData[selectedDate] ? (
-                        <div className="space-y-4">
-                            {calendarData[selectedDate].map(post => (
-                                <div key={post.id} className="p-4 rounded-2xl bg-white/5 border border-white/5 group">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <span className="text-xs font-bold text-secondary">{post.time}</span>
-                                        <button
-                                            onClick={() => handleCancel(post.id)}
-                                            className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:bg-red-500/20 rounded transition-all"
-                                        >
-                                            <Trash2 className="w-3 h-3" />
-                                        </button>
+                        <div className="flex items-center gap-4 mb-10">
+                            <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center border border-primary/20 shadow-lg">
+                                <Clock className="w-6 h-6 text-primary animate-pulse" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-extrabold uppercase tracking-tight">Timeline Detail</h3>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+                                    {selectedDate ? new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Temporal Select'}
+                                </p>
+                            </div>
+                        </div>
+
+                        {selectedDate && calendarData[selectedDate] ? (
+                            <div className="space-y-6">
+                                {calendarData[selectedDate].map(post => (
+                                    <div key={post.id} className="relative p-6 rounded-[1.5rem] bg-black/40 border border-white/5 hover:border-white/10 transition-all group/post shadow-xl">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="px-3 py-1 bg-primary/10 rounded-lg text-[9px] font-black text-primary uppercase tracking-widest">
+                                                {post.time}
+                                            </div>
+                                            <button
+                                                onClick={() => handleCancel(post.id)}
+                                                className="opacity-0 group-hover/post:opacity-100 p-2 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-all border border-rose-500/20"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+                                        <p className="text-xs text-slate-300 font-medium leading-relaxed mb-6 line-clamp-3">{post.content}</p>
+                                        <div className="flex gap-2">
+                                            {post.platforms?.map(p => {
+                                                const Icon = PLATFORM_ICONS[p] || Calendar;
+                                                return (
+                                                    <div key={p} className="w-8 h-8 rounded-lg bg-slate-900 border border-white/5 flex items-center justify-center" title={p}>
+                                                        <Icon className="w-4 h-4 text-slate-500" />
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-gray-300 mb-3">{post.content}</p>
-                                    <div className="flex gap-2">
-                                        {post.platforms?.map(p => {
-                                            const Icon = PLATFORM_ICONS[p] || Calendar;
-                                            return <Icon key={p} className="w-4 h-4 text-gray-500" />;
-                                        })}
-                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+                                <div className="w-16 h-16 bg-slate-900 border border-white/5 rounded-2xl flex items-center justify-center mb-4">
+                                    <Zap className="w-8 h-8 text-slate-700" />
                                 </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-10 text-gray-500">
-                            {selectedDate ? 'No posts scheduled for this day' : 'Click on a date to see scheduled posts'}
-                        </div>
-                    )}
+                                <p className="text-[10px] font-extrabold text-slate-600 uppercase tracking-widest leading-loose">
+                                    {selectedDate ? 'Temporal Void: No Events' : 'Activate a node on the grid to inspect details'}
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

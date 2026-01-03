@@ -55,6 +55,9 @@ export default function FeaturePageTemplate({
 
     const loginUrl = `/login?redirect=${encodeURIComponent(targetRoute)}`;
 
+    const isAuthenticated = localStorage.getItem('token') || localStorage.getItem('social_api_key');
+    const finalCtaLink = isAuthenticated ? targetRoute : loginUrl;
+
     return (
         <div className="bg-white dark:bg-black font-sans overflow-hidden">
             {/* HERO */}
@@ -130,10 +133,10 @@ export default function FeaturePageTemplate({
                                 whileHover={{ scale: 1.05, y: -5 }}
                                 whileTap={{ scale: 0.98 }}
                             >
-                                <Link to={loginUrl} className="px-8 py-4 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl text-lg transition-all shadow-lg shadow-primary/25 flex items-center gap-2 relative overflow-hidden group">
+                                <Link to={finalCtaLink} className="px-8 py-4 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl text-lg transition-all shadow-lg shadow-primary/25 flex items-center gap-2 relative overflow-hidden group">
                                     {/* Shimmer effect */}
                                     <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                                    <span className="relative z-10">Start Free Trial</span>
+                                    <span className="relative z-10">{isAuthenticated ? 'Enter Command Center' : 'Start Free Trial'}</span>
                                     <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
                                 </Link>
                             </motion.div>

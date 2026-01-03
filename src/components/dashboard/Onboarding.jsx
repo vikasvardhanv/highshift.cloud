@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Linkedin, Twitter, ArrowRight } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Twitter, ArrowRight, Zap, ShieldCheck } from 'lucide-react';
 import { getAuthUrl } from '../../services/api';
 
 export default function Onboarding({ onComplete }) {
@@ -14,98 +14,113 @@ export default function Onboarding({ onComplete }) {
     };
 
     return (
-        <div className="max-w-4xl mx-auto py-12 px-4 animate-fade-in">
+        <div className="max-w-4xl mx-auto py-20 px-4 animate-fade-in relative z-10">
             {/* Onboarding Card */}
-            <div className="bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl overflow-hidden border border-slate-100 dark:border-white/10 p-12 md:p-16">
+            <div className="glass-card rounded-[3.5rem] bg-white/[0.02] border-white/5 shadow-2xl overflow-hidden p-12 md:p-20 relative group">
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -mr-48 -mt-48 transition-colors duration-1000 group-hover:bg-primary/15"></div>
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/5 rounded-full blur-[100px] -ml-40 -mb-40 group-hover:bg-blue-500/10"></div>
 
-                {/* Progress Bar Container */}
-                <div className="mb-12">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Step 1: Connect Profiles</span>
-                        <span className="text-xs font-bold text-primary">50% Complete</span>
+                {/* Progress Indicators */}
+                <div className="mb-20">
+                    <div className="flex items-center justify-between mb-6">
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Neural Link Status</span>
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] flex items-center gap-2">
+                            Initialization Matrix Active
+                        </span>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                         {[1, 2, 3].map(i => (
-                            <div key={i} className="h-1.5 flex-1 bg-primary rounded-full" />
+                            <div key={i} className="h-1.5 flex-1 bg-primary rounded-full shadow-[0_0_15px_rgba(34,197,94,0.3)] animate-pulse" />
                         ))}
                         {[4, 5, 6].map(i => (
-                            <div key={i} className="h-1.5 flex-1 bg-slate-100 dark:bg-white/10 rounded-full" />
+                            <div key={i} className="h-1.5 flex-1 bg-white/5 rounded-full" />
                         ))}
                     </div>
                 </div>
 
-                <div className="max-w-2xl">
-                    <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 tracking-tight">
-                        Connect a profile
+                <div className="max-w-2xl relative z-10">
+                    <h1 className="text-5xl md:text-6xl font-black text-white mb-8 tracking-tighter leading-tight bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-slate-500">
+                        Establish Network Node
                     </h1>
-                    <p className="text-lg text-slate-500 dark:text-gray-400 mb-10 leading-relaxed">
-                        Attach a profile to see how HighShift can help grow your business.
-                        You'll be able to unify your inbox, automate scheduling, and track performance.
+                    <p className="text-lg text-slate-500 font-medium mb-12 leading-relaxed">
+                        Authorize a transmission vector to begin synchronizing your presence across the highshift network.
                     </p>
 
                     {/* Platform Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-16">
                         <ConnectButton
                             platform="Facebook"
                             icon={Facebook}
                             color="bg-[#1877F2]"
-                            hoverColor="hover:bg-[#166fe5]"
+                            hoverShadow="shadow-blue-500/20"
                             onClick={() => handleConnect('facebook')}
                         />
                         <ConnectButton
                             platform="Instagram"
                             icon={Instagram}
-                            color="bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045]"
-                            hoverColor="hover:opacity-90"
+                            color="bg-gradient-to-br from-[#833ab4] via-[#fd1d1d] to-[#fcb045]"
+                            hoverShadow="shadow-rose-500/20"
                             onClick={() => handleConnect('instagram')}
                         />
                         <ConnectButton
                             platform="LinkedIn"
                             icon={Linkedin}
                             color="bg-[#0A66C2]"
-                            hoverColor="hover:bg-[#004182]"
+                            hoverShadow="shadow-blue-700/20"
                             onClick={() => handleConnect('linkedin')}
                         />
                         <ConnectButton
-                            platform="X Profile"
+                            platform="X Global"
                             icon={Twitter}
                             color="bg-black"
-                            hoverColor="hover:bg-slate-900"
+                            hoverShadow="shadow-white/5"
                             onClick={() => handleConnect('twitter')}
                         />
                     </div>
 
-                    <p className="text-center text-slate-400 text-sm">
-                        You can connect more profiles and networks later.
-                    </p>
+                    <div className="flex flex-col items-center gap-6">
+                        <div className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                            Enterprise OAuth 2.0 Security Protocols Active
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* Support/Info below */}
-            <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-8 px-8 opacity-60">
-                <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
-                        <ArrowRight className="w-5 h-5" />
+            <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-10 px-12 opacity-40 hover:opacity-100 transition-opacity duration-700">
+                <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                        <ArrowRight className="w-5 h-5 text-slate-400" />
                     </div>
-                    <p className="text-sm font-medium">Safe & Secure with Enterprise OAuth 2.0</p>
+                    <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">Synchronized Protocols</p>
+                        <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest mt-0.5">Automated Scheduling / Cross-Platform Sync</p>
+                    </div>
                 </div>
-                <div className="flex gap-6">
-                    <span className="text-xs uppercase tracking-widest font-bold">Privacy Policy</span>
-                    <span className="text-xs uppercase tracking-widest font-bold">Terms of Service</span>
+                <div className="flex gap-10">
+                    <span className="text-[10px] uppercase tracking-[0.3em] font-black text-slate-500 hover:text-primary cursor-pointer transition-colors">Digital Autonomy</span>
+                    <span className="text-[10px] uppercase tracking-[0.3em] font-black text-slate-500 hover:text-primary cursor-pointer transition-colors">Neural Policy</span>
                 </div>
             </div>
         </div>
     );
 }
 
-function ConnectButton({ platform, icon: Icon, color, hoverColor, onClick }) {
+function ConnectButton({ platform, icon: Icon, color, hoverShadow, onClick }) {
     return (
         <button
             onClick={onClick}
-            className={`flex items-center justify-center gap-3 px-6 py-4 ${color} ${hoverColor} text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:scale-95`}
+            className={`
+                group relative flex items-center justify-center gap-4 px-8 py-5 ${color} text-white rounded-[1.5rem] 
+                text-sm font-black uppercase tracking-[0.15em] transition-all duration-500 
+                hover:scale-105 active:scale-95 shadow-2xl ${hoverShadow}
+                overflow-hidden
+            `}
         >
-            <Icon className="w-5 h-5 flex-shrink-0" />
-            <span>{platform} {platform !== 'X Profile' ? 'Page' : ''}</span>
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Icon className="w-5 h-5 flex-shrink-0 relative z-10 group-hover:scale-110 transition-transform" />
+            <span className="relative z-10">{platform}</span>
         </button>
     );
 }

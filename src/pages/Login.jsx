@@ -14,6 +14,15 @@ export default function Login() {
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({ email: '', password: '' });
 
+    // Redirect if already logged in
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const apiKey = localStorage.getItem('social_api_key');
+        if (token || apiKey) {
+            navigate('/publishing');
+        }
+    }, [navigate]);
+
     const handleGoogleLogin = () => {
         // Redirect to backend endpoint for Google Auth
         const googleAuthUrl = `${API_URL}/auth/google`;
