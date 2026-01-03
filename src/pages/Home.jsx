@@ -21,7 +21,7 @@ export default function Home() {
                         <div className="flex-1 text-center lg:text-left z-10">
                             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6 tracking-tight">
                                 The Intelligent OS for <br />
-                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-500">
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-300 via-indigo-300 to-slate-500">
                                     Social Growth
                                 </span>
                             </h1>
@@ -32,12 +32,12 @@ export default function Home() {
                             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                                 <Link
                                     to={localStorage.getItem('token') || localStorage.getItem('social_api_key') ? "/publishing" : "/login"}
-                                    className="px-8 py-4 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl text-lg transition-all shadow-lg hover:shadow-primary/25 flex items-center gap-2"
+                                    className="px-8 py-4 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl text-lg transition-all shadow-xl hover:shadow-primary/10 flex items-center gap-2"
                                 >
                                     {localStorage.getItem('token') || localStorage.getItem('social_api_key') ? 'Enter Command Center' : 'Start Free Trial'}
                                     <ArrowRight className="w-5 h-5" />
                                 </Link>
-                                <button className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-lg transition-all border border-white/10">
+                                <button className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl text-lg transition-all border border-white/5">
                                     Live Product Tour
                                 </button>
                             </div>
@@ -47,12 +47,12 @@ export default function Home() {
                         {/* Hero Image & Widgets */}
                         <div className="flex-1 relative w-full max-w-xl lg:max-w-none">
                             {/* Updated Container */}
-                            <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group">
-                                <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent opacity-50 mix-blend-overlay z-10"></div>
+                            <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-slate-950 group border border-white/5">
+                                <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent opacity-50 mix-blend-overlay z-10"></div>
                                 <img
                                     src={heroImage}
                                     alt="Social Media Manager optimizing workflow"
-                                    className="w-full h-auto object-cover opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"
+                                    className="w-full h-auto object-cover opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
                                 />
 
                                 {/* Floating Widgets Overlay */}
@@ -67,8 +67,8 @@ export default function Home() {
                             </div>
 
                             {/* Glow effects */}
-                            <div className="absolute -top-20 -right-20 w-96 h-96 bg-primary/20 rounded-full blur-[100px] pointer-events-none -z-10"></div>
-                            <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-violet-500/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+                            <div className="absolute -top-20 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+                            <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-slate-500/5 rounded-full blur-[100px] pointer-events-none -z-10"></div>
                         </div>
                     </div>
                 </div>

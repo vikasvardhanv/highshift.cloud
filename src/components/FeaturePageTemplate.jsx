@@ -6,7 +6,7 @@ export default function FeaturePageTemplate({
     title,
     subtitle,
     heroImage,
-    heroGradient = "from-blue-600 to-indigo-600",
+    heroGradient = "from-slate-900 via-indigo-950 to-slate-900",
     features = [],
     ctaTitle = "Ready to get started?",
     ctaText = "Join thousands of brands using HighShift to grow.",
@@ -133,9 +133,9 @@ export default function FeaturePageTemplate({
                                 whileHover={{ scale: 1.05, y: -5 }}
                                 whileTap={{ scale: 0.98 }}
                             >
-                                <Link to={finalCtaLink} className="px-8 py-4 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl text-lg transition-all shadow-lg shadow-primary/25 flex items-center gap-2 relative overflow-hidden group">
+                                <Link to={finalCtaLink} className="px-8 py-4 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl text-lg transition-all shadow-xl shadow-primary/10 flex items-center gap-2 relative overflow-hidden group">
                                     {/* Shimmer effect */}
-                                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                                     <span className="relative z-10">{isAuthenticated ? 'Enter Command Center' : 'Start Free Trial'}</span>
                                     <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
                                 </Link>
@@ -168,13 +168,13 @@ export default function FeaturePageTemplate({
                                     scale: 1.03,
                                     transition: { type: "spring", stiffness: 300 }
                                 }}
-                                className="group relative p-8 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 hover:border-primary/50 transition-all hover:shadow-2xl hover:bg-white dark:hover:bg-white/10 overflow-hidden"
+                                className="group relative p-8 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 hover:border-primary/30 transition-all hover:shadow-2xl hover:bg-white dark:hover:bg-slate-900 overflow-hidden"
                             >
                                 {/* Animated background gradient on hover */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                                 {/* Shimmer effect */}
-                                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
 
                                 <div className="relative z-10">
                                     {/* Animation Container - NEW! */}
