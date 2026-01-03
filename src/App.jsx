@@ -20,7 +20,32 @@ import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 import DashboardLayout from './layouts/DashboardLayout';
 
-// Layout for public pages (Landing, Legal)
+import FeaturePublishing from './pages/features/Publishing';
+import FeatureAnalytics from './pages/features/Analytics';
+import FeatureEngagement from './pages/features/Engagement';
+import FeatureListening from './pages/features/Listening';
+import FeatureAdvocacy from './pages/features/Advocacy';
+import SolutionEnterprise from './pages/solutions/Enterprise';
+import SolutionAgencies from './pages/solutions/Agencies';
+import SolutionSmallBusiness from './pages/solutions/SmallBusiness';
+import ResourceDocs from './pages/resources/Docs';
+import ResourceHelp from './pages/resources/Help';
+import ResourceBlog from './pages/resources/Blog';
+
+// Layout for full-width marketing pages (Home, Features)
+function LandingLayout({ children }) {
+  return (
+    <div className="min-h-screen bg-background text-white selection:bg-primary/30 font-sans flex flex-col">
+      <Navbar />
+      <main className="flex-1 w-full">
+        {children}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+// Layout for generic public pages (Legal, etc) - Contained
 function PublicLayout({ children }) {
   return (
     <div className="min-h-screen bg-background text-white selection:bg-primary/30 font-sans flex flex-col">
@@ -37,15 +62,29 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+        {/* Marketing Routes */}
+        <Route path="/" element={<LandingLayout><Home /></LandingLayout>} />
+        <Route path="/features/publishing" element={<LandingLayout><FeaturePublishing /></LandingLayout>} />
+        <Route path="/features/analytics" element={<LandingLayout><FeatureAnalytics /></LandingLayout>} />
+        <Route path="/features/engagement" element={<LandingLayout><FeatureEngagement /></LandingLayout>} />
+        <Route path="/features/listening" element={<LandingLayout><FeatureListening /></LandingLayout>} />
+        <Route path="/features/advocacy" element={<LandingLayout><FeatureAdvocacy /></LandingLayout>} />
+
+        <Route path="/solutions/enterprise" element={<LandingLayout><SolutionEnterprise /></LandingLayout>} />
+        <Route path="/solutions/agencies" element={<LandingLayout><SolutionAgencies /></LandingLayout>} />
+        <Route path="/solutions/small-business" element={<LandingLayout><SolutionSmallBusiness /></LandingLayout>} />
+
+        <Route path="/docs" element={<LandingLayout><ResourceDocs /></LandingLayout>} />
+        <Route path="/help" element={<LandingLayout><ResourceHelp /></LandingLayout>} />
+        <Route path="/blog" element={<LandingLayout><ResourceBlog /></LandingLayout>} />
+
         <Route path="/terms" element={<PublicLayout><TermsOfUse /></PublicLayout>} />
         <Route path="/privacy" element={<PublicLayout><PrivacyPolicy /></PublicLayout>} />
-        <Route path="/pricing" element={<PublicLayout><Pricing /></PublicLayout>} />
+        <Route path="/pricing" element={<LandingLayout><Pricing /></LandingLayout>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Login />} />
 
-        {/* Auth Callback works best in Public Layout usually */}
+        {/* Auth Callback */}
         <Route path="/auth/callback" element={<PublicLayout><AuthCallback /></PublicLayout>} />
 
         {/* Protected Dashboard Routes */}

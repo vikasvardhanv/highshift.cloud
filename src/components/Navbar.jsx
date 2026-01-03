@@ -32,19 +32,19 @@ export default function Navbar() {
         {
             name: 'Platform',
             children: [
-                { name: 'Publishing', icon: Calendar, desc: 'Schedule & Publish', path: '/#publishing' },
-                { name: 'Analytics', icon: BarChart3, desc: 'Measure Performace', path: '/#analytics' },
-                { name: 'Engagement', icon: MessageSquare, desc: 'Social Inbox', path: '/#engagement' },
-                { name: 'Listening', icon: Activity, desc: 'Monitor Trends', path: '/#listening' },
-                { name: 'Advocacy', icon: Users, desc: 'Employee Advocacy', path: '/#advocacy' },
+                { name: 'Publishing', icon: Calendar, desc: 'Schedule & Publish', path: '/features/publishing' },
+                { name: 'Analytics', icon: BarChart3, desc: 'Measure Performace', path: '/features/analytics' },
+                { name: 'Engagement', icon: MessageSquare, desc: 'Social Inbox', path: '/features/engagement' },
+                { name: 'Listening', icon: Activity, desc: 'Monitor Trends', path: '/features/listening' },
+                { name: 'Advocacy', icon: Users, desc: 'Employee Advocacy', path: '/features/advocacy' },
             ]
         },
         {
             name: 'Solutions',
             children: [
-                { name: 'Enterprise', icon: Building, desc: 'Scale your organization', path: '/#enterprise' },
-                { name: 'Agencies', icon: Briefcase, desc: 'Manage multiple clients', path: '/#agencies' },
-                { name: 'Small Business', icon: Zap, desc: 'Grow your brand', path: '/#smb' },
+                { name: 'Enterprise', icon: Building, desc: 'Scale your organization', path: '/solutions/enterprise' },
+                { name: 'Agencies', icon: Briefcase, desc: 'Manage multiple clients', path: '/solutions/agencies' },
+                { name: 'Small Business', icon: Zap, desc: 'Grow your brand', path: '/solutions/small-business' },
             ]
         },
         {
@@ -112,20 +112,23 @@ export default function Navbar() {
                                         </button>
 
                                         {/* Dropdown */}
-                                        <div className="hidden group-hover:block absolute top-full left-1/2 -translate-x-1/2 w-72 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl shadow-black/50 overflow-hidden pt-1 mt-1 transition-all animate-fade-in-down z-50">
-                                            <div className="p-2 space-y-1">
-                                                <div className="px-3 py-1 text-xs font-bold text-slate-500 uppercase tracking-wider">{item.name}</div>
-                                                {item.children.map(child => (
-                                                    <Link key={child.name} to={child.path} className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors group/link">
-                                                        <div className="mt-1 p-1.5 bg-white/5 rounded-md group-hover/link:bg-primary/20 group-hover/link:text-primary transition-colors text-slate-400">
-                                                            <child.icon className="w-4 h-4" />
-                                                        </div>
-                                                        <div>
-                                                            <div className="text-sm font-semibold text-white">{child.name}</div>
-                                                            <div className="text-xs text-slate-500 group-hover/link:text-slate-400">{child.desc}</div>
-                                                        </div>
-                                                    </Link>
-                                                ))}
+                                        {/* Dropdown - Fixed Hover Bridge */}
+                                        <div className="hidden group-hover:block absolute top-full left-1/2 -translate-x-1/2 w-72 pt-2 z-50 animate-fade-in-up">
+                                            <div className="bg-slate-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden p-2">
+                                                <div className="px-3 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-white/5 mb-1">{item.name}</div>
+                                                <div className="space-y-1">
+                                                    {item.children.map(child => (
+                                                        <Link key={child.name} to={child.path} className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/10 transition-colors group/link">
+                                                            <div className="mt-1 p-1.5 bg-white/5 rounded-lg group-hover/link:bg-primary group-hover/link:text-white transition-all text-slate-400">
+                                                                <child.icon className="w-4 h-4" />
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-sm font-bold text-slate-200 group-hover/link:text-white">{child.name}</div>
+                                                                <div className="text-xs text-slate-500 group-hover/link:text-slate-400 leading-snug">{child.desc}</div>
+                                                            </div>
+                                                        </Link>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
