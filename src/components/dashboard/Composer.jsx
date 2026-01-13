@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
     Send, Sparkles, X, Zap, Link2,
     FileText, Upload, CheckCircle, AlertCircle, Loader2, Plus, Image as ImageIcon,
@@ -165,6 +166,14 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
                 </div>
 
                 <div className="flex items-center gap-2">
+                    <Link
+                        to="/connections"
+                        className="text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5"
+                    >
+                        <Plus className="w-3.5 h-3.5" />
+                        Connect Social
+                    </Link>
+
                     <button
                         onClick={handleSoloToggle}
                         className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5

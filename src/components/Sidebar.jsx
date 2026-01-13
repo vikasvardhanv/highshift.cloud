@@ -16,11 +16,11 @@ import {
 
 const NAV_ITEMS = [
     { label: 'Overview', path: '/publishing', icon: LayoutDashboard },
+    { label: 'Connections', path: '/connections', icon: Network },
     { label: 'Schedule', path: '/schedule', icon: Calendar },
     { label: 'Media Library', path: '/media', icon: Image },
     { label: 'Analytics', path: '/analytics', icon: BarChart2 },
     { label: 'Engagement', path: '/inbox', icon: MessageSquare },
-    { label: 'Connections', path: '/connections', icon: Network },
     { label: 'Brand Kit', path: '/brand', icon: Palette },
     { label: 'AI Studio', path: '/ai', icon: Zap },
     { label: 'Settings', path: '/settings', icon: Settings },
