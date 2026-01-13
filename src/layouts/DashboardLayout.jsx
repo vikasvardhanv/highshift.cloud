@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import { getAccounts } from '../services/api';
+import { getCurrentUser } from '../services/api';
 import { User, ChevronDown, LogOut, Menu, Settings } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 
@@ -17,15 +17,12 @@ export default function DashboardLayout({ children }) {
 
     const loadUserInfo = async () => {
         try {
-            const data = await getAccounts();
-            // USER REQUEST: Display logged user, not social media
-            // Since we don't have a specific /me endpoint yet, we'll simulate the system user
-            // In a real app, we would fetch this from /auth/me
+            const data = await getCurrentUser();
             setUser({
-                name: 'Vikash Vardhan', // Hardcoded as requested to show System User
-                email: 'vikash@highshift.cloud',
-                avatar: null, // Default to initials
-                initials: 'VV'
+                name: data.name || 'User',
+                email: data.email,
+                avatar: null,
+                initials: data.initials || 'U'
             });
         } catch (err) {
             console.error('Failed to load user info:', err);

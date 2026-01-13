@@ -15,15 +15,15 @@ import {
 } from 'lucide-react';
 
 const NAV_ITEMS = [
-    { label: 'Publishing', path: '/publishing', icon: LayoutDashboard },
-    { label: 'Smart Inbox', path: '/inbox', icon: MessageSquare },
-    { label: 'Developer API', path: '/developer', icon: PenTool },
     { label: 'Connections', path: '/profiles', icon: Network },
+    { label: 'Publishing', path: '/publishing', icon: LayoutDashboard },
     { label: 'Schedule', path: '/schedule', icon: Calendar },
     { label: 'Media Library', path: '/media', icon: Image },
     { label: 'Analytics', path: '/analytics', icon: BarChart2 },
+    { label: 'Smart Inbox', path: '/inbox', icon: MessageSquare },
     { label: 'Brand Kit', path: '/brand', icon: Palette },
     { label: 'AI Studio', path: '/ai', icon: Zap },
+    { label: 'Developer API', path: '/developer', icon: PenTool },
     { label: 'Settings', path: '/settings', icon: Settings },
 ];
 

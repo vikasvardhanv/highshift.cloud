@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Image as ImageIcon, Video, Calendar, MapPin, Smile, MoreHorizontal,
-    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User
+    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User, Plus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAccounts, uploadMedia, postContent, schedulePost, getProfiles } from '../../services/api';
 
 export default function Publisher() {
+    const navigate = useNavigate();
     const [profiles, setProfiles] = useState([]);
     const [selectedProfileId, setSelectedProfileId] = useState(null);
     const [accounts, setAccounts] = useState([]); // Filtered by profile
@@ -219,7 +221,16 @@ export default function Publisher() {
                                     )
                                 })}
                                 {accounts.length === 0 && (
-                                    <span className="text-sm text-slate-400 italic px-2">No accounts in this profile.</span>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-sm text-slate-400 italic">No accounts connected.</span>
+                                        <button
+                                            onClick={() => navigate('/profiles')}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
+                                        >
+                                            <Plus className="w-4 h-4" />
+                                            Add Account
+                                        </button>
+                                    </div>
                                 )}
                             </div>
                         </div>

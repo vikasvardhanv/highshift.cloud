@@ -151,8 +151,11 @@ export default function Profiles() {
                     </div>
 
                     {/* Rows */}
-                    {profiles.lengh === 0 && (
-                        <div className="p-8 text-center text-slate-500">No profiles created yet.</div>
+                    {profiles.length === 0 && (
+                        <div className="p-8 text-center">
+                            <p className="text-slate-500 mb-4">No profiles created yet.</p>
+                            <p className="text-sm text-slate-400">Create a profile above to start connecting social media accounts.</p>
+                        </div>
                     )}
 
                     {profiles.map(profile => (

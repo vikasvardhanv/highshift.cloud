@@ -31,6 +31,11 @@ export const getAccounts = async () => {
     return res.data;
 };
 
+export const getCurrentUser = async () => {
+    const res = await api.get('/auth/me');
+    return res.data;
+};
+
 export const getDashboardAnalytics = async () => {
     const res = await api.get('/analytics/dashboard/summary');
     return res.data;
