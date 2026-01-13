@@ -46,12 +46,13 @@ export const disconnectAccount = async (platform, accountId) => {
     await api.delete(`/linked-accounts/disconnect/${platform}/${accountId}`);
 };
 
-export const postContent = async (accounts, content) => {
+export const postContent = async (accounts, content, media = []) => {
     // accounts is array of { platform, accountId }
     // Endpoint: /post/multi
     const res = await api.post('/post/multi', {
         accounts,
-        content
+        content,
+        media
     });
     return res.data;
 };
