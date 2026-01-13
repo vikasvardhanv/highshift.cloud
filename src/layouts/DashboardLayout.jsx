@@ -26,7 +26,13 @@ export default function DashboardLayout({ children }) {
             });
         } catch (err) {
             console.error('Failed to load user info:', err);
-            setUser({ name: 'Admin User', initials: 'AD' });
+            // If auth fails (401), redirect to login
+            if (err.response?.status === 401 || !localStorage.getItem('token')) {
+                window.location.href = '/login';
+                return;
+            }
+            // For other errors, show minimal fallback but keep user in app
+            setUser({ name: 'User', initials: 'U', email: '' });
         }
     };
 
