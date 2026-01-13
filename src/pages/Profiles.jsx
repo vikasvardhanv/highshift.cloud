@@ -141,7 +141,7 @@ export default function Profiles() {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm">
                     {/* Table Header */}
                     <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900 text-xs font-bold text-slate-500 uppercase tracking-wider">
                         <div className="col-span-3">Profile</div>
@@ -203,7 +203,7 @@ export default function Profiles() {
 
                                     {/* Dropdown for platforms */}
                                     {addingToProfileId === profile.id && (
-                                        <div className="absolute top-full left-0 mt-2 p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xl z-20 w-48 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-200">
+                                        <div className="absolute top-full left-0 mt-2 p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xl z-50 w-48 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-200">
                                             {PLATFORMS.map(p => (
                                                 <button
                                                     key={p.id}
