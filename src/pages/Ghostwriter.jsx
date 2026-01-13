@@ -1,16 +1,28 @@
-import { useState } from 'react';
-import { Send, Sparkles, Bot, User, Copy, ThumbsUp, RefreshCw, Loader2 } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Send, Sparkles, Bot, User, Copy, RefreshCw, Loader2, Zap, Command } from 'lucide-react';
 import { generateContent } from '../services/api';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Ghostwriter() {
     const [messages, setMessages] = useState([
-        { role: 'assistant', content: "I'm your AI Ghostwriter. Paste a topic, a URL, or an existing post, and I'll forge it into high-impact social content." }
+        { role: 'assistant', content: "I am your neural ghostwriter. Give me a raw URL, a topic, or a vague idea, and I will forge it into high-impact social content." }
     ]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [tone, setTone] = useState('Professional');
+    const bottomRef = useRef(null);
 
-    const tones = ['Professional', 'Witty', 'Aggressive', 'Empathetic', 'Minimalist'];
+    const tones = [
+        { id: 'Professional', label: 'Professional', icon: Command, color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        { id: 'Witty', label: 'Witty', icon: Sparkles, color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' },
+        { id: 'Aggressive', label: 'Bold', icon: Zap, color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20' },
+        { id: 'Empathetic', label: 'Empathetic', icon: User, color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+        { id: 'Minimalist', label: 'Minimal', icon: Bot, color: 'text-slate-400', bg: 'bg-slate-500/10 border-slate-500/20' }
+    ];
+
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
 
     const handleSend = async () => {
         if (!input.trim() || loading) return;
@@ -21,112 +33,150 @@ export default function Ghostwriter() {
         setLoading(true);
 
         try {
-            // Using the real API
             const result = await generateContent(userMessage, 'all', tone);
             setMessages(prev => [...prev, { role: 'assistant', content: result }]);
         } catch (err) {
-            setMessages(prev => [...prev, { role: 'assistant', content: "Failed to forge content. The aether is currently unstable." }]);
+            setMessages(prev => [...prev, { role: 'assistant', content: "My connection to the neural net was interrupted. Please try again." }]);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="h-[calc(100vh-160px)] flex flex-col glass-card rounded-[2rem] overflow-hidden border-white/5 shadow-2xl">
+        <div className="h-[calc(100vh-140px)] flex flex-col relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 shadow-2xl">
+            {/* Ambient Background Effects */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+                <div className="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] rounded-full bg-indigo-600/10 blur-[100px]" />
+                <div className="absolute top-[40%] -left-[10%] w-[500px] h-[500px] rounded-full bg-purple-600/5 blur-[100px]" />
+            </div>
+
             {/* Header */}
-            <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center shadow-lg border border-primary/20">
-                        <Sparkles className="w-6 h-6 text-primary animate-pulse" />
+            <div className="z-10 flex flex-col md:flex-row md:items-center justify-between p-6 border-b border-white/5 bg-slate-950/50 backdrop-blur-md">
+                <div className="flex items-center gap-4 mb-4 md:mb-0">
+                    <div className="relative">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                            <Bot className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-slate-950 flex items-center justify-center">
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        </div>
                     </div>
                     <div>
-                        <h2 className="text-xl font-extrabold tracking-tight">Ghostwriter Engine</h2>
-                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Neural Content Synthesis Active</p>
+                        <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                            Ghostwriter <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/20 tracking-wide">BETA</span>
+                        </h2>
+                        <p className="text-xs text-slate-400">Neural Content Synthesis Engine</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
                     {tones.map(t => (
                         <button
-                            key={t}
-                            onClick={() => setTone(t)}
-                            className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase transition-all border
-                            ${tone === t
-                                    ? 'bg-primary/20 border-primary/40 text-primary'
-                                    : 'bg-white/5 border-transparent text-slate-500 hover:text-slate-300'}`}
+                            key={t.id}
+                            onClick={() => setTone(t.id)}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border
+                            ${tone === t.id
+                                    ? `${t.bg} ${t.color} border-current shadow-lg shadow-indigo-500/5 ring-1 ring-inset ring-white/5`
+                                    : 'bg-white/5 border-transparent text-slate-400 hover:bg-white/10 hover:text-slate-200'}`}
                         >
-                            {t}
+                            <t.icon className="w-3.5 h-3.5" />
+                            {t.label}
                         </button>
                     ))}
                 </div>
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto p-8 space-y-8 scrollbar-hide">
-                {messages.map((msg, idx) => (
-                    <div key={idx} className={`flex gap-5 ${msg.role === 'user' ? 'flex-row-reverse' : ''} animate-fade-in`}>
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg border
-                            ${msg.role === 'assistant' ? 'bg-slate-900 border-white/10 text-primary' : 'bg-primary border-primary/20 text-white'}`}>
-                            {msg.role === 'assistant' ? <Bot className="w-5 h-5" /> : <User className="w-5 h-5" />}
-                        </div>
-                        <div className={`max-w-[75%] p-6 rounded-[2rem] whitespace-pre-wrap text-[15px] leading-relaxed relative group
-                            ${msg.role === 'assistant'
-                                ? 'bg-white/5 border border-white/10 text-slate-200 rounded-tl-none shadow-xl'
-                                : 'bg-primary/10 border border-primary/30 text-white rounded-tr-none shadow-primary/5'}`}>
-                            {msg.content}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide z-10">
+                <AnimatePresence initial={false}>
+                    {messages.map((msg, idx) => (
+                        <motion.div
+                            key={idx}
+                            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 0.3 }}
+                            className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+                        >
+                            {/* Avatar */}
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-lg border
+                                ${msg.role === 'assistant'
+                                    ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
+                                    : 'bg-slate-800 border-slate-700 text-slate-300'}`}>
+                                {msg.role === 'assistant' ? <Sparkles className="w-4 h-4" /> : <User className="w-4 h-4" />}
+                            </div>
 
-                            {msg.role === 'assistant' && !loading && (
-                                <div className="flex gap-3 mt-6 pt-5 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => navigator.clipboard.writeText(msg.content)} className="flex items-center gap-2 text-[10px] font-bold uppercase px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
-                                        <Copy className="w-3.5 h-3.5" /> Copy Snippet
-                                    </button>
-                                    <button className="flex items-center gap-2 text-[10px] font-bold uppercase px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
-                                        <RefreshCw className="w-3.5 h-3.5" /> Regenerate
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                ))}
+                            {/* Message Bubble */}
+                            <div className={`max-w-[80%] rounded-2xl p-5 text-sm leading-relaxed shadow-sm
+                                ${msg.role === 'assistant'
+                                    ? 'bg-slate-900/80 border border-white/10 text-slate-200 rounded-tl-sm'
+                                    : 'bg-indigo-600 text-white rounded-tr-sm shadow-indigo-500/10'}`}>
+                                <div className="whitespace-pre-wrap font-sans">{msg.content}</div>
+
+                                {msg.role === 'assistant' && !loading && (
+                                    <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/5">
+                                        <button
+                                            onClick={() => navigator.clipboard.writeText(msg.content)}
+                                            className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-indigo-400 transition-colors"
+                                        >
+                                            <Copy className="w-3 h-3" /> Copy
+                                        </button>
+                                        <button className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-indigo-400 transition-colors">
+                                            <RefreshCw className="w-3 h-3" /> Retry
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+
                 {loading && (
-                    <div className="flex gap-5 animate-pulse">
-                        <div className="w-10 h-10 rounded-xl bg-slate-900 border border-white/10 flex items-center justify-center">
-                            <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="flex gap-4"
+                    >
+                        <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
+                            <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />
                         </div>
-                        <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] rounded-tl-none w-32 h-12"></div>
-                    </div>
+                        <div className="bg-slate-900/50 border border-white/5 px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500/50 animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500/50 animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500/50 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                        </div>
+                    </motion.div>
                 )}
+                <div ref={bottomRef} />
             </div>
 
             {/* Input Area */}
-            <div className="p-8 border-t border-white/5 bg-black/20">
-                <div className="relative group/input max-w-4xl mx-auto">
+            <div className="p-6 bg-slate-950 border-t border-white/5 z-20">
+                <div className="relative max-w-4xl mx-auto">
+                    <div className="absolute inset-0 bg-indigo-500/5 blur-xl -z-10 rounded-full" />
                     <input
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                         disabled={loading}
                         type="text"
-                        placeholder="Describe your vision or paste a link..."
-                        className="w-full bg-black/40 border border-white/10 rounded-[1.5rem] px-8 py-5 pr-32 focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-lg placeholder:text-slate-700 disabled:opacity-50"
+                        placeholder="Ask Ghostwriter to create something..."
+                        className="w-full bg-slate-900/80 border border-white/10 rounded-xl pl-5 pr-32 py-4 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-sm text-white placeholder-slate-500 shadow-xl"
                     />
-                    <div className="absolute right-3 top-3 flex items-center gap-2">
+                    <div className="absolute right-2 top-2 bottom-2">
                         <button
                             onClick={handleSend}
                             disabled={loading || !input.trim()}
-                            className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primaryHover disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-extrabold shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+                            className="h-full px-5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:hover:bg-indigo-600 rounded-lg text-white text-xs font-bold uppercase tracking-wider transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2"
                         >
-                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                            FORGE
+                            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                            <span>Generate</span>
                         </button>
                     </div>
                 </div>
-                <div className="mt-4 flex items-center justify-center gap-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-                    <span>Markdown Support</span>
-                    <div className="w-1 h-1 rounded-full bg-slate-800" />
-                    <span>Cross-Platform Ready</span>
-                    <div className="w-1 h-1 rounded-full bg-slate-800" />
-                    <span>AI Optimized</span>
+                <div className="text-center mt-3">
+                    <p className="text-[10px] text-slate-600 uppercase tracking-widest font-medium">
+                        Powered by MeganAI Neural Engine
+                    </p>
                 </div>
             </div>
         </div>

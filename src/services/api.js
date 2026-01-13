@@ -133,6 +133,18 @@ export const uploadAndPost = async (accounts, content, files = [], mediaUrls = [
     return res.data;
 };
 
+export const uploadMedia = async (files) => {
+    const formData = new FormData();
+    files.forEach((file) => {
+        formData.append('files', file);
+    });
+
+    const res = await api.post('/post/media-upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return res.data.urls;
+};
+
 // ============ NEW: Calendar View ============
 export const getScheduleCalendar = async () => {
     const res = await api.get('/schedule/calendar');

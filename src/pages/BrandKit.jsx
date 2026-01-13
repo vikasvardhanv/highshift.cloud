@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Globe, Hash, Smile, Loader2 } from 'lucide-react';
+import { Save, Globe, Hash, Smile, Loader2, Link2 } from 'lucide-react';
 import { getBrandKit, updateBrandKit } from '../services/api';
 
 export default function BrandKit() {
