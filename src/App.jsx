@@ -22,6 +22,7 @@ import Login from './pages/Login';
 import DashboardLayout from './layouts/DashboardLayout';
 import SmartInbox from './pages/SmartInbox';
 import DeveloperApi from './pages/DeveloperApi';
+import Profiles from './pages/Profiles';
 
 import FeaturePublishing from './pages/features/Publishing';
 import FeatureAnalytics from './pages/features/Analytics';
@@ -96,7 +97,8 @@ function App() {
         {/* Protected Dashboard Routes - Now Platform Routes */}
         <Route path="/publishing" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
         <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} /> {/* Legacy redirect/alias */}
-        <Route path="/connections" element={<DashboardLayout><Connections /></DashboardLayout>} />
+        <Route path="/profiles" element={<DashboardLayout><Profiles /></DashboardLayout>} />
+        <Route path="/connections" element={<DashboardLayout><Profiles /></DashboardLayout>} />
         <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
         <Route path="/analytics" element={<DashboardLayout><Analytics /></DashboardLayout>} />
         <Route path="/schedule" element={<DashboardLayout><ScheduleCalendar /></DashboardLayout>} />

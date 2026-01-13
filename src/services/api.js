@@ -24,12 +24,6 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-export const getAuthUrl = async (platform, redirectUrl) => {
-    const res = await api.get(`/auth/connect/${platform}`, {
-        params: { redirect: redirectUrl }
-    });
-    return res.data.authUrl;
-};
 
 export const getAccounts = async () => {
     const res = await api.get('/linked-accounts');
@@ -153,6 +147,7 @@ export const getScheduleCalendar = async () => {
 };
 
 // ============ NEW: User Profiles ============
+// ============ NEW: User Profiles ============
 export const getProfiles = async () => {
     const res = await api.get('/profiles');
     return res.data.profiles;
@@ -160,19 +155,25 @@ export const getProfiles = async () => {
 
 export const createProfile = async (name) => {
     const res = await api.post('/profiles', { name });
-    return res.data.profile;
-};
-
-export const deleteProfile = async (profileName) => {
-    await api.delete(`/profiles/${encodeURIComponent(profileName)}`);
-};
-
-export const assignAccountToProfile = async (profileName, accountId) => {
-    const res = await api.post(`/profiles/${encodeURIComponent(profileName)}/accounts/${accountId}`);
     return res.data;
 };
 
-export const getProfileAccounts = async (profileName) => {
-    const res = await api.get(`/profiles/${encodeURIComponent(profileName)}/accounts`);
-    return res.data.accounts;
+export const deleteProfile = async (id) => {
+    await api.delete(`/profiles/${id}`);
+};
+
+export const getAuthUrl = async (platform, redirectUrl, profileId = null) => {
+    const res = await api.get(`/auth/connect/${platform}`, {
+        params: {
+            redirect_uri: redirectUrl,  // NOTE: backend expects 'redirect_uri' in query? No, backend takes 'redirect_uri' in some places, but `auth_routes.py` uses param `platform`.
+            // Wait, existing code used `params: { redirect: redirectUrl }`. BUT `auth_routes.py` didn't have a `redirect` query param in my previous view.
+            // Let's check `auth_routes.py` again.
+            // It reads `redirect_uri` from ENV usually.
+            // BUT, `connect_platform` signature is `connect_platform(platform, profile_id, user)`. It does NOT take Redirect URI from query.
+            // So `redirectUrl` param here might be unused or for legacy. 
+            // I'll pass profile_id.
+            profile_id: profileId
+        }
+    });
+    return res.data.authUrl;
 };

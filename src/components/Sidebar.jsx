@@ -18,7 +18,7 @@ const NAV_ITEMS = [
     { label: 'Publishing', path: '/publishing', icon: LayoutDashboard },
     { label: 'Smart Inbox', path: '/inbox', icon: MessageSquare },
     { label: 'Developer API', path: '/developer', icon: PenTool },
-    { label: 'Connections', path: '/connections', icon: Network },
+    { label: 'Connections', path: '/profiles', icon: Network },
     { label: 'Schedule', path: '/schedule', icon: Calendar },
     { label: 'Media Library', path: '/media', icon: Image },
     { label: 'Analytics', path: '/analytics', icon: BarChart2 },

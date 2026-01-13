@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import {
     Image as ImageIcon, Video, Calendar, MapPin, Smile, MoreHorizontal,
-    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle
+    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAccounts, uploadMedia, postContent, schedulePost } from '../../services/api';
+import { getAccounts, uploadMedia, postContent, schedulePost, getProfiles } from '../../services/api';
 
 export default function Publisher() {
-    const [accounts, setAccounts] = useState([]);
+    const [profiles, setProfiles] = useState([]);
+    const [selectedProfileId, setSelectedProfileId] = useState(null);
+    const [accounts, setAccounts] = useState([]); // Filtered by profile
+    const [allAccounts, setAllAccounts] = useState([]); // All accounts store
     const [selectedAccounts, setSelectedAccounts] = useState([]);
     const [content, setContent] = useState('');
     const [mediaFiles, setMediaFiles] = useState([]);
@@ -23,16 +26,38 @@ export default function Publisher() {
     const fileInputRef = useRef(null);
 
     useEffect(() => {
-        loadAccounts();
+        loadData();
     }, []);
 
-    const loadAccounts = async () => {
+    // Filter accounts when profile changes
+    useEffect(() => {
+        if (!selectedProfileId) {
+            setAccounts([]);
+            return;
+        }
+        const filtered = allAccounts.filter(acc => acc.profileId === selectedProfileId);
+        setAccounts(filtered);
+        // Auto-select all accounts for this profile
+        if (filtered.length > 0) {
+            setSelectedAccounts(filtered.map(a => a.accountId));
+        } else {
+            setSelectedAccounts([]);
+        }
+    }, [selectedProfileId, allAccounts]);
+
+    const loadData = async () => {
         try {
-            const data = await getAccounts();
-            setAccounts(data?.accounts || []);
-            // Auto-select first account
-            if (data?.accounts?.length > 0) {
-                setSelectedAccounts([data.accounts[0].accountId]);
+            const [profilesData, accountsData] = await Promise.all([
+                getProfiles(),
+                getAccounts()
+            ]);
+
+            setProfiles(profilesData || []);
+            setAllAccounts(accountsData.accounts || []);
+
+            // Auto-select first profile
+            if (profilesData && profilesData.length > 0) {
+                setSelectedProfileId(profilesData[0].id);
             }
         } catch (err) {
             console.error(err);
@@ -146,32 +171,58 @@ export default function Publisher() {
             {/* --- LEFT COLUMN: COMPOSER --- */}
             <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900">
                 {/* 1. Account Selector */}
-                <div className="p-4 border-b border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                        {accounts.map(acc => {
-                            const isSelected = selectedAccounts.includes(acc.accountId);
-                            return (
-                                <button
-                                    key={acc.accountId}
-                                    onClick={() => toggleAccount(acc.accountId)}
-                                    className={`
-                                        flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium transition-all whitespace-nowrap
-                                        ${isSelected
-                                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-700/50 dark:text-indigo-300'
-                                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-700'}
-                                    `}
+                {/* 1. Account Setup */}
+                <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                    <div className="flex flex-col gap-4">
+                        {/* Profile Selector */}
+                        <div>
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Post As (Profile)</label>
+                            <div className="relative">
+                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                <select
+                                    className="w-full pl-10 pr-10 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none text-slate-700 dark:text-slate-200"
+                                    value={selectedProfileId || ''}
+                                    onChange={(e) => setSelectedProfileId(e.target.value)}
                                 >
-                                    <div className="w-5 h-5 rounded-full bg-slate-200 overflow-hidden">
-                                        <img src={acc.rawProfile?.data?.profile_image_url || `https://ui-avatars.com/api/?name=${acc.username}`} className="w-full h-full object-cover" />
-                                    </div>
-                                    {acc.username}
-                                    {isSelected && <Check className="w-3 h-3 ml-1" />}
-                                </button>
-                            )
-                        })}
-                        {accounts.length === 0 && (
-                            <span className="text-sm text-slate-400 italic px-2">No accounts connected.</span>
-                        )}
+                                    {profiles.map(p => (
+                                        <option key={p.id} value={p.id}>{p.name}</option>
+                                    ))}
+                                    {profiles.length === 0 && <option value="">No profiles found</option>}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                            </div>
+                        </div>
+
+                        {/* Accounts List (Horizontal Scroll) */}
+                        <div>
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Select Accounts</label>
+                            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                                {accounts.map(acc => {
+                                    const isSelected = selectedAccounts.includes(acc.accountId);
+                                    return (
+                                        <button
+                                            key={acc.accountId}
+                                            onClick={() => toggleAccount(acc.accountId)}
+                                            className={`
+                                                flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium transition-all whitespace-nowrap
+                                                ${isSelected
+                                                    ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-700/50 dark:text-indigo-300'
+                                                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-700'}
+                                            `}
+                                        >
+                                            <div className="w-5 h-5 rounded-full bg-slate-200 overflow-hidden">
+                                                <img src={acc.rawProfile?.data?.profile_image_url || `https://ui-avatars.com/api/?name=${acc.username}`} className="w-full h-full object-cover" />
+                                            </div>
+                                            {acc.username}
+                                            {isSelected && <Check className="w-3 h-3 ml-1" />}
+                                        </button>
+                                    )
+                                })}
+                                {accounts.length === 0 && (
+                                    <span className="text-sm text-slate-400 italic px-2">No accounts in this profile.</span>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
