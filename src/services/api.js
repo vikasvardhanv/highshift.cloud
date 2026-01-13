@@ -61,6 +61,11 @@ export const getKeys = async () => {
     return res.data.keys;
 };
 
+export const getMediaLibrary = async () => {
+    const res = await api.get('/post/media/library');
+    return res.data.media;
+};
+
 export const createKey = async (name) => {
     const res = await api.post('/keys', { name });
     return res.data; // { key: {...}, rawApiKey: "..." }

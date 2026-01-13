@@ -102,6 +102,7 @@ function App() {
         <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
         <Route path="/analytics" element={<DashboardLayout><Analytics /></DashboardLayout>} />
         <Route path="/schedule" element={<DashboardLayout><ScheduleCalendar /></DashboardLayout>} />
+        <Route path="/media" element={<DashboardLayout><MediaLibrary /></DashboardLayout>} />
 
         {/* New Placeholders */}
         <Route path="/inbox" element={<DashboardLayout><SmartInbox /></DashboardLayout>} />
