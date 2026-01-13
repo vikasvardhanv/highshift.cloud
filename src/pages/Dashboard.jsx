@@ -1,218 +1,226 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 import {
-    Users,
-    RefreshCw,
-    Plus,
-    Loader2,
-    Zap,
-    Send,
-    Calendar,
-    BarChart3,
-    ArrowUpRight,
-    Activity,
-    MoreHorizontal
+    Users, Plus, Loader2, Zap, Send, Calendar, BarChart3,
+    Video, MessageCircle, Play, Bookmark, MoreVertical,
+    CheckCircle2, Search, Filter, ArrowUpRight
 } from 'lucide-react';
-import { getAccounts, getProfiles, getDashboardAnalytics } from '../services/api'; // Added getDashboardAnalytics
-import Onboarding from '../components/dashboard/Onboarding';
-import Composer from '../components/dashboard/Composer';
+import { getAccounts } from '../services/api';
+import { motion } from 'framer-motion';
 
 export default function Dashboard() {
     const [accounts, setAccounts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [token] = useState(localStorage.getItem('token'));
-    // State for real analytics data
-    const [dashboardData, setDashboardData] = useState({
-        stats: [
-            { title: 'Total Reach', value: '0', change: '0%', isPositive: true, icon: Users },
-            { title: 'Engagement', value: '0%', change: '0%', isPositive: true, icon: Activity },
-            { title: 'Scheduled', value: '0', change: 'Next: --', isPositive: true, icon: Calendar },
-            { title: 'Published', value: '0', change: '+0', isPositive: true, icon: Send },
-        ],
-        recent_activity: []
-    });
+    const [selectedCreator, setSelectedCreator] = useState(null);
+
+    // Simulated media data for the UI
+    const mediaItems = [
+        {
+            id: 1,
+            type: 'video',
+            thumbnail: 'https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=800&q=80',
+            title: 'AI Ads Strategy',
+            views: '4.5M',
+            likes: '88.5K',
+            comments: '6.1K',
+            creator: '@rourkeheath',
+            creatorAvatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80'
+        },
+        {
+            id: 2,
+            type: 'image',
+            thumbnail: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=800&q=80',
+            title: 'Photoshop Update is INSANE',
+            views: '262.6K',
+            likes: '10.1K',
+            comments: '1.3K',
+            creator: '@sebastienjeffries',
+            creatorAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80'
+        }
+    ];
 
     useEffect(() => {
-        if (token) {
-            loadData();
-        } else {
-            setLoading(false);
-        }
-    }, [token]);
+        loadData();
+    }, []);
 
     const loadData = async () => {
         try {
-            // Parallel fetch for speed
-            const [accountsData, analyticsData] = await Promise.all([
-                getAccounts(),
-                getDashboardAnalytics()
-            ]);
-
-            setAccounts(accountsData?.accounts || []);
-
-            if (analyticsData) {
-                // Map icon strings back to components if needed, or rely on consistent naming
-                // The backend returns "Users", "Activity" etc strings for icons. 
-                // We need to map them to the actual imported Logic components.
-                const iconMap = { 'Users': Users, 'Activity': Activity, 'Calendar': Calendar, 'CheckCircle': Send, 'Send': Send, 'Zap': Zap };
-
-                const statsWithIcons = (analyticsData.stats || []).map(s => ({
-                    ...s,
-                    icon: iconMap[s.icon] || Users
-                }));
-
-                setDashboardData({
-                    stats: statsWithIcons.length ? statsWithIcons : dashboardData.stats,
-                    recent_activity: analyticsData.recent_activity || []
-                });
-            }
-
+            const data = await getAccounts();
+            setAccounts(data?.accounts || []);
+            setLoading(false);
         } catch (err) {
-            console.error("Failed to load dashboard data", err);
-        } finally {
+            console.error("Failed to load accounts", err);
             setLoading(false);
         }
     };
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center p-24 h-96">
-                <Loader2 className="animate-spin text-indigo-600 w-8 h-8" />
+            <div className="flex flex-col items-center justify-center h-[calc(100vh-100px)]">
+                <Loader2 className="animate-spin text-indigo-500 w-8 h-8" />
             </div>
         );
     }
 
-    if (accounts.length === 0) {
-        return <Onboarding onComplete={loadData} />;
-    }
-
     return (
-        <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1">Overview of your social performance.</p>
-                </div>
-                <div className="flex gap-3">
-                    <button onClick={loadData} className="btn-secondary flex items-center gap-2">
-                        <RefreshCw className="w-4 h-4" /> Refresh
-                    </button>
-                    <button className="btn-primary flex items-center gap-2">
-                        <Plus className="w-4 h-4" /> Create Post
-                    </button>
-                </div>
-            </div>
+        <div className="h-[calc(100vh-120px)] flex gap-6 overflow-hidden max-w-[1600px] mx-auto">
+            {/* LEFT COLUMN: Creator Management */}
+            <div className="w-[380px] flex flex-col gap-6 shrink-0">
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {dashboardData.stats.map((stat, i) => (
-                    <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-xl shadow-sm">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="p-2 bg-indigo-50 dark:bg-slate-800 rounded-lg text-indigo-600 dark:text-indigo-400">
-                                <stat.icon className="w-5 h-5" />
-                            </span>
-                            {stat.change && (
-                                <span className={`text-xs font-medium px-2 py-1 rounded-full ${stat.isPositive ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400' : 'bg-red-50 text-red-600'}`}>
-                                    {stat.change}
-                                </span>
-                            )}
-                        </div>
-                        <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</h3>
-                        <p className="text-sm text-slate-500 font-medium">{stat.title}</p>
+                {/* Add Creator Input */}
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
+                    <div className="flex items-center gap-2 mb-4 text-slate-400 text-sm font-medium">
+                        <CheckCircle2 className="w-4 h-4 text-indigo-500" />
+                        Add Instagram Creator
                     </div>
-                ))}
-            </div>
-
-            {/* Main Content Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left Column (Composer & posts) */}
-                <div className="lg:col-span-2 space-y-8">
-                    {/* Quick Compose */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
-                        <div className="mb-4 flex items-center justify-between">
-                            <h3 className="font-semibold text-slate-900 dark:text-white">Quick Compose</h3>
-                        </div>
-                        <Composer
-                            accounts={accounts}
-                            selectedAccounts={accounts.map(a => a.accountId)} // Default select all for convenience
-                            onAccountToggle={() => { }}
-                            onSuccess={loadAccounts}
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Enter Instagram username..."
+                            className="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-3 px-4 text-slate-200 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 transition-all placeholder:text-slate-600"
                         />
-                    </div>
-
-                    {/* Performance Chart Placeholder */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm min-h-[300px] flex flex-col items-center justify-center text-center">
-                        <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-full mb-3">
-                            <BarChart3 className="w-8 h-8 text-slate-400" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Performance Overview</h3>
-                        <p className="text-sm text-slate-500 mt-2 max-w-sm">Connect more data sources to unlock advanced analytics and engagement forecasting.</p>
+                        <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-slate-700 hover:bg-indigo-600 rounded-lg text-slate-300 hover:text-white transition-colors">
+                            <Plus className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
 
-                {/* Right Column (Activity/Sidebar) */}
-                <div className="space-y-8">
-                    {/* Recent Activity */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="font-semibold text-slate-900 dark:text-white">Recent Activity</h3>
-                            <button className="text-slate-400 hover:text-slate-600"><MoreHorizontal className="w-4 h-4" /></button>
+                {/* Tracked Creators List */}
+                <div className="flex-1 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col overflow-hidden">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-slate-200 font-semibold flex items-center gap-2">
+                            <Users className="w-4 h-4 text-slate-500" />
+                            Tracked Creators ({accounts.length})
+                        </h3>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-4 bg-slate-800/30 p-2 rounded-lg border border-slate-800">
+                        <div className="flex items-center gap-3">
+                            <button className="text-xs font-medium text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-md border border-slate-700 transition-all">
+                                Select All
+                            </button>
+                            <span className="text-[10px] text-slate-500">2 of 19 selected</span>
                         </div>
-                        <div className="space-y-6">
-                            {dashboardData.recent_activity.length > 0 ? (
-                                dashboardData.recent_activity.map(activity => (
-                                    <ActivityItem
-                                        key={activity.id}
-                                        title={activity.title}
-                                        desc={activity.description}
-                                    />
-                                ))
-                            ) : (
-                                <p className="text-sm text-slate-500">No recent activity.</p>
-                            )}
-                        </div>
-                        <button className="w-full mt-6 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                            View All History
+                        <button className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3 py-1.5 rounded-md shadow-lg shadow-indigo-600/20 transition-all">
+                            Get Reels
                         </button>
                     </div>
 
-                    {/* Connected Accounts Summary */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
-                        <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Connected Accounts</h3>
-                        <div className="space-y-3">
-                            {accounts.slice(0, 3).map(acc => (
-                                <div key={acc.accountId} className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-xs text-slate-600 dark:text-slate-400 uppercase">
-                                        {acc.platform[0]}
+                    <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                        {accounts.map((account) => (
+                            <motion.div
+                                key={account.accountId}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className={`group p-3 rounded-xl border transition-all cursor-pointer relative overflow-hidden ${selectedCreator === account.accountId
+                                        ? 'bg-indigo-500/10 border-indigo-500/50'
+                                        : 'bg-slate-800/30 border-slate-800 hover:border-slate-700'
+                                    }`}
+                                onClick={() => setSelectedCreator(account.accountId)}
+                            >
+                                <div className="flex items-center gap-3 relative z-10">
+                                    <div className="relative">
+                                        <div className="w-10 h-10 rounded-full bg-slate-700 overflow-hidden ring-2 ring-slate-800">
+                                            <img
+                                                src={account.rawProfile?.data?.profile_image_url || `https://ui-avatars.com/api/?name=${account.username}&background=random`}
+                                                alt={account.username}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-indigo-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
+                                            <CheckCircle2 className="w-2.5 h-2.5 text-white" />
+                                        </div>
                                     </div>
-                                    <div className="min-w-0 flex-1">
-                                        <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{acc.displayName}</p>
-                                        <p className="text-xs text-slate-500 truncate">@{acc.username}</p>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-sm font-bold text-slate-200 truncate">@{account.username}</h4>
+                                        <p className="text-[10px] text-slate-500 truncate">
+                                            {account.platform === 'instagram' ? '12.5k followers • 142 posts' : 'Platform connected'}
+                                        </p>
                                     </div>
-                                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
                                 </div>
-                            ))}
-                            {accounts.length > 3 && (
-                                <p className="text-xs text-slate-500 text-center pt-2">+{accounts.length - 3} more connected</p>
-                            )}
-                        </div>
+
+                                {/* Hover Actions */}
+                                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button className="text-slate-500 hover:text-red-400 transition-colors">
+                                        <MoreVertical className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* RIGHT COLUMN: Media Feed */}
+            <div className="flex-1 bg-slate-950 rounded-3xl overflow-hidden flex flex-col">
+                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 h-full">
+                        {mediaItems.map((item) => (
+                            <div key={item.id} className="relative group rounded-2xl overflow-hidden aspect-[9/16] bg-slate-900 border border-slate-800 shadow-2xl">
+                                {/* Media Background */}
+                                <img
+                                    src={item.thumbnail}
+                                    alt={item.title}
+                                    className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-300"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/50"></div>
+
+                                {/* Top Actions */}
+                                <div className="absolute top-4 left-4 z-20">
+                                    <button className="p-2 bg-slate-900/50 backdrop-blur-md rounded-full text-white/70 hover:text-white hover:bg-indigo-600 transition-all">
+                                        <Bookmark className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                <div className="absolute top-4 right-4 z-20">
+                                    <button className="p-2 bg-slate-900/50 backdrop-blur-md rounded-full text-white/70 hover:text-white transition-all">
+                                        <Video className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                {/* Center Content (Title overlay) */}
+                                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0 duration-300">
+                                    <h3 className="text-3xl font-black text-white leading-tight drop-shadow-2xl mb-4" style={{ fontFamily: 'Impact, sans-serif', letterSpacing: '1px' }}>
+                                        {item.title}
+                                    </h3>
+                                    <button className="flex items-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white font-bold hover:bg-white hover:text-indigo-900 transition-all">
+                                        <Zap className="w-4 h-4 fill-current" />
+                                        Harmonize
+                                    </button>
+                                </div>
+
+                                {/* Bottom Info */}
+                                <div className="absolute bottom-0 left-0 w-full p-5 z-20 bg-slate-900/90 backdrop-blur-xl border-t border-white/5 transform translate-y-0 transition-transform">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <img src={item.creatorAvatar} className="w-8 h-8 rounded-full border border-white/10" alt="Avatar" />
+                                            <div>
+                                                <p className="text-xs font-bold text-white">{item.creator}</p>
+                                                <p className="text-[10px] text-slate-400">09/08/2026</p>
+                                            </div>
+                                        </div>
+                                        <button className="text-slate-400 hover:text-white">
+                                            <ArrowUpRight className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-slate-300 line-clamp-2 mb-3 leading-relaxed">
+                                        How to create AI Videos for your brand or business 💥 #MagnificAI #KlingAI
+                                    </p>
+
+                                    <div className="flex items-center justify-between text-[11px] font-medium text-slate-400 border-t border-white/5 pt-3">
+                                        <div className="flex gap-4">
+                                            <span className="flex items-center gap-1"><Play className="w-3 h-3" /> {item.views}</span>
+                                            <span className="flex items-center gap-1"><Zap className="w-3 h-3" /> {item.likes}</span>
+                                            <span className="flex items-center gap-1"><MessageCircle className="w-3 h-3" /> {item.comments}</span>
+                                        </div>
+                                        <button className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide flex items-center gap-1.5 transition-colors">
+                                            <CheckCircle2 className="w-3 h-3" /> Transcribe
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
         </div>
     );
 }
-
-function ActivityItem({ title, desc }) {
-    return (
-        <div className="flex items-start gap-3">
-            <div className="mt-1 w-2 h-2 rounded-full bg-indigo-500"></div>
-            <div>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">{title}</p>
-                <p className="text-xs text-slate-500">{desc}</p>
-            </div>
-        </div>
-    );
-}
-
