@@ -15,6 +15,7 @@ export default function Publisher() {
     const [showSchedule, setShowSchedule] = useState(false);
     const [scheduleDate, setScheduleDate] = useState('');
     const [scheduleTime, setScheduleTime] = useState('');
+    const [previewMode, setPreviewMode] = useState('mobile');
 
     // Notifications
     const [toast, setToast] = useState(null);
@@ -301,14 +302,29 @@ export default function Publisher() {
                 <div className="flex items-center justify-between mb-6">
                     <h3 className="font-bold text-slate-700 dark:text-slate-300 text-sm uppercase tracking-wider">Network Preview</h3>
                     <div className="flex gap-2">
-                        <button className="text-xs font-semibold text-indigo-600 bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 px-3 py-1 rounded-full">Mobile</button>
-                        <button className="text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300 px-3 py-1">Desktop</button>
+                        <button
+                            onClick={() => setPreviewMode('mobile')}
+                            className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors ${previewMode === 'mobile' ? 'text-indigo-600 bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'}`}
+                        >
+                            Mobile
+                        </button>
+                        <button
+                            onClick={() => setPreviewMode('desktop')}
+                            className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors ${previewMode === 'desktop' ? 'text-indigo-600 bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'}`}
+                        >
+                            Desktop
+                        </button>
                     </div>
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    {/* Mock Phone Preview */}
-                    <div className="w-[320px] bg-white dark:bg-slate-900 rounded-[2rem] border-[6px] border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
+                    {/* Mock Phone/Desktop Preview */}
+                    <div className={`transition-all duration-300 flex flex-col bg-white dark:bg-slate-900 shadow-2xl overflow-hidden
+                        ${previewMode === 'mobile'
+                            ? 'w-[320px] rounded-[2rem] border-[6px] border-slate-200 dark:border-slate-800'
+                            : 'w-full max-w-[440px] rounded-lg border border-slate-200 dark:border-slate-800'
+                        }`}
+                    >
                         {/* Header */}
                         <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700"></div>

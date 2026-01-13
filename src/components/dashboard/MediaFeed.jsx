@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import {
     Users, Plus, Loader2, Zap, Send, Calendar, BarChart3,
     Video, MessageCircle, Play, Bookmark, MoreVertical,
-    CheckCircle2, Search, Filter, ArrowUpRight
+    CheckCircle2, Search, Filter, ArrowUpRight,
+    Facebook, Twitter, Instagram, Linkedin, Youtube, Globe
 } from 'lucide-react';
 import { getAccounts } from '../../services/api';
 import { motion } from 'framer-motion';
@@ -11,6 +12,17 @@ export default function MediaFeed() {
     const [accounts, setAccounts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCreator, setSelectedCreator] = useState(null);
+
+    const getPlatformIcon = (platform) => {
+        switch (platform?.toLowerCase()) {
+            case 'facebook': return <Facebook className="w-4 h-4 text-blue-600" />;
+            case 'twitter': return <Twitter className="w-4 h-4 text-sky-500" />;
+            case 'instagram': return <Instagram className="w-4 h-4 text-pink-500" />;
+            case 'linkedin': return <Linkedin className="w-4 h-4 text-blue-700" />;
+            case 'youtube': return <Youtube className="w-4 h-4 text-red-600" />;
+            default: return <Globe className="w-4 h-4 text-slate-500" />;
+        }
+    };
 
     // Simulated media data for the UI
     const mediaItems = [
@@ -131,9 +143,14 @@ export default function MediaFeed() {
                                         </div>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-bold text-slate-200 truncate">@{account.username}</h4>
-                                        <p className="text-[10px] text-slate-500 truncate">
-                                            {account.platform === 'instagram' ? '12.5k followers • 142 posts' : 'Platform connected'}
+                                        <div className="flex items-center gap-1.5 mb-0.5">
+                                            {getPlatformIcon(account.platform)}
+                                            <h4 className="text-sm font-bold text-slate-200 truncate">
+                                                {account.displayName || account.username || 'Page Name'}
+                                            </h4>
+                                        </div>
+                                        <p className="text-[10px] text-slate-500 truncate ml-5.5">
+                                            @{account.username}
                                         </p>
                                     </div>
                                 </div>

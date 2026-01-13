@@ -20,6 +20,8 @@ import Footer from './components/Footer';
 import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 import DashboardLayout from './layouts/DashboardLayout';
+import SmartInbox from './pages/SmartInbox';
+import DeveloperApi from './pages/DeveloperApi';
 
 import FeaturePublishing from './pages/features/Publishing';
 import FeatureAnalytics from './pages/features/Analytics';
@@ -100,7 +102,8 @@ function App() {
         <Route path="/schedule" element={<DashboardLayout><ScheduleCalendar /></DashboardLayout>} />
 
         {/* New Placeholders */}
-        <Route path="/inbox" element={<DashboardLayout><div className="p-10 text-center text-gray-400">Inbox Feature Coming Soon</div></DashboardLayout>} />
+        <Route path="/inbox" element={<DashboardLayout><SmartInbox /></DashboardLayout>} />
+        <Route path="/developer" element={<DashboardLayout><DeveloperApi /></DashboardLayout>} />
         <Route path="/listening" element={<DashboardLayout><div className="p-10 text-center text-gray-400">Social Listening Feature Coming Soon</div></DashboardLayout>} />
         <Route path="/ads" element={<DashboardLayout><div className="p-10 text-center text-gray-400">Social Ads Feature Coming Soon</div></DashboardLayout>} />
 

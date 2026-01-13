@@ -15,12 +15,13 @@ import {
 } from 'lucide-react';
 
 const NAV_ITEMS = [
-    { label: 'Overview', path: '/publishing', icon: LayoutDashboard },
+    { label: 'Publishing', path: '/publishing', icon: LayoutDashboard },
+    { label: 'Smart Inbox', path: '/inbox', icon: MessageSquare },
+    { label: 'Developer API', path: '/developer', icon: PenTool },
     { label: 'Connections', path: '/connections', icon: Network },
     { label: 'Schedule', path: '/schedule', icon: Calendar },
     { label: 'Media Library', path: '/media', icon: Image },
     { label: 'Analytics', path: '/analytics', icon: BarChart2 },
-    { label: 'Engagement', path: '/inbox', icon: MessageSquare },
     { label: 'Brand Kit', path: '/brand', icon: Palette },
     { label: 'AI Studio', path: '/ai', icon: Zap },
     { label: 'Settings', path: '/settings', icon: Settings },

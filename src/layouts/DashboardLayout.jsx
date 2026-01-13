@@ -18,17 +18,15 @@ export default function DashboardLayout({ children }) {
     const loadUserInfo = async () => {
         try {
             const data = await getAccounts();
-            if (data && data.accounts && data.accounts.length > 0) {
-                const firstAccount = data.accounts[0];
-                setUser({
-                    name: firstAccount.displayName || firstAccount.username || 'Ghost Admin',
-                    email: firstAccount.rawProfile?.email || null,
-                    avatar: firstAccount.rawProfile?.data?.profile_image_url || null,
-                    initials: (firstAccount.displayName || firstAccount.username || 'G').substring(0, 2).toUpperCase()
-                });
-            } else {
-                setUser({ name: 'Admin User', initials: 'AD' });
-            }
+            // USER REQUEST: Display logged user, not social media
+            // Since we don't have a specific /me endpoint yet, we'll simulate the system user
+            // In a real app, we would fetch this from /auth/me
+            setUser({
+                name: 'Vikash Vardhan', // Hardcoded as requested to show System User
+                email: 'vikash@highshift.cloud',
+                avatar: null, // Default to initials
+                initials: 'VV'
+            });
         } catch (err) {
             console.error('Failed to load user info:', err);
             setUser({ name: 'Admin User', initials: 'AD' });
