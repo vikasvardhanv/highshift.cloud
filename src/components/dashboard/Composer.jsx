@@ -1,17 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import {
-    Send, Trash2, Check, Sparkles, X, Zap, AtSign, Pin,
-    MessageSquare, Cloud, Music, Plus, Calendar, Clock,
-    Loader2, AlertCircle, CheckCircle, Upload, Link2,
-    FileText, Image as ImageIcon, Smile
+    Send, Sparkles, X, Zap, Link2,
+    FileText, Upload, CheckCircle, AlertCircle, Loader2, Plus, Image as ImageIcon
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { postContent, uploadAndPost, generateContent } from '../../services/api';
 
 const UPLOAD_METHODS = [
-    { id: 'text', label: 'Text Only', icon: FileText },
-    { id: 'url', label: 'Media URL', icon: Link2 },
-    { id: 'file', label: 'Upload File', icon: Upload },
+    { id: 'text', label: 'Text', icon: FileText },
+    { id: 'url', label: 'Link', icon: Link2 },
+    { id: 'file', label: 'Media', icon: ImageIcon },
 ];
 
 export default function Composer({ accounts = [], selectedAccounts = [], onAccountToggle, onSuccess }) {
@@ -30,16 +28,13 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
     // Sync solo mode with account selection
     useEffect(() => {
         if (soloMode) {
-            const allIds = accounts.map(a => a.accountId);
-            // We need to notify parent to select all, but for now we'll handle visual state
-            // In a real app, this would call a setAllSelected function from props
+            // Logic to handle visual state for solo mode
         }
     }, [soloMode, accounts]);
 
     const handleSoloToggle = () => {
         setSoloMode(!soloMode);
         if (!soloMode) {
-            // Select all accounts via the callback if provided, or handled by parent
             accounts.forEach(acc => {
                 if (!selectedAccounts.includes(acc.accountId)) {
                     onAccountToggle(acc.accountId);
@@ -48,14 +43,12 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
         }
     };
 
-    // Handle file selection
     const onFileSelect = (e) => {
         if (e.target.files && e.target.files.length > 0) {
             setSelectedFiles(Array.from(e.target.files));
         }
     };
 
-    // AI Generation
     const handleAiGenerate = async () => {
         if (!aiPrompt) return;
         setGenerating(true);
@@ -76,7 +69,6 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
         setShowAiModal(true);
     };
 
-    // Posting Logic
     const handlePost = async () => {
         if (!postText && uploadMethod === 'text') return;
         if (selectedAccounts.length === 0) return alert('Select at least one account');
@@ -90,6 +82,7 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
         try {
             let res;
             if (uploadMethod === 'file' && selectedFiles.length > 0) {
+                // Ensure file upload works as requested
                 res = await uploadAndPost(targetAccounts, postText, selectedFiles, []);
             } else if (uploadMethod === 'url' && mediaUrls.trim()) {
                 const urls = mediaUrls.split(',').map(u => u.trim()).filter(u => u);
@@ -114,76 +107,53 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
     };
 
     return (
-        <div className={`relative overflow-hidden rounded-[2.5rem] p-8 border transition-all duration-500 backdrop-blur-3xl shadow-2xl
+        <div className={`relative rounded-xl border transition-all duration-300 shadow-sm
             ${soloMode
-                ? 'bg-primary/5 border-primary/30 shadow-primary/20'
-                : 'bg-white/5 border-white/10 shadow-black'}`}>
-
-            {/* Solo Mode background decoration */}
-            {soloMode && (
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] -mr-48 -mt-48 animate-pulse"></div>
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px] -ml-32 -mb-32"></div>
-                </div>
-            )}
+                ? 'bg-indigo-50/50 border-indigo-200 dark:bg-indigo-900/10 dark:border-indigo-800'
+                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'}`}>
 
             {/* Header */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 relative z-10">
-                <div className="flex items-center gap-4">
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-500 transform rotate-3
-                        ${soloMode ? 'bg-primary scale-110' : 'bg-gradient-to-br from-slate-700 to-slate-900'}`}>
-                        <Send className={`w-7 h-7 text-white transition-all ${soloMode ? 'scale-110' : ''}`} />
+            <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${soloMode ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>
+                        <Send className="w-4 h-4" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight">
-                            {soloMode ? 'Solo Upload Engine' : 'Creation Studio'}
+                        <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
+                            {soloMode ? 'Broadcast Mode' : 'New Post'}
                         </h2>
-                        <p className="text-sm text-slate-500 font-medium">
-                            {soloMode ? 'Broadcasting to all nodes simultaneously' : 'Compose and target specific platforms'}
+                        <p className="text-xs text-slate-500">
+                            {soloMode ? 'Publishing to all channels' : 'Create and schedule content'}
                         </p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    {/* Solo Mode Toggle */}
+                <div className="flex items-center gap-2">
                     <button
                         onClick={handleSoloToggle}
-                        className={`group relative flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm transition-all border
+                        className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5
                         ${soloMode
-                                ? 'bg-primary/20 text-primary border-primary/40'
-                                : 'bg-white/5 text-slate-400 border-white/10 hover:border-white/20'}`}
+                                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300'
+                                : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'}`}
                     >
-                        <Zap className={`w-4 h-4 transition-all ${soloMode ? 'fill-primary animate-pulse' : 'group-hover:text-primary'}`} />
-                        Solo Mode
-                        <div className={`w-10 h-5 rounded-full p-1 transition-colors relative
-                            ${soloMode ? 'bg-primary' : 'bg-slate-800'}`}>
-                            <div className={`w-3 h-3 bg-white rounded-full transition-all 
-                                ${soloMode ? 'ml-5' : 'ml-0'}`} />
-                        </div>
+                        <Zap className="w-3.5 h-3.5" />
+                        {soloMode ? 'Broadcast On' : 'Broadcast Off'}
                     </button>
 
                     <button
                         onClick={openAiModal}
-                        className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-fuchsia-400 transition-all"
-                        title="AI Ghostwriter"
+                        className="p-1.5 text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-lg transition-colors"
+                        title="AI Assistant"
                     >
-                        <Sparkles className="w-5 h-5" />
+                        <Sparkles className="w-4 h-4" />
                     </button>
                 </div>
             </div>
 
             {/* Account Selector */}
             {accounts.length > 0 && (
-                <div className="mb-8 relative z-10">
-                    <div className="flex items-center justify-between mb-3">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Target Nodes</p>
-                        {soloMode && (
-                            <span className="text-[10px] font-bold text-primary uppercase tracking-widest animate-pulse flex items-center gap-1">
-                                <CheckCircle className="w-3 h-3" /> Global Casting Active
-                            </span>
-                        )}
-                    </div>
-                    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                         {accounts.map(acc => {
                             const isSelected = selectedAccounts.includes(acc.accountId);
                             return (
@@ -191,87 +161,46 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
                                     key={acc.accountId}
                                     onClick={() => !soloMode && onAccountToggle(acc.accountId)}
                                     disabled={soloMode}
-                                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all duration-300 text-sm whitespace-nowrap
+                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium border transition-all whitespace-nowrap
                                     ${isSelected
-                                            ? 'bg-primary/20 text-primary border-primary/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
-                                            : 'bg-white/5 text-slate-500 border-white/5 hover:bg-white/10 hover:text-slate-300'}
-                                    ${soloMode ? 'opacity-50 cursor-not-allowed scale-95' : 'hover:-translate-y-0.5'}`}
+                                            ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 shadow-sm'
+                                            : 'text-slate-500 border-transparent hover:bg-slate-200 dark:hover:bg-slate-700'}
+                                    ${soloMode ? 'opacity-75 cursor-default' : ''}`}
                                 >
-                                    <div className="w-2 h-2 rounded-full bg-current opacity-60"></div>
-                                    <span className="font-bold capitalize">{acc.platform}</span>
-                                    <span className="opacity-40 text-xs">@{acc.username || 'user'}</span>
+                                    <span className="capitalize">{acc.platform}</span>
+                                    {isSelected && <CheckCircle className="w-3 h-3" />}
                                 </button>
                             );
                         })}
-                        {!soloMode && (
-                            <button className="w-10 h-10 rounded-xl border border-dashed border-slate-700 hover:border-primary/50 hover:text-primary text-slate-500 flex items-center justify-center transition-all bg-white/5">
-                                <Plus className="w-5 h-5" />
-                            </button>
-                        )}
                     </div>
                 </div>
             )}
 
             {/* Content Area */}
-            <div className="space-y-6 relative z-10">
-                {/* Upload Method Tabs */}
-                <div className="flex gap-2 p-1.5 bg-black/40 border border-white/5 rounded-2xl w-fit">
-                    {UPLOAD_METHODS.map(method => (
-                        <button
-                            key={method.id}
-                            onClick={() => setUploadMethod(method.id)}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all border
-                            ${uploadMethod === method.id
-                                    ? 'bg-primary/20 text-primary border-primary/30 shadow-[0_0_20px_rgba(16,185,129,0.1)]'
-                                    : 'text-slate-500 border-transparent hover:text-slate-300 hover:bg-white/5'}`}
-                        >
-                            <method.icon className="w-3.5 h-3.5" />
-                            {method.label}
-                        </button>
-                    ))}
-                </div>
+            <div className="p-4 space-y-4">
+                <textarea
+                    value={postText}
+                    onChange={(e) => setPostText(e.target.value)}
+                    placeholder="What's on your mind?"
+                    className="w-full h-32 bg-transparent text-slate-900 dark:text-white placeholder-slate-400 resize-none focus:outline-none text-base"
+                />
 
-                {/* Text Input */}
-                <div className="relative group">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
-                    <textarea
-                        value={postText}
-                        onChange={(e) => setPostText(e.target.value)}
-                        placeholder={soloMode ? "Broadcasting to all your networks..." : "What's happening today?"}
-                        className={`relative w-full h-48 bg-black/30 border rounded-2xl p-6 text-lg focus:outline-none transition-all resize-none placeholder:text-slate-700
-                        ${soloMode ? 'border-primary/30' : 'border-white/10 focus:border-primary/50'}`}
-                    />
-                    <div className="absolute bottom-4 right-6 text-[10px] text-slate-700 font-bold uppercase tracking-widest">
-                        {postText.length} Characters
-                    </div>
-                </div>
-
-                {/* Media Inputs */}
-                {uploadMethod === 'url' && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="animate-fade-in"
-                    >
+                {/* Media Handling */}
+                <div className="space-y-3">
+                    {uploadMethod === 'url' && (
                         <input
                             type="text"
                             value={mediaUrls}
                             onChange={(e) => setMediaUrls(e.target.value)}
-                            placeholder="Enter image or video URLs (comma separated)"
-                            className="w-full bg-black/30 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-primary/50 transition-all placeholder:text-slate-700"
+                            placeholder="Paste image URL..."
+                            className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-sm border border-slate-200 dark:border-slate-700 focus:border-indigo-500 outline-none"
                         />
-                    </motion.div>
-                )}
+                    )}
 
-                {uploadMethod === 'file' && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="animate-fade-in group/upload"
-                    >
+                    {uploadMethod === 'file' && (
                         <div
                             onClick={() => fileInputRef.current?.click()}
-                            className="border-2 border-dashed border-white/10 hover:border-primary/50 hover:bg-primary/5 rounded-[2rem] p-12 text-center cursor-pointer transition-all duration-300 relative overflow-hidden"
+                            className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg p-6 text-center hover:border-indigo-400 cursor-pointer transition-colors"
                         >
                             <input
                                 type="file"
@@ -281,91 +210,93 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
                                 ref={fileInputRef}
                                 onChange={onFileSelect}
                             />
-                            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4 group-hover/upload:scale-110 transition-transform duration-500">
-                                <Upload className="w-8 h-8 text-slate-500 group-hover/upload:text-primary transition-colors" />
-                            </div>
-                            <p className="text-lg text-slate-300 font-bold tracking-tight">Drop files or click to forge</p>
-                            <p className="text-sm text-slate-500 mt-2 font-medium">
-                                {selectedFiles.length > 0
-                                    ? `${selectedFiles.length} nodes ready for transmission`
-                                    : 'High-res JPG, PNG, or MP4 up to 50MB'}
-                            </p>
-
+                            <Upload className="w-6 h-6 text-slate-400 mx-auto mb-2" />
+                            <p className="text-sm text-slate-500 font-medium">Click to upload images or video</p>
                             {selectedFiles.length > 0 && (
-                                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                                <div className="mt-2 flex flex-wrap justify-center gap-2">
                                     {selectedFiles.map((f, i) => (
-                                        <div key={i} className="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase">
+                                        <span key={i} className="px-2 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs rounded-md">
                                             {f.name}
-                                        </div>
+                                        </span>
                                     ))}
                                 </div>
                             )}
                         </div>
-                    </motion.div>
-                )}
+                    )}
+                </div>
 
-                {/* Action Bar */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-white/5">
-                    <div className="flex items-center gap-6">
-                        <button className="text-xs font-bold text-slate-500 hover:text-primary transition-colors flex items-center gap-2 uppercase tracking-widest">
-                            <Calendar className="w-4 h-4" /> Smart Queue
-                        </button>
-                        <div className="h-4 w-px bg-white/5"></div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">System Ready</span>
-                        </div>
+                {/* Footer Actions */}
+                <div className="flex items-center justify-between pt-2">
+                    <div className="flex gap-1">
+                        {UPLOAD_METHODS.map(method => (
+                            <button
+                                key={method.id}
+                                onClick={() => setUploadMethod(method.id)}
+                                className={`p-2 rounded-lg transition-colors
+                                ${uploadMethod === method.id
+                                        ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400'
+                                        : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                title={method.label}
+                            >
+                                <method.icon className="w-4 h-4" />
+                            </button>
+                        ))}
                     </div>
 
-                    <button
-                        onClick={handlePost}
-                        disabled={posting || (selectedAccounts.length === 0)}
-                        className={`relative group px-10 py-4 rounded-2xl font-bold shadow-2xl transition-all duration-300 transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden
-                        ${soloMode
-                                ? 'bg-primary text-white scale-105'
-                                : 'bg-white text-black hover:bg-slate-200'}`}
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                        <div className="flex items-center gap-3 relative z-10">
-                            {posting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className={`w-5 h-5 ${soloMode ? 'animate-bounce' : ''}`} />}
-                            {soloMode ? 'SOLO BROADCAST' : 'PUBLISH NOW'}
-                        </div>
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <span className="text-xs text-slate-400 hidden sm:inline">{postText.length} chars</span>
+                        <button
+                            onClick={handlePost}
+                            disabled={posting || selectedAccounts.length === 0}
+                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                        >
+                            {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                            {soloMode ? 'Broadcast' : 'Post'}
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Post Result Toast/Banner */}
-            {postResult && (
-                <div className={`absolute bottom-4 left-4 right-4 p-4 rounded-xl flex items-center gap-3 animate-fade-in-up border backdrop-blur-md shadow-2xl z-20 
-                    ${postResult.success ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300' : 'bg-red-500/10 border-red-500/20 text-red-300'}`}>
-                    {postResult.success ? <CheckCircle className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
-                    <p className="text-sm font-medium">{postResult.success ? 'Content published successfully!' : postResult.error}</p>
-                </div>
-            )}
+            {/* Result Notification */}
+            <AnimatePresence>
+                {postResult && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className={`absolute bottom-full left-0 right-0 mb-4 mx-4 p-3 rounded-lg shadow-lg border flex items-center gap-2 text-sm font-medium z-10
+                        ${postResult.success
+                                ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/50 dark:border-emerald-800 dark:text-emerald-300'
+                                : 'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/50 dark:border-red-800 dark:text-red-300'}`}
+                    >
+                        {postResult.success ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                        {postResult.success ? 'Posted successfully!' : postResult.error}
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* AI Modal */}
             {showAiModal && (
-                <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 rounded-2xl">
-                    <div className="w-full max-w-sm bg-slate-900 border border-white/10 rounded-2xl p-6 shadow-2xl">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-bold flex items-center gap-2">
-                                <Sparkles className="w-5 h-5 text-fuchsia-400" /> Ghostwriter AI
+                <div className="absolute inset-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 rounded-xl">
+                    <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-xl">
+                        <div className="flex justify-between items-center mb-3">
+                            <h3 className="text-sm font-semibold flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-amber-500" /> AI Assistant
                             </h3>
-                            <button onClick={() => setShowAiModal(false)} className="p-1 hover:bg-white/10 rounded-lg"><X className="w-4 h-4" /></button>
+                            <button onClick={() => setShowAiModal(false)}><X className="w-4 h-4 text-slate-400" /></button>
                         </div>
                         <textarea
                             value={aiPrompt}
                             onChange={(e) => setAiPrompt(e.target.value)}
-                            placeholder="e.g. Write a funny tweet about coffee..."
-                            className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-fuchsia-500/50 mb-4 resize-none"
+                            placeholder="What should I write about?"
+                            className="w-full h-24 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg text-sm mb-3 focus:outline-none resize-none"
                         />
                         <button
                             onClick={handleAiGenerate}
                             disabled={generating || !aiPrompt}
-                            className="w-full py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-xl text-white font-bold flex items-center justify-center gap-2"
+                            className="w-full py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
                         >
-                            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
-                            Generate Content
+                            {generating ? 'Generating...' : 'Generate Text'}
                         </button>
                     </div>
                 </div>
