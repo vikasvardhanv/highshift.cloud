@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import { getAccounts, getAuthUrl, disconnectAccount } from '../services/api';
 import {
     Facebook, Twitter, Instagram, Linkedin, Youtube,
-    Trash2, Plus, Zap, Cloud, Loader2, AtSign, Pin, MessageSquare, Music
+    Trash2, Plus, Loader2, AtSign, Globe
 } from 'lucide-react';
 
 const PLATFORMS = [
-    { id: 'twitter', name: 'Twitter / X', icon: Twitter, color: 'hover:text-sky-400' },
-    { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'hover:text-blue-500' },
-    { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'hover:text-pink-500' },
-    { id: 'linkedin', name: 'LinkedIn', icon: Linkedin, color: 'hover:text-blue-600' },
-    { id: 'youtube', name: 'YouTube', icon: Youtube, color: 'hover:text-red-500' },
-    { id: 'threads', name: 'Threads', icon: AtSign, color: 'hover:text-white' },
+    { id: 'twitter', name: 'Twitter / X', icon: Twitter, color: 'text-sky-500' },
+    { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'text-blue-600' },
+    { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'text-pink-600' },
+    { id: 'linkedin', name: 'LinkedIn', icon: Linkedin, color: 'text-blue-700' },
+    { id: 'youtube', name: 'YouTube', icon: Youtube, color: 'text-red-600' },
+    // { id: 'threads', name: 'Threads', icon: AtSign, color: 'text-black' },
 ];
 
 export default function Connections() {
@@ -53,109 +53,75 @@ export default function Connections() {
     }
 
     return (
-        <div className="space-y-10 animate-fade-in relative z-10 pb-20">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight mb-2">Connected Nodes</h1>
-                    <p className="text-slate-500 font-medium leading-relaxed max-w-xl">
-                        Manage your neural bridges across the social spectrum. Each node expands your reach in Solo Mode.
-                    </p>
-                </div>
-                <div className="flex items-center gap-3 px-5 py-2.5 bg-primary/10 border border-primary/20 rounded-2xl">
-                    <Zap className="w-4 h-4 text-primary animate-pulse" />
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">Solo Broadcast Ready</span>
-                </div>
+        <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
+            {/* Header */}
+            <div>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Connected Accounts</h1>
+                <p className="text-slate-500 dark:text-slate-400 mt-1">
+                    Connect your social media profiles to enable publishing and analytics.
+                </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* Add New Card - Refined */}
-                <div className="group relative overflow-hidden glass-card rounded-[2.5rem] border-dashed border-white/10 hover:border-primary/50 transition-all duration-500 p-10 flex flex-col items-center justify-center gap-8 min-h-[320px] bg-white/[0.02] hover:bg-white/[0.05]">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-opacity opacity-0 group-hover:opacity-100"></div>
+            {/* Available Platforms */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Existing Connected Accounts */}
+                {accounts.map(acc => {
+                    const platformCfg = PLATFORMS.find(p => p.id === acc.platform);
+                    const Icon = platformCfg?.icon || Globe;
 
-                    <div className="relative">
-                        <div className="w-20 h-20 rounded-[2rem] bg-primary/20 text-primary flex items-center justify-center shadow-2xl border border-primary/20 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
-                            <Plus className="w-10 h-10" />
-                        </div>
-                    </div>
-
-                    <div className="text-center">
-                        <h3 className="font-extrabold text-xl mb-2">Forge New Link</h3>
-                        <p className="text-xs text-slate-500 font-medium">Select a platform to authorize access</p>
-                    </div>
-
-                    <div className="flex gap-3 flex-wrap justify-center relative z-10">
-                        {PLATFORMS.map(p => (
-                            <button
-                                key={p.id}
-                                onClick={() => handleConnect(p.id)}
-                                className="w-12 h-12 rounded-2xl bg-slate-900 border border-white/5 hover:border-primary/50 transition-all flex items-center justify-center group/btn hover:-translate-y-1"
-                                title={p.name}
-                            >
-                                <p.icon className="w-5 h-5 text-slate-500 group-hover/btn:text-white transition-colors" />
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Account Cards */}
-                {loading ? (
-                    <div className="col-span-full py-20 flex flex-col items-center justify-center gap-4">
-                        <Loader2 className="animate-spin text-primary w-12 h-12" />
-                        <p className="text-xs font-bold text-slate-600 uppercase tracking-widest">Scanning Network...</p>
-                    </div>
-                ) : (
-                    accounts.map(acc => {
-                        const platformCfg = PLATFORMS.find(p => p.id === acc.platform);
-                        const Icon = platformCfg?.icon || Zap;
-
-                        return (
-                            <div key={acc.accountId} className="group relative glass-card p-8 rounded-[2.5rem] bg-white/[0.02] border-white/5 hover:border-white/10 transition-all duration-500 overflow-hidden shadow-2xl">
-                                {/* Trash Icon - Refined */}
-                                <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-20">
-                                    <button
-                                        onClick={() => handleDisconnect(acc.platform, acc.accountId)}
-                                        className="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center border border-red-500/20"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
+                    return (
+                        <div key={acc.accountId} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm flex flex-col justify-between h-48">
+                            <div className="flex justify-between items-start">
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center ${platformCfg?.color || 'text-slate-600'}`}>
+                                        <Icon className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold text-slate-900 dark:text-white">{acc.displayName}</h3>
+                                        <p className="text-xs text-slate-500">@{acc.username}</p>
+                                    </div>
                                 </div>
-
-                                <div className="flex flex-col items-center text-center">
-                                    <div className="relative mb-6">
-                                        <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-slate-900 via-slate-950 to-black border border-white/10 flex items-center justify-center shadow-inner relative z-10 group-hover:scale-105 transition-transform duration-500">
-                                            <Icon className="w-10 h-10 text-white" />
-                                        </div>
-                                        <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full scale-110 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    </div>
-
-                                    <div className="mb-6">
-                                        <h3 className="font-extrabold text-xl truncate w-full px-4 mb-1">{acc.displayName}</h3>
-                                        <p className="text-sm text-slate-500 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-                                            @{acc.username || acc.platform}
-                                        </p>
-                                    </div>
-
-                                    <div className="w-full relative py-3 rounded-2xl bg-emerald-500/5 text-emerald-500 text-[10px] font-bold uppercase tracking-[0.2em] border border-emerald-500/10 shadow-inner group-hover:bg-emerald-500/10 group-hover:border-emerald-500/20 transition-all">
-                                        <span className="flex items-center justify-center gap-2">
-                                            <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                                            Secure Connection Active
-                                        </span>
-                                    </div>
-
-                                    <div className="mt-4 flex gap-2">
-                                        <div className="px-3 py-1 bg-white/5 rounded-full text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                                            {acc.platform}
-                                        </div>
-                                        <div className="px-3 py-1 bg-primary/10 rounded-full text-[9px] font-bold text-primary uppercase tracking-widest">
-                                            Solo Capable
-                                        </div>
-                                    </div>
+                                <div className="px-2 py-1 bg-emerald-50 text-emerald-600 rounded-full text-xs font-medium">
+                                    Connected
                                 </div>
                             </div>
-                        );
-                    })
-                )}
+
+                            <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                                <span className="text-xs text-slate-400 font-medium uppercase tracking-wide">{acc.platform}</span>
+                                <button
+                                    onClick={() => handleDisconnect(acc.platform, acc.accountId)}
+                                    className="text-red-500 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                    title="Disconnect"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
+
+                {/* Connect New Buttons */}
+                {/* Group "Connect New" into a section if we have many, or listing them as available cards */}
+            </div>
+
+            <div className="pt-8 border-t border-slate-200 dark:border-slate-800">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Add New Connection</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {PLATFORMS.map(p => (
+                        <button
+                            key={p.id}
+                            onClick={() => handleConnect(p.id)}
+                            className="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 hover:shadow-md transition-all rounded-xl group"
+                        >
+                            <div className={`w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform ${p.color}`}>
+                                <p.icon className="w-6 h-6" />
+                            </div>
+                            <span className="font-medium text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                                {p.name}
+                            </span>
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
     );

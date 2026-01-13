@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Linkedin, Twitter, ArrowRight, Zap, ShieldCheck } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Twitter, ArrowRight, CheckCircle, Globe } from 'lucide-react';
 import { getAuthUrl } from '../../services/api';
 
 export default function Onboarding({ onComplete }) {
@@ -14,113 +14,81 @@ export default function Onboarding({ onComplete }) {
     };
 
     return (
-        <div className="max-w-4xl mx-auto py-20 px-4 animate-fade-in relative z-10">
-            {/* Onboarding Card */}
-            <div className="glass-card rounded-[3.5rem] bg-white/[0.02] border-white/5 shadow-2xl overflow-hidden p-12 md:p-20 relative group">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -mr-48 -mt-48 transition-colors duration-1000 group-hover:bg-primary/15"></div>
-                <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/5 rounded-full blur-[100px] -ml-40 -mb-40 group-hover:bg-blue-500/10"></div>
+        <div className="max-w-3xl mx-auto py-20 px-4 animate-in fade-in duration-700">
+            <div className="text-center mb-12">
+                <div className="w-16 h-16 bg-indigo-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-600/20 mb-6">
+                    <span className="text-white font-bold text-3xl">H</span>
+                </div>
+                <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+                    Welcome to HighShift
+                </h1>
+                <p className="text-lg text-slate-500 dark:text-slate-400 max-w-lg mx-auto">
+                    Connect your social accounts to start publishing, scheduling, and analyzing your content from one place.
+                </p>
+            </div>
 
-                {/* Progress Indicators */}
-                <div className="mb-20">
-                    <div className="flex items-center justify-between mb-6">
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Neural Link Status</span>
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] flex items-center gap-2">
-                            Initialization Matrix Active
-                        </span>
-                    </div>
-                    <div className="flex gap-3">
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className="h-1.5 flex-1 bg-primary rounded-full shadow-[0_0_15px_rgba(34,197,94,0.3)] animate-pulse" />
-                        ))}
-                        {[4, 5, 6].map(i => (
-                            <div key={i} className="h-1.5 flex-1 bg-white/5 rounded-full" />
-                        ))}
-                    </div>
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 shadow-sm">
+                <h2 className="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-6">
+                    Select a platform to connect
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <ConnectButton
+                        platform="Twitter / X"
+                        icon={Twitter}
+                        description="Schedule tweets & threads"
+                        onClick={() => handleConnect('twitter')}
+                    />
+                    <ConnectButton
+                        platform="LinkedIn"
+                        icon={Linkedin}
+                        description="Publish professional updates"
+                        onClick={() => handleConnect('linkedin')}
+                    />
+                    <ConnectButton
+                        platform="Facebook"
+                        icon={Facebook}
+                        description="Manage pages & groups"
+                        onClick={() => handleConnect('facebook')}
+                    />
+                    <ConnectButton
+                        platform="Instagram"
+                        icon={Instagram}
+                        description="Share photos & reels"
+                        onClick={() => handleConnect('instagram')}
+                    />
                 </div>
 
-                <div className="max-w-2xl relative z-10">
-                    <h1 className="text-5xl md:text-6xl font-black text-white mb-8 tracking-tighter leading-tight bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-slate-500">
-                        Establish Network Node
-                    </h1>
-                    <p className="text-lg text-slate-500 font-medium mb-12 leading-relaxed">
-                        Authorize a transmission vector to begin synchronizing your presence across the highshift network.
-                    </p>
-
-                    {/* Platform Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-16">
-                        <ConnectButton
-                            platform="Facebook"
-                            icon={Facebook}
-                            color="bg-[#1877F2]"
-                            hoverShadow="shadow-blue-500/20"
-                            onClick={() => handleConnect('facebook')}
-                        />
-                        <ConnectButton
-                            platform="Instagram"
-                            icon={Instagram}
-                            color="bg-gradient-to-br from-[#833ab4] via-[#fd1d1d] to-[#fcb045]"
-                            hoverShadow="shadow-rose-500/20"
-                            onClick={() => handleConnect('instagram')}
-                        />
-                        <ConnectButton
-                            platform="LinkedIn"
-                            icon={Linkedin}
-                            color="bg-[#0A66C2]"
-                            hoverShadow="shadow-blue-700/20"
-                            onClick={() => handleConnect('linkedin')}
-                        />
-                        <ConnectButton
-                            platform="X Global"
-                            icon={Twitter}
-                            color="bg-black"
-                            hoverShadow="shadow-white/5"
-                            onClick={() => handleConnect('twitter')}
-                        />
-                    </div>
-
-                    <div className="flex flex-col items-center gap-6">
-                        <div className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                            Enterprise OAuth 2.0 Security Protocols Active
-                        </div>
-                    </div>
+                <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center text-xs text-slate-400">
+                    <CheckCircle className="w-3 h-3 mr-1.5 text-emerald-500" />
+                    Secure OAuth 2.0 Connection
                 </div>
             </div>
 
-            {/* Support/Info below */}
-            <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-10 px-12 opacity-40 hover:opacity-100 transition-opacity duration-700">
-                <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                        <ArrowRight className="w-5 h-5 text-slate-400" />
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">Synchronized Protocols</p>
-                        <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest mt-0.5">Automated Scheduling / Cross-Platform Sync</p>
-                    </div>
-                </div>
-                <div className="flex gap-10">
-                    <span className="text-[10px] uppercase tracking-[0.3em] font-black text-slate-500 hover:text-primary cursor-pointer transition-colors">Digital Autonomy</span>
-                    <span className="text-[10px] uppercase tracking-[0.3em] font-black text-slate-500 hover:text-primary cursor-pointer transition-colors">Neural Policy</span>
-                </div>
+            <div className="mt-8 text-center">
+                <button onClick={onComplete} className="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
+                    Skip for now (Demo Mode)
+                </button>
             </div>
         </div>
     );
 }
 
-function ConnectButton({ platform, icon: Icon, color, hoverShadow, onClick }) {
+function ConnectButton({ platform, icon: Icon, description, onClick }) {
     return (
         <button
             onClick={onClick}
-            className={`
-                group relative flex items-center justify-center gap-4 px-8 py-5 ${color} text-white rounded-[1.5rem] 
-                text-sm font-black uppercase tracking-[0.15em] transition-all duration-500 
-                hover:scale-105 active:scale-95 shadow-2xl ${hoverShadow}
-                overflow-hidden
-            `}
+            className="flex items-start gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 hover:shadow-md transition-all text-left group bg-slate-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-900"
         >
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <Icon className="w-5 h-5 flex-shrink-0 relative z-10 group-hover:scale-110 transition-transform" />
-            <span className="relative z-10">{platform}</span>
+            <div className="p-2.5 bg-white dark:bg-slate-800 rounded-lg shadow-sm group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/20 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                <Icon className="w-6 h-6" />
+            </div>
+            <div>
+                <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    {platform}
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">{description}</p>
+            </div>
         </button>
     );
 }
