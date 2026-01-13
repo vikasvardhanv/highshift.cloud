@@ -11,7 +11,8 @@ import {
     Settings,
     LogOut,
     Network,
-    Zap
+    Zap,
+    User
 } from 'lucide-react';
 
 const NAV_ITEMS = [
