@@ -13,7 +13,7 @@ import {
     Activity,
     MoreHorizontal
 } from 'lucide-react';
-import { getAccounts, getProfiles } from '../services/api';
+import { getAccounts, getProfiles, getDashboardAnalytics } from '../services/api'; // Added getDashboardAnalytics
 import Onboarding from '../components/dashboard/Onboarding';
 import Composer from '../components/dashboard/Composer';
 
@@ -21,29 +21,54 @@ export default function Dashboard() {
     const [accounts, setAccounts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [token] = useState(localStorage.getItem('token'));
-
-    // Stats (Mock data for now, ideally fetched)
-    const stats = [
-        { title: 'Total Reach', value: '24.8k', change: '+12%', isPositive: true, icon: Users },
-        { title: 'Engagement', value: '4.2%', change: '+0.8%', isPositive: true, icon: Activity },
-        { title: 'Scheduled', value: '12', change: 'Next: 2h', isPositive: true, icon: Calendar },
-        { title: 'Published', value: '128', change: '+24', isPositive: true, icon: Send },
-    ];
+    // State for real analytics data
+    const [dashboardData, setDashboardData] = useState({
+        stats: [
+            { title: 'Total Reach', value: '0', change: '0%', isPositive: true, icon: Users },
+            { title: 'Engagement', value: '0%', change: '0%', isPositive: true, icon: Activity },
+            { title: 'Scheduled', value: '0', change: 'Next: --', isPositive: true, icon: Calendar },
+            { title: 'Published', value: '0', change: '+0', isPositive: true, icon: Send },
+        ],
+        recent_activity: []
+    });
 
     useEffect(() => {
         if (token) {
-            loadAccounts();
+            loadData();
         } else {
             setLoading(false);
         }
     }, [token]);
 
-    const loadAccounts = async () => {
+    const loadData = async () => {
         try {
-            const data = await getAccounts();
-            setAccounts(data?.accounts || []);
+            // Parallel fetch for speed
+            const [accountsData, analyticsData] = await Promise.all([
+                getAccounts(),
+                getDashboardAnalytics()
+            ]);
+
+            setAccounts(accountsData?.accounts || []);
+
+            if (analyticsData) {
+                // Map icon strings back to components if needed, or rely on consistent naming
+                // The backend returns "Users", "Activity" etc strings for icons. 
+                // We need to map them to the actual imported Logic components.
+                const iconMap = { 'Users': Users, 'Activity': Activity, 'Calendar': Calendar, 'CheckCircle': Send, 'Send': Send, 'Zap': Zap };
+
+                const statsWithIcons = (analyticsData.stats || []).map(s => ({
+                    ...s,
+                    icon: iconMap[s.icon] || Users
+                }));
+
+                setDashboardData({
+                    stats: statsWithIcons.length ? statsWithIcons : dashboardData.stats,
+                    recent_activity: analyticsData.recent_activity || []
+                });
+            }
+
         } catch (err) {
-            console.error(err);
+            console.error("Failed to load dashboard data", err);
         } finally {
             setLoading(false);
         }
@@ -58,7 +83,7 @@ export default function Dashboard() {
     }
 
     if (accounts.length === 0) {
-        return <Onboarding onComplete={loadAccounts} />;
+        return <Onboarding onComplete={loadData} />;
     }
 
     return (
@@ -70,7 +95,7 @@ export default function Dashboard() {
                     <p className="text-slate-500 dark:text-slate-400 mt-1">Overview of your social performance.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="btn-secondary flex items-center gap-2">
+                    <button onClick={loadData} className="btn-secondary flex items-center gap-2">
                         <RefreshCw className="w-4 h-4" /> Refresh
                     </button>
                     <button className="btn-primary flex items-center gap-2">
@@ -81,7 +106,7 @@ export default function Dashboard() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, i) => (
+                {dashboardData.stats.map((stat, i) => (
                     <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-xl shadow-sm">
                         <div className="flex items-center justify-between mb-4">
                             <span className="p-2 bg-indigo-50 dark:bg-slate-800 rounded-lg text-indigo-600 dark:text-indigo-400">
@@ -135,10 +160,17 @@ export default function Dashboard() {
                             <button className="text-slate-400 hover:text-slate-600"><MoreHorizontal className="w-4 h-4" /></button>
                         </div>
                         <div className="space-y-6">
-                            <ActivityItem title="Post Published" desc="LinkedIn • 2m ago" />
-                            <ActivityItem title="Scheduled Thread" desc="Twitter • 1h ago" />
-                            <ActivityItem title="New Follower" desc="Instagram • 3h ago" />
-                            <ActivityItem title="Engagement Spike" desc="Facebook • 5h ago" />
+                            {dashboardData.recent_activity.length > 0 ? (
+                                dashboardData.recent_activity.map(activity => (
+                                    <ActivityItem
+                                        key={activity.id}
+                                        title={activity.title}
+                                        desc={activity.description}
+                                    />
+                                ))
+                            ) : (
+                                <p className="text-sm text-slate-500">No recent activity.</p>
+                            )}
                         </div>
                         <button className="w-full mt-6 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                             View All History

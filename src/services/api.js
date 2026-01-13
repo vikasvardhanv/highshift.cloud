@@ -37,6 +37,11 @@ export const getAccounts = async () => {
     return res.data;
 };
 
+export const getDashboardAnalytics = async () => {
+    const res = await api.get('/analytics/dashboard/summary');
+    return res.data;
+};
+
 export const disconnectAccount = async (platform, accountId) => {
     await api.delete(`/linked-accounts/disconnect/${platform}/${accountId}`);
 };

@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import {
     Send, Sparkles, X, Zap, Link2,
-    FileText, Upload, CheckCircle, AlertCircle, Loader2, Plus, Image as ImageIcon
+    FileText, Upload, CheckCircle, AlertCircle, Loader2, Plus, Image as ImageIcon,
+    Calendar, Clock, ChevronDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { postContent, uploadAndPost, generateContent } from '../../services/api';
+import { postContent, uploadAndPost, generateContent, schedulePost, uploadMedia } from '../../services/api';
 
 const UPLOAD_METHODS = [
     { id: 'text', label: 'Text', icon: FileText },
@@ -23,7 +24,23 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
     const [aiPrompt, setAiPrompt] = useState('');
     const [generating, setGenerating] = useState(false);
     const [soloMode, setSoloMode] = useState(false);
+
+    // Scheduling State
+    const [isScheduling, setIsScheduling] = useState(false);
+    const [scheduledDate, setScheduledDate] = useState('');
+    const [scheduledTime, setScheduledTime] = useState('');
+
     const fileInputRef = useRef(null);
+
+    // Set default schedule time to tomorrow 10am if not set
+    useEffect(() => {
+        if (isScheduling && !scheduledDate) {
+            const tmr = new Date();
+            tmr.setDate(tmr.getDate() + 1);
+            setScheduledDate(tmr.toISOString().split('T')[0]);
+            setScheduledTime("10:00");
+        }
+    }, [isScheduling]);
 
     // Sync solo mode with account selection
     useEffect(() => {
@@ -81,14 +98,32 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
 
         try {
             let res;
-            if (uploadMethod === 'file' && selectedFiles.length > 0) {
-                // Ensure file upload works as requested
-                res = await uploadAndPost(targetAccounts, postText, selectedFiles, []);
-            } else if (uploadMethod === 'url' && mediaUrls.trim()) {
-                const urls = mediaUrls.split(',').map(u => u.trim()).filter(u => u);
-                res = await uploadAndPost(targetAccounts, postText, [], urls);
+
+            // Handle Scheduling
+            if (isScheduling) {
+                const finalDate = new Date(`${scheduledDate}T${scheduledTime}:00`);
+                let finalMediaUrls = [];
+
+                // Upload files first if needed
+                if (uploadMethod === 'file' && selectedFiles.length > 0) {
+                    finalMediaUrls = await uploadMedia(selectedFiles);
+                } else if (uploadMethod === 'url' && mediaUrls.trim()) {
+                    finalMediaUrls = mediaUrls.split(',').map(u => u.trim()).filter(u => u);
+                }
+
+                res = await schedulePost(targetAccounts, postText, finalDate.toISOString(), finalMediaUrls);
+
             } else {
-                res = await postContent(targetAccounts, postText);
+                // Immediate Posting
+                if (uploadMethod === 'file' && selectedFiles.length > 0) {
+                    // Ensure file upload works as requested
+                    res = await uploadAndPost(targetAccounts, postText, selectedFiles, []);
+                } else if (uploadMethod === 'url' && mediaUrls.trim()) {
+                    const urls = mediaUrls.split(',').map(u => u.trim()).filter(u => u);
+                    res = await uploadAndPost(targetAccounts, postText, [], urls);
+                } else {
+                    res = await postContent(targetAccounts, postText);
+                }
             }
 
             setPostResult({ success: true, data: res });
@@ -96,6 +131,7 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
             setMediaUrls('');
             setSelectedFiles([]);
             setSoloMode(false);
+            setIsScheduling(false);
             if (onSuccess) onSuccess();
 
             setTimeout(() => setPostResult(null), 5000);
@@ -226,33 +262,72 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
                 </div>
 
                 {/* Footer Actions */}
-                <div className="flex items-center justify-between pt-2">
-                    <div className="flex gap-1">
-                        {UPLOAD_METHODS.map(method => (
-                            <button
-                                key={method.id}
-                                onClick={() => setUploadMethod(method.id)}
-                                className={`p-2 rounded-lg transition-colors
-                                ${uploadMethod === method.id
-                                        ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400'
-                                        : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
-                                title={method.label}
-                            >
-                                <method.icon className="w-4 h-4" />
-                            </button>
-                        ))}
+                <div className="flex flex-col gap-4 pt-2">
+                    {/* Scheduling UI */}
+                    <div className="flex items-center justify-between">
+                        <button
+                            onClick={() => setIsScheduling(!isScheduling)}
+                            className={`flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors
+                                ${isScheduling
+                                    ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
+                                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                        >
+                            <Calendar className="w-3.5 h-3.5" />
+                            {isScheduling ? 'Schedule On' : 'Schedule for later'}
+                            {isScheduling && <ChevronDown className="w-3 h-3 ml-1" />}
+                        </button>
+
+                        {isScheduling && (
+                            <div className="flex gap-2 animate-in fade-in slide-in-from-left-2">
+                                <input
+                                    type="date"
+                                    value={scheduledDate}
+                                    onChange={e => setScheduledDate(e.target.value)}
+                                    className="px-2 py-1 text-xs border border-slate-200 rounded-md outline-none focus:border-indigo-500"
+                                />
+                                <input
+                                    type="time"
+                                    value={scheduledTime}
+                                    onChange={e => setScheduledTime(e.target.value)}
+                                    className="px-2 py-1 text-xs border border-slate-200 rounded-md outline-none focus:border-indigo-500"
+                                />
+                            </div>
+                        )}
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <span className="text-xs text-slate-400 hidden sm:inline">{postText.length} chars</span>
-                        <button
-                            onClick={handlePost}
-                            disabled={posting || selectedAccounts.length === 0}
-                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
-                        >
-                            {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                            {soloMode ? 'Broadcast' : 'Post'}
-                        </button>
+                    <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
+                        <div className="flex gap-1">
+                            {UPLOAD_METHODS.map(method => (
+                                <button
+                                    key={method.id}
+                                    onClick={() => setUploadMethod(method.id)}
+                                    className={`p-2 rounded-lg transition-colors
+                                    ${uploadMethod === method.id
+                                            ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400'
+                                            : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                    title={method.label}
+                                >
+                                    <method.icon className="w-4 h-4" />
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <span className="text-xs text-slate-400 hidden sm:inline">{postText.length} chars</span>
+                            <button
+                                onClick={handlePost}
+                                disabled={posting || selectedAccounts.length === 0 || (isScheduling && (!scheduledDate || !scheduledTime))}
+                                className={`px-4 py-2 text-white text-sm font-medium rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors
+                                    ${isScheduling ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-slate-900 hover:bg-slate-800'}`}
+                            >
+                                {posting ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    isScheduling ? <Clock className="w-4 h-4" /> : <Send className="w-4 h-4" />
+                                )}
+                                {posting ? 'Processing...' : (isScheduling ? 'Schedule' : (soloMode ? 'Broadcast' : 'Post'))}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -270,12 +345,12 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
                                 : 'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/50 dark:border-red-800 dark:text-red-300'}`}
                     >
                         {postResult.success ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-                        {postResult.success ? 'Posted successfully!' : postResult.error}
+                        {postResult.success ? (isScheduling ? 'Scheduled successfully!' : 'Posted successfully!') : postResult.error}
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* AI Modal */}
+            {/* AI Modal (Unchanged) */}
             {showAiModal && (
                 <div className="absolute inset-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 rounded-xl">
                     <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-xl">
