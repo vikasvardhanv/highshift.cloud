@@ -14,6 +14,7 @@ import ApiKeys from './pages/ApiKeys';
 import AuthCallback from './pages/AuthCallback';
 import TermsOfUse from './pages/TermsOfUse';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import DataDeletion from './pages/DataDeletion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Pricing from './pages/Pricing';
@@ -82,6 +83,7 @@ function App() {
 
         <Route path="/terms" element={<PublicLayout><TermsOfUse /></PublicLayout>} />
         <Route path="/privacy" element={<PublicLayout><PrivacyPolicy /></PublicLayout>} />
+        <Route path="/data-deletion" element={<PublicLayout><DataDeletion /></PublicLayout>} />
         <Route path="/pricing" element={<LandingLayout><Pricing /></LandingLayout>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Login />} />
