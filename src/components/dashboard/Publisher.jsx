@@ -101,8 +101,11 @@ export default function Publisher() {
                 const res = await uploadMedia(formData); // Expects { url, ... }
 
                 // Update with real URL
+                // Backend returns { urls: ['...'] }
+                const realUrl = res.urls && res.urls.length > 0 ? res.urls[0] : res.url;
+
                 setMediaFiles(prev => prev.map(item =>
-                    item.id === tempId ? { ...item, url: res.url, uploading: false } : item
+                    item.id === tempId ? { ...item, url: realUrl, uploading: false } : item
                 ));
             } catch (err) {
                 console.error('Upload failed', err);

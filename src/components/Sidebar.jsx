@@ -15,7 +15,8 @@ import {
 } from 'lucide-react';
 
 const NAV_ITEMS = [
-    { label: 'Connections', path: '/profiles', icon: Network },
+    { label: 'Connections', path: '/connections', icon: Network },
+    { label: 'Profiles', path: '/profiles', icon: User },
     { label: 'Publishing', path: '/publishing', icon: LayoutDashboard },
     { label: 'Schedule', path: '/schedule', icon: Calendar },
     { label: 'Media Library', path: '/media', icon: Image },

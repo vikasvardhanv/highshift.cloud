@@ -98,7 +98,7 @@ function App() {
         <Route path="/publishing" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
         <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} /> {/* Legacy redirect/alias */}
         <Route path="/profiles" element={<DashboardLayout><Profiles /></DashboardLayout>} />
-        <Route path="/connections" element={<DashboardLayout><Profiles /></DashboardLayout>} />
+        <Route path="/connections" element={<DashboardLayout><Connections /></DashboardLayout>} />
         <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
         <Route path="/analytics" element={<DashboardLayout><Analytics /></DashboardLayout>} />
         <Route path="/schedule" element={<DashboardLayout><ScheduleCalendar /></DashboardLayout>} />
