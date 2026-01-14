@@ -2,10 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Image as ImageIcon, Video, Calendar, MapPin, Smile, MoreHorizontal,
-    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User, Plus
+    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User, Plus, FolderOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAccounts, uploadMedia, postContent, schedulePost, getProfiles } from '../../services/api';
+import { getAccounts, uploadMedia, postContent, schedulePost, getProfiles, getMediaLibrary } from '../../services/api';
 
 export default function Publisher() {
     const navigate = useNavigate();
@@ -24,6 +24,11 @@ export default function Publisher() {
 
     // Notifications
     const [toast, setToast] = useState(null);
+
+    // Media Library Modal
+    const [showLibrary, setShowLibrary] = useState(false);
+    const [libraryMedia, setLibraryMedia] = useState([]);
+    const [libraryLoading, setLibraryLoading] = useState(false);
 
     const fileInputRef = useRef(null);
 
@@ -120,6 +125,32 @@ export default function Publisher() {
 
     const removeMedia = (id) => {
         setMediaFiles(mediaFiles.filter(m => m.id !== id));
+    };
+
+    const openLibrary = async () => {
+        setShowLibrary(true);
+        if (libraryMedia.length === 0) {
+            setLibraryLoading(true);
+            try {
+                const data = await getMediaLibrary();
+                setLibraryMedia(data || []);
+            } catch (err) {
+                console.error('Failed to load library', err);
+            } finally {
+                setLibraryLoading(false);
+            }
+        }
+    };
+
+    const selectFromLibrary = (item) => {
+        // Add media from library to current selection
+        setMediaFiles(prev => [...prev, {
+            id: item.id,
+            url: item.url,
+            type: item.type,
+            uploading: false
+        }]);
+        setShowLibrary(false);
     };
 
     const handleSubmit = async (isDraft = false) => {
@@ -290,6 +321,7 @@ export default function Publisher() {
                             />
                             <ToolbarBtn icon={ImageIcon} label="Photo" onClick={() => fileInputRef.current?.click()} />
                             <ToolbarBtn icon={Video} label="Video" onClick={() => fileInputRef.current?.click()} />
+                            <ToolbarBtn icon={FolderOpen} label="Library" onClick={openLibrary} />
                             <div className="w-px h-6 bg-slate-200 dark:bg-slate-800 mx-2" />
                             <ToolbarBtn icon={Smile} label="Emoji" />
                             <ToolbarBtn icon={MapPin} label="Location" />
@@ -447,6 +479,67 @@ export default function Publisher() {
                     </p>
                 </div>
             </div>
+
+            {/* Media Library Modal */}
+            <AnimatePresence>
+                {showLibrary && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setShowLibrary(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] overflow-hidden"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Select from Library</h3>
+                                <button onClick={() => setShowLibrary(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                                    <X className="w-5 h-5 text-slate-500" />
+                                </button>
+                            </div>
+                            <div className="p-4 overflow-y-auto max-h-[60vh]">
+                                {libraryLoading ? (
+                                    <div className="flex justify-center py-12">
+                                        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                                    </div>
+                                ) : libraryMedia.length === 0 ? (
+                                    <div className="text-center py-12 text-slate-500">
+                                        <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                                        <p>No media in library yet.</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                                        {libraryMedia.map(item => (
+                                            <button
+                                                key={item.id}
+                                                onClick={() => selectFromLibrary(item)}
+                                                className="relative pt-[100%] rounded-xl overflow-hidden border-2 border-transparent hover:border-indigo-500 transition-all group"
+                                            >
+                                                <div className="absolute inset-0">
+                                                    {item.type === 'video' ? (
+                                                        <video src={item.url} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <img src={item.url} alt={item.filename} className="w-full h-full object-cover" />
+                                                    )}
+                                                    <div className="absolute inset-0 bg-indigo-500/0 group-hover:bg-indigo-500/20 transition-colors flex items-center justify-center">
+                                                        <Plus className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Toast Notification */}
             <AnimatePresence>

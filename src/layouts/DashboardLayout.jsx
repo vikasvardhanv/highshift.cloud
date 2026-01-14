@@ -90,7 +90,7 @@ export default function DashboardLayout({ children }) {
                                     <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg py-1 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                                         <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800">
                                             <p className="text-sm font-semibold text-slate-900 dark:text-white">{user?.name}</p>
-                                            <p className="text-xs text-slate-500 truncate">{user?.email || 'admin@highshift.cloud'}</p>
+                                            <p className="text-xs text-slate-500 truncate">{user?.email || ''}</p>
                                         </div>
 
                                         <div className="py-1">
