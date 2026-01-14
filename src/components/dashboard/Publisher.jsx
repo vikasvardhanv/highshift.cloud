@@ -104,6 +104,10 @@ export default function Publisher() {
                 // Backend returns { urls: ['...'] }
                 const realUrl = res.urls && res.urls.length > 0 ? res.urls[0] : res.url;
 
+                if (!realUrl) {
+                    throw new Error("No URL returned from server");
+                }
+
                 setMediaFiles(prev => prev.map(item =>
                     item.id === tempId ? { ...item, url: realUrl, uploading: false } : item
                 ));
@@ -132,7 +136,7 @@ export default function Publisher() {
 
         setIsSubmitting(true);
         try {
-            const mediaUrls = mediaFiles.map(m => m.url);
+            const mediaUrls = mediaFiles.map(m => m.url).filter(u => u); // Filter valid URLs just in case
 
             // Construct payload matching backend PostAccount model { platform, accountId }
             const accountsPayload = selectedAccounts.map(accId => {
