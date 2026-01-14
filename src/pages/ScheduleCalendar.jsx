@@ -3,7 +3,7 @@ import {
     ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MoreVertical,
     Edit2, Trash2, X, Plus, TrendingUp, Users, MessageSquare, Activity
 } from 'lucide-react';
-import { getScheduleCalendar, getAccounts, getActivityLog } from '../services/api';
+import { getScheduleCalendar, getAccounts, getActivityLog, getProfiles } from '../services/api';
 import Composer from '../components/dashboard/Composer';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -18,12 +18,14 @@ export default function ScheduleCalendar() {
     const [showComposer, setShowComposer] = useState(false);
     const [loading, setLoading] = useState(true);
     const [accounts, setAccounts] = useState([]);
+    const [profiles, setProfiles] = useState([]);
     const [selectedAccounts, setSelectedAccounts] = useState([]);
     const [recentActivity, setRecentActivity] = useState([]);
 
     useEffect(() => {
         loadSchedule();
         loadAccounts();
+        loadProfiles();
         loadActivity();
 
         // Real-time polling for activity
@@ -33,6 +35,15 @@ export default function ScheduleCalendar() {
 
         return () => clearInterval(interval);
     }, []);
+
+    const loadProfiles = async () => {
+        try {
+            const data = await getProfiles();
+            setProfiles(data || []);
+        } catch (err) {
+            console.error("Failed to load profiles", err);
+        }
+    };
 
     const loadActivity = async () => {
         try {
@@ -274,6 +285,7 @@ export default function ScheduleCalendar() {
                                     onSuccess={() => { setShowComposer(false); loadSchedule(); }}
                                     selectedAccounts={selectedAccounts}
                                     accounts={accounts}
+                                    profiles={profiles}
                                     onAccountToggle={handleAccountToggle}
                                 />
                             </div>

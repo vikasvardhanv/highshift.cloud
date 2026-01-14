@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User, Plus, FolderOpen, Info, Trash2, Link,
-    CheckCircle2
+    CheckCircle2, Image as ImageIcon, Video, Smile, MapPin, MoreHorizontal, Calendar
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAccounts, uploadMedia, postContent, schedulePost, getProfiles, getMediaLibrary, deleteMedia } from '../../services/api';

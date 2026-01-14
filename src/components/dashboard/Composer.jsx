@@ -14,7 +14,7 @@ const UPLOAD_METHODS = [
     { id: 'file', label: 'Media', icon: ImageIcon },
 ];
 
-export default function Composer({ accounts = [], selectedAccounts = [], onAccountToggle, onSuccess }) {
+export default function Composer({ accounts = [], selectedAccounts = [], profiles = [], onAccountToggle, onSuccess }) {
     const [postText, setPostText] = useState('');
     const [posting, setPosting] = useState(false);
     const [uploadMethod, setUploadMethod] = useState('text');
@@ -22,6 +22,7 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [postResult, setPostResult] = useState(null);
     const [showAiModal, setShowAiModal] = useState(false);
+    const [showAccountSelector, setShowAccountSelector] = useState(false);
     const [aiPrompt, setAiPrompt] = useState('');
     const [generating, setGenerating] = useState(false);
     const [soloMode, setSoloMode] = useState(false);
@@ -195,29 +196,126 @@ export default function Composer({ accounts = [], selectedAccounts = [], onAccou
                 </div>
             </div>
 
-            {/* Account Selector */}
+            {/* Account Selector (Dropdown) */}
             {accounts.length > 0 && (
-                <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                        {accounts.map(acc => {
-                            const isSelected = selectedAccounts.includes(acc.accountId);
-                            return (
-                                <button
-                                    key={acc.accountId}
-                                    onClick={() => !soloMode && onAccountToggle(acc.accountId)}
-                                    disabled={soloMode}
-                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium border transition-all whitespace-nowrap
-                                    ${isSelected
-                                            ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 shadow-sm'
-                                            : 'text-slate-500 border-transparent hover:bg-slate-200 dark:hover:bg-slate-700'}
-                                    ${soloMode ? 'opacity-75 cursor-default' : ''}`}
-                                >
-                                    <span className="capitalize">{acc.platform}</span>
-                                    {isSelected && <CheckCircle className="w-3 h-3" />}
-                                </button>
-                            );
-                        })}
-                    </div>
+                <div className="relative px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 z-20">
+                    <button
+                        onClick={() => !soloMode && setShowAccountSelector(!showAccountSelector)}
+                        disabled={soloMode}
+                        className={`w-full flex items-center justify-between px-3 py-2 bg-white dark:bg-slate-800 border ${showAccountSelector ? 'border-indigo-500 ring-1 ring-indigo-500' : 'border-slate-200 dark:border-slate-700'} rounded-lg text-sm transition-all ${soloMode ? 'opacity-75 cursor-default' : 'hover:border-indigo-300 dark:hover:border-indigo-700'}`}
+                    >
+                        <div className="flex items-center gap-2 overflow-hidden">
+                            <span className="font-medium text-slate-700 dark:text-slate-300">
+                                {selectedAccounts.length === 0 ? 'Select Accounts' : `${selectedAccounts.length} accounts selected`}
+                            </span>
+                            {selectedAccounts.length > 0 && (
+                                <div className="flex -space-x-1.5">
+                                    {accounts.filter(a => selectedAccounts.includes(a.accountId)).slice(0, 5).map(a => (
+                                        <div key={a.accountId} className="w-5 h-5 rounded-full border border-white dark:border-slate-800 flex items-center justify-center bg-indigo-100 text-[10px] text-indigo-600 font-bold uppercase" title={a.platform}>
+                                            {a.platform[0]}
+                                        </div>
+                                    ))}
+                                    {selectedAccounts.length > 5 && (
+                                        <div className="w-5 h-5 rounded-full border border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-700 text-[9px] flex items-center justify-center text-slate-500">
+                                            +{selectedAccounts.length - 5}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${showAccountSelector ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    <AnimatePresence>
+                        {showAccountSelector && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 5 }}
+                                className="absolute top-full left-0 right-0 mt-1 mx-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-h-64 overflow-y-auto z-30"
+                            >
+                                {profiles.length > 0 ? (
+                                    // Group by Profile
+                                    profiles.map(profile => {
+                                        const profileAccounts = accounts.filter(a => a.profileId === profile.id);
+                                        if (profileAccounts.length === 0) return null;
+                                        return (
+                                            <div key={profile.id} className="border-b border-slate-100 dark:border-slate-800 last:border-0">
+                                                <div className="px-3 py-2 bg-slate-50 dark:bg-slate-800/50 text-xs font-bold text-slate-500 uppercase tracking-wider sticky top-0">
+                                                    {profile.name}
+                                                </div>
+                                                <div className="p-2 space-y-1">
+                                                    {profileAccounts.map(acc => {
+                                                        const isSelected = selectedAccounts.includes(acc.accountId);
+                                                        return (
+                                                            <button
+                                                                key={acc.accountId}
+                                                                onClick={() => onAccountToggle(acc.accountId)}
+                                                                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${isSelected ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className={`capitalize font-medium ${isSelected ? 'text-indigo-600 dark:text-indigo-400' : ''}`}>{acc.platform}</span>
+                                                                    <span className="text-xs text-slate-400">@{acc.username}</span>
+                                                                </div>
+                                                                {isSelected && <CheckCircle className="w-4 h-4 text-indigo-500" />}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    // Fallback if no profiles loaded (Flat list)
+                                    <div className="p-2 space-y-1">
+                                        {accounts.map(acc => {
+                                            const isSelected = selectedAccounts.includes(acc.accountId);
+                                            return (
+                                                <button
+                                                    key={acc.accountId}
+                                                    onClick={() => onAccountToggle(acc.accountId)}
+                                                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${isSelected ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`capitalize font-medium ${isSelected ? 'text-indigo-600 dark:text-indigo-400' : ''}`}>{acc.platform}</span>
+                                                        <span className="text-xs text-slate-400">@{acc.username}</span>
+                                                    </div>
+                                                    {isSelected && <CheckCircle className="w-4 h-4 text-indigo-500" />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                                {/* Handle Unassigned Accounts */}
+                                {profiles.length > 0 && accounts.filter(a => !a.profileId).length > 0 && (
+                                    <div className="border-b border-slate-100 dark:border-slate-800 last:border-0">
+                                        <div className="px-3 py-2 bg-slate-50 dark:bg-slate-800/50 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                            Unassigned
+                                        </div>
+                                        <div className="p-2 space-y-1">
+                                            {accounts.filter(a => !a.profileId).map(acc => {
+                                                const isSelected = selectedAccounts.includes(acc.accountId);
+                                                return (
+                                                    <button
+                                                        key={acc.accountId}
+                                                        onClick={() => onAccountToggle(acc.accountId)}
+                                                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${isSelected ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`capitalize font-medium ${isSelected ? 'text-indigo-600 dark:text-indigo-400' : ''}`}>{acc.platform}</span>
+                                                            <span className="text-xs text-slate-400">@{acc.username}</span>
+                                                        </div>
+                                                        {isSelected && <CheckCircle className="w-4 h-4 text-indigo-500" />}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             )}
 

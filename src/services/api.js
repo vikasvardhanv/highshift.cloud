@@ -169,7 +169,6 @@ export const getActivityLog = async () => {
 
 
 // ============ NEW: User Profiles ============
-// ============ NEW: User Profiles ============
 export const getProfiles = async () => {
     const res = await api.get('/profiles');
     return res.data.profiles;
