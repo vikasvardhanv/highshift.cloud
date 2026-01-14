@@ -19,6 +19,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Pricing from './pages/Pricing';
 import Login from './pages/Login';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 import DashboardLayout from './layouts/DashboardLayout';
 import SmartInbox from './pages/SmartInbox';
 import DeveloperApi from './pages/DeveloperApi';
@@ -89,7 +91,10 @@ function App() {
         <Route path="/data-deletion" element={<PublicLayout><DataDeletion /></PublicLayout>} />
         <Route path="/pricing" element={<LandingLayout><Pricing /></LandingLayout>} />
         <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Auth Callback */}
         <Route path="/auth/callback" element={<PublicLayout><AuthCallback /></PublicLayout>} />
