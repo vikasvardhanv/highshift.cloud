@@ -150,6 +150,11 @@ export const uploadMedia = async (files) => {
     return res.data.urls;
 };
 
+export const deleteMedia = async (mediaId) => {
+    const res = await api.delete(`/post/media/${mediaId}`);
+    return res.data;
+};
+
 // ============ NEW: Calendar View ============
 export const getScheduleCalendar = async () => {
     const res = await api.get('/schedule/calendar');

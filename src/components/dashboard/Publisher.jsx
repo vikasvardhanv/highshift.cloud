@@ -2,10 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Image as ImageIcon, Video, Calendar, MapPin, Smile, MoreHorizontal,
-    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User, Plus, FolderOpen
+    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User, Plus, FolderOpen, Info, Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAccounts, uploadMedia, postContent, schedulePost, getProfiles, getMediaLibrary } from '../../services/api';
+import { getAccounts, uploadMedia, postContent, schedulePost, getProfiles, getMediaLibrary, deleteMedia } from '../../services/api';
 
 export default function Publisher() {
     const navigate = useNavigate();
@@ -83,9 +83,30 @@ export default function Publisher() {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
 
+        // Reset input immediately so same file can be selected again
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+
+        // Vercel Serverless Limit check (approx 4.5MB safe limit)
+        const MAX_SIZE = 4.5 * 1024 * 1024;
+
+        const validFiles = files.filter(f => {
+            if (f.size > MAX_SIZE) {
+                setToast({
+                    type: 'error',
+                    message: `File ${f.name} is too large (>4.5MB). Please use a URL for large videos.`
+                });
+                return false;
+            }
+            return true;
+        });
+
+        if (validFiles.length === 0) return;
+
         // Upload immediately to get URL
         // In a real app we might show progress bars here
-        for (const file of files) {
+        for (const file of validFiles) {
             const tempId = Math.random().toString(36).substr(2, 9);
             const isVideo = file.type.startsWith('video/');
             const previewUrl = URL.createObjectURL(file);
@@ -151,6 +172,20 @@ export default function Publisher() {
             uploading: false
         }]);
         setShowLibrary(false);
+    };
+
+    const handleDeleteFromLibrary = async (e, id) => {
+        e.stopPropagation();
+        if (!window.confirm("Are you sure you want to delete this file?")) return;
+
+        try {
+            await deleteMedia(id);
+            setLibraryMedia(prev => prev.filter(m => m.id !== id));
+            setToast({ type: 'success', message: 'File deleted.' });
+        } catch (err) {
+            console.error("Delete failed", err);
+            setToast({ type: 'error', message: 'Failed to delete file.' });
+        }
     };
 
     const handleSubmit = async (isDraft = false) => {
@@ -322,6 +357,22 @@ export default function Publisher() {
                             <ToolbarBtn icon={ImageIcon} label="Photo" onClick={() => fileInputRef.current?.click()} />
                             <ToolbarBtn icon={Video} label="Video" onClick={() => fileInputRef.current?.click()} />
                             <ToolbarBtn icon={FolderOpen} label="Library" onClick={openLibrary} />
+
+                            {/* Video Guidelines Info */}
+                            <div className="relative group ml-1">
+                                <Info className="w-4 h-4 text-slate-400 cursor-help" />
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-slate-800 text-white text-xs p-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl">
+                                    <p className="font-bold mb-1">Video Guidelines:</p>
+                                    <ul className="list-disc pl-3 space-y-1 text-slate-300">
+                                        <li>Max size: 4.5MB (Direct) or use URL</li>
+                                        <li>Ratio: 16:9, 1:1, or 9:16</li>
+                                        <li>Twitter: Max 140s</li>
+                                        <li>Instagram: Max 60s (Feed), 15m (Reels)</li>
+                                    </ul>
+                                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+                                </div>
+                            </div>
+
                             <div className="w-px h-6 bg-slate-200 dark:bg-slate-800 mx-2" />
                             <ToolbarBtn icon={Smile} label="Emoji" />
                             <ToolbarBtn icon={MapPin} label="Location" />
@@ -530,6 +581,14 @@ export default function Publisher() {
                                                     <div className="absolute inset-0 bg-indigo-500/0 group-hover:bg-indigo-500/20 transition-colors flex items-center justify-center">
                                                         <Plus className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                                     </div>
+                                                </div>
+                                                {/* Delete Button */}
+                                                <div
+                                                    onClick={(e) => handleDeleteFromLibrary(e, item.id)}
+                                                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-10"
+                                                    title="Delete"
+                                                >
+                                                    <Trash2 className="w-3 h-3" />
                                                 </div>
                                             </button>
                                         ))}
