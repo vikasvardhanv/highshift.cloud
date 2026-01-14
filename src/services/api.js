@@ -5,7 +5,7 @@ import axios from 'axios';
 // - If running in production (served by backend), default to relative path '' (same origin)
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : '');
 
-const api = axios.create({
+export const api = axios.create({
     baseURL: API_URL,
 });
 
