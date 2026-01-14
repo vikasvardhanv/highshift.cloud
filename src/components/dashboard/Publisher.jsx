@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Image as ImageIcon, Video, Calendar, MapPin, Smile, MoreHorizontal,
-    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User, Plus, FolderOpen, Info, Trash2, Link
+    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User, Plus, FolderOpen, Info, Trash2, Link,
+    CheckCircle2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAccounts, uploadMedia, postContent, schedulePost, getProfiles, getMediaLibrary, deleteMedia } from '../../services/api';
@@ -326,22 +326,47 @@ export default function Publisher() {
                             <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
                                 {accounts.map(acc => {
                                     const isSelected = selectedAccounts.includes(acc.accountId);
+                                    let platformColor = 'bg-slate-500';
+                                    if (acc.platform === 'twitter') platformColor = 'text-[#1DA1F2]';
+                                    if (acc.platform === 'facebook') platformColor = 'text-[#1877F2]';
+                                    if (acc.platform === 'linkedin') platformColor = 'text-[#0A66C2]';
+                                    if (acc.platform === 'instagram') platformColor = 'text-[#E4405F]';
+                                    if (acc.platform === 'youtube') platformColor = 'text-[#FF0000]';
+
                                     return (
                                         <button
                                             key={acc.accountId}
                                             onClick={() => toggleAccount(acc.accountId)}
                                             className={`
-                                                flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium transition-all whitespace-nowrap
+                                                flex items-center justify-between p-3 rounded-xl border transition-all min-w-[220px] max-w-[220px] text-left
                                                 ${isSelected
-                                                    ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-700/50 dark:text-indigo-300'
-                                                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-700'}
+                                                    ? 'bg-sky-50 border-sky-400 dark:bg-sky-900/30 dark:border-sky-500/50 shadow-sm'
+                                                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-750'}
                                             `}
                                         >
-                                            <div className="w-5 h-5 rounded-full bg-slate-200 overflow-hidden">
-                                                <img src={acc.rawProfile?.data?.profile_image_url || `https://ui-avatars.com/api/?name=${acc.username}`} className="w-full h-full object-cover" />
+                                            <div className="flex items-center gap-3">
+                                                {/* Icon */}
+                                                <div className={`flex-shrink-0 ${platformColor}`}>
+                                                    <SocialIcon platform={acc.platform} className="w-6 h-6" />
+                                                </div>
+
+                                                {/* Text Info */}
+                                                <div className="flex flex-col overflow-hidden">
+                                                    <span className={`text-sm font-bold truncate ${isSelected ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
+                                                        {acc.username.startsWith('@') ? acc.username : `@${acc.username}`}
+                                                    </span>
+                                                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                                                        {acc.platform}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            {acc.username}
-                                            {isSelected && <Check className="w-3 h-3 ml-1" />}
+
+                                            {/* Selection Indicator */}
+                                            {isSelected && (
+                                                <div className="flex-shrink-0 text-sky-500">
+                                                    <CheckCircle2 className="w-5 h-5 fill-current" />
+                                                </div>
+                                            )}
                                         </button>
                                     )
                                 })}
@@ -752,4 +777,44 @@ function ToolbarBtn({ icon: Icon, label, onClick }) {
             <Icon className="w-5 h-5" />
         </button>
     )
+}
+
+function SocialIcon({ platform, className = "w-5 h-5" }) {
+    switch (platform.toLowerCase()) {
+        case 'twitter':
+        case 'x':
+            return (
+                <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+            );
+        case 'facebook':
+            return (
+                <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036c-2.148 0-2.971.956-2.971 3.594v.377h4.945l-1.037 3.667h-3.908v7.98h-4.843Z" />
+                </svg>
+            );
+        case 'instagram':
+            return (
+                <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+                    <path fillRule="evenodd" d="M12.31 4.75c1.891 0 2.126.008 2.872.042 3.44.156 5.037 1.769 5.2 5.286.035.765.042 1.003.042 2.91 0 1.905-.007 2.14-.042 2.898-.163 3.513-1.758 5.126-5.2 5.286-.746.033-.981.041-2.872.041-1.894 0-2.128-.008-2.874-.041-3.468-.157-5.06-1.79-5.2-5.286-.035-.758-.042-.993-.042-2.898 0-1.907.007-2.145.042-2.91.14-3.518 1.732-5.13 5.2-5.286.746-.034.98-.042 2.874-.042ZM12.31 2.25c-2.738 0-3.085.01-4.161.059-4.885.222-7.627 3-7.842 7.925C.256 11.298.25 11.64.25 14.39c0 2.75.006 3.092.057 4.156.215 4.925 2.957 7.703 7.842 7.925 1.076.049 1.423.059 4.161.059 2.741 0 3.087-.01 4.163-.059 4.887-.222 7.629-3 7.846-7.925.047-1.064.053-1.406.053-4.156 0-2.75-.006-3.092-.053-4.156-.217-4.925-2.959-7.703-7.846-7.925-1.076-.049-1.422-.059-4.163-.059Z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M12.31 8.351a4.663 4.663 0 1 0 0 9.326 4.663 4.663 0 0 0 0-9.326Zm0-2.5a7.163 7.163 0 1 1 0 14.326 7.163 7.163 0 0 1 0-14.326Z" clipRule="evenodd" />
+                    <path d="M20.245 7.172a1.666 1.666 0 1 1-3.333 0 1.666 1.666 0 0 1 3.333 0Z" />
+                </svg>
+            );
+        case 'linkedin':
+            return (
+                <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                </svg>
+            );
+        case 'youtube':
+            return (
+                <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+            );
+        default:
+            return <Globe className={className} />;
+    }
 }
