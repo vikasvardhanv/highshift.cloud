@@ -57,9 +57,10 @@ export default function ScheduleCalendar() {
     const loadAccounts = async () => {
         try {
             const data = await getAccounts();
-            setAccounts(data || []);
-            if (data && data.length > 0) {
-                setSelectedAccounts(data.map(a => a.accountId));
+            setAccounts(data.accounts || []);
+            if (data.accounts && data.accounts.length > 0) {
+                // Pre-select all
+                setSelectedAccounts(data.accounts.map(a => a.accountId));
             }
         } catch (err) {
             console.error("Failed to load accounts", err);
