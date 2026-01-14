@@ -96,13 +96,11 @@ export default function Publisher() {
 
             try {
                 // Upload to backend
-                const formData = new FormData();
-                formData.append('file', file);
-                const res = await uploadMedia(formData); // Expects { url, ... }
+                const res = await uploadMedia([file]);
 
                 // Update with real URL
-                // Backend returns { urls: ['...'] }
-                const realUrl = res.urls && res.urls.length > 0 ? res.urls[0] : res.url;
+                // uploadMedia returns the array of URLs directly
+                const realUrl = res && res.length > 0 ? res[0] : null;
 
                 if (!realUrl) {
                     throw new Error("No URL returned from server");
