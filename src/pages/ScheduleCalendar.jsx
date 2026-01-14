@@ -3,7 +3,7 @@ import {
     ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MoreVertical,
     Edit2, Trash2, X, Plus, TrendingUp, Users, MessageSquare, Activity
 } from 'lucide-react';
-import { getScheduleCalendar, getAccounts } from '../services/api';
+import { getScheduleCalendar, getAccounts, getActivityLog } from '../services/api';
 import Composer from '../components/dashboard/Composer';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -19,11 +19,29 @@ export default function ScheduleCalendar() {
     const [loading, setLoading] = useState(true);
     const [accounts, setAccounts] = useState([]);
     const [selectedAccounts, setSelectedAccounts] = useState([]);
+    const [recentActivity, setRecentActivity] = useState([]);
 
     useEffect(() => {
         loadSchedule();
         loadAccounts();
+        loadActivity();
+
+        // Real-time polling for activity
+        const interval = setInterval(() => {
+            loadActivity();
+        }, 30000); // 30 seconds
+
+        return () => clearInterval(interval);
     }, []);
+
+    const loadActivity = async () => {
+        try {
+            const data = await getActivityLog();
+            setRecentActivity(data || []);
+        } catch (err) {
+            console.error("Failed to load activity", err);
+        }
+    };
 
     const loadAccounts = async () => {
         try {
@@ -175,40 +193,50 @@ export default function ScheduleCalendar() {
             <div className="w-80 shrink-0 hidden xl:flex flex-col gap-6 p-1">
                 <div className="flex items-center justify-between">
                     <h2 className="text-lg font-bold text-slate-900 dark:text-white">Recent Activity</h2>
-                    <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button onClick={loadActivity} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Refresh">
                         <MoreVertical className="w-4 h-4 text-slate-400" />
                     </button>
                 </div>
 
-                <div className="space-y-4">
-                    <ActivityCard
-                        icon={<TrendingUp className="w-4 h-4 text-emerald-500" />}
-                        title="Post Published"
-                        platform="LinkedIn"
-                        time="2m ago"
-                        accent="emerald"
-                    />
-                    <ActivityCard
-                        icon={<Clock className="w-4 h-4 text-blue-500" />}
-                        title="Scheduled Thread"
-                        platform="Twitter"
-                        time="1h ago"
-                        accent="blue"
-                    />
-                    <ActivityCard
-                        icon={<Users className="w-4 h-4 text-purple-500" />}
-                        title="New Follower"
-                        platform="Instagram"
-                        time="3h ago"
-                        accent="purple"
-                    />
-                    <ActivityCard
-                        icon={<Activity className="w-4 h-4 text-amber-500" />}
-                        title="Engagement Spike"
-                        platform="Facebook"
-                        time="5h ago"
-                        accent="amber"
-                    />
+                <div className="space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto scrollbar-hide">
+                    {recentActivity.length > 0 ? (
+                        recentActivity.map((log) => {
+                            let icon = <Activity className="w-4 h-4 text-slate-500" />;
+                            let accent = 'blue';
+
+                            if (log.type === 'success') {
+                                icon = <TrendingUp className="w-4 h-4 text-emerald-500" />;
+                                accent = 'emerald';
+                            } else if (log.type === 'error') {
+                                icon = <Activity className="w-4 h-4 text-red-500" />;
+                                accent = 'amber'; // amber context for errors? or define red
+                            }
+
+                            if (log.platform === 'Twitter') {
+                                accent = 'blue';
+                            } else if (log.platform === 'Instagram') {
+                                accent = 'purple';
+                            } else if (log.platform === 'Facebook') {
+                                accent = 'blue'; // Facebook blue similar to twitter or specific
+                            }
+
+                            return (
+                                <ActivityCard
+                                    key={log._id || log.id}
+                                    icon={icon}
+                                    title={log.title}
+                                    platform={log.platform || 'System'}
+                                    time={formatTimeAgo(log.time)}
+                                    accent={accent}
+                                />
+                            )
+                        })
+                    ) : (
+                        <div className="text-center py-10 text-slate-500">
+                            <Activity className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                            <p className="text-sm">No recent activity</p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="mt-auto p-6 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden group cursor-pointer">

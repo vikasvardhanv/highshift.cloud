@@ -161,6 +161,13 @@ export const getScheduleCalendar = async () => {
     return res.data.calendar;
 };
 
+export const getActivityLog = async () => {
+    const res = await api.get('/activity/recent');
+    return res.data.activity;
+};
+
+
+
 // ============ NEW: User Profiles ============
 // ============ NEW: User Profiles ============
 export const getProfiles = async () => {
