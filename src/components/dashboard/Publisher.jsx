@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Image as ImageIcon, Video, Calendar, MapPin, Smile, MoreHorizontal,
-    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User, Plus, FolderOpen, Info, Trash2
+    X, ChevronDown, Check, Globe, Clock, Send, Loader2, AlertCircle, User, Plus, FolderOpen, Info, Trash2, Link
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAccounts, uploadMedia, postContent, schedulePost, getProfiles, getMediaLibrary, deleteMedia } from '../../services/api';
@@ -29,6 +29,10 @@ export default function Publisher() {
     const [showLibrary, setShowLibrary] = useState(false);
     const [libraryMedia, setLibraryMedia] = useState([]);
     const [libraryLoading, setLibraryLoading] = useState(false);
+
+    // URL Input State
+    const [showUrlInput, setShowUrlInput] = useState(false);
+    const [urlInputValue, setUrlInputValue] = useState('');
 
     const fileInputRef = useRef(null);
 
@@ -161,6 +165,31 @@ export default function Publisher() {
                 setLibraryLoading(false);
             }
         }
+    };
+
+    const handleAddUrl = () => {
+        if (!urlInputValue) return;
+
+        let type = 'image';
+        const lowerUrl = urlInputValue.toLowerCase();
+        if (lowerUrl.match(/\.(mp4|mov|avi|mkv|webm)$/)) {
+            type = 'video';
+        } else if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be') || lowerUrl.includes('vimeo')) {
+            // Note: External embeds might need special handling, but treating as video for now
+            type = 'video';
+        }
+
+        const tempId = Math.random().toString(36).substr(2, 9);
+        setMediaFiles(prev => [...prev, {
+            id: tempId,
+            url: urlInputValue,
+            type: type,
+            uploading: false,
+            isUrl: true
+        }]);
+
+        setUrlInputValue('');
+        setShowUrlInput(false);
     };
 
     const selectFromLibrary = (item) => {
@@ -357,6 +386,7 @@ export default function Publisher() {
                             <ToolbarBtn icon={ImageIcon} label="Photo" onClick={() => fileInputRef.current?.click()} />
                             <ToolbarBtn icon={Video} label="Video" onClick={() => fileInputRef.current?.click()} />
                             <ToolbarBtn icon={FolderOpen} label="Library" onClick={openLibrary} />
+                            <ToolbarBtn icon={Link} label="Link" onClick={() => setShowUrlInput(true)} />
 
                             {/* Video Guidelines Info */}
                             <div className="relative group ml-1">
@@ -600,6 +630,53 @@ export default function Publisher() {
                 )}
             </AnimatePresence>
 
+
+
+            {/* URL Input Modal */}
+            <AnimatePresence>
+                {showUrlInput && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setShowUrlInput(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full p-6"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Add Media from URL</h3>
+                            <input
+                                type="text"
+                                value={urlInputValue}
+                                onChange={(e) => setUrlInputValue(e.target.value)}
+                                placeholder="https://example.com/image.jpg"
+                                className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 mb-4 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                autoFocus
+                            />
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={() => setShowUrlInput(false)}
+                                    className="px-4 py-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleAddUrl}
+                                    className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold"
+                                >
+                                    Add Media
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Toast Notification */}
             <AnimatePresence>
                 {toast && (
@@ -615,7 +692,7 @@ export default function Publisher() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     );
 }
 
