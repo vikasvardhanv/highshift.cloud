@@ -24,7 +24,7 @@ const NAV_ITEMS = [
     { label: 'Analytics', path: '/analytics', icon: BarChart2 },
     { label: 'Smart Inbox', path: '/inbox', icon: MessageSquare },
     { label: 'Brand Kit', path: '/brand', icon: Palette },
-    { label: 'AI Studio', path: '/ai', icon: Zap },
+    { label: 'HighShift AI', path: '/ai', icon: Zap },
     { label: 'Developer API', path: '/developer', icon: PenTool },
     { label: 'Settings', path: '/settings', icon: Settings },
 ];
