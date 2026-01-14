@@ -172,11 +172,13 @@ export default function Publisher() {
 
         let type = 'image';
         const lowerUrl = urlInputValue.toLowerCase();
+        let isEmbed = false;
+
         if (lowerUrl.match(/\.(mp4|mov|avi|mkv|webm)$/)) {
             type = 'video';
         } else if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be') || lowerUrl.includes('vimeo')) {
-            // Note: External embeds might need special handling, but treating as video for now
             type = 'video';
+            isEmbed = true;
         }
 
         const tempId = Math.random().toString(36).substr(2, 9);
@@ -185,11 +187,27 @@ export default function Publisher() {
             url: urlInputValue,
             type: type,
             uploading: false,
-            isUrl: true
+            isUrl: true,
+            isEmbed: isEmbed
         }]);
 
         setUrlInputValue('');
         setShowUrlInput(false);
+    };
+
+    const getEmbedUrl = (url) => {
+        if (!url) return '';
+        // YouTube
+        const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+        if (ytMatch && ytMatch[1]) {
+            return `https://www.youtube.com/embed/${ytMatch[1]}`;
+        }
+        // Vimeo
+        const vimeoMatch = url.match(/(?:vimeo\.com\/)([0-9]+)/);
+        if (vimeoMatch && vimeoMatch[1]) {
+            return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+        }
+        return url;
     };
 
     const selectFromLibrary = (item) => {
@@ -229,7 +247,16 @@ export default function Publisher() {
 
         setIsSubmitting(true);
         try {
-            const mediaUrls = mediaFiles.map(m => m.url).filter(u => u); // Filter valid URLs just in case
+            // Separate actual media files (imgs/mp4s) from Rich Embeds (YouTube)
+            // Twitter/etc cannot "upload" a YouTube link as a file. We must append it to body.
+            const mediaToUpload = mediaFiles.filter(m => !m.isEmbed).map(m => m.url);
+            const embedLinks = mediaFiles.filter(m => m.isEmbed).map(m => m.url);
+
+            // Append embed links to content if present
+            let finalContent = content;
+            if (embedLinks.length > 0) {
+                finalContent += "\n\n" + embedLinks.join("\n");
+            }
 
             // Construct payload matching backend PostAccount model { platform, accountId }
             const accountsPayload = selectedAccounts.map(accId => {
@@ -240,12 +267,10 @@ export default function Publisher() {
             // Basic logic: If date/time set, schedule it. Otherwise post now.
             if (scheduleDate && scheduleTime) {
                 const isoDateTime = new Date(`${scheduleDate}T${scheduleTime}`).toISOString();
-                // schedulePost(accounts, content, scheduledFor, media)
-                await schedulePost(accountsPayload, content, isoDateTime, mediaUrls);
+                await schedulePost(accountsPayload, finalContent, isoDateTime, mediaToUpload);
                 setToast({ type: 'success', message: 'Post scheduled successfully!' });
             } else {
-                // postContent(accounts, content, media)
-                await postContent(accountsPayload, content, mediaUrls);
+                await postContent(accountsPayload, finalContent, mediaToUpload);
                 setToast({ type: 'success', message: 'Posted successfully!' });
             }
 
@@ -356,8 +381,21 @@ export default function Publisher() {
                                             <Loader2 className="w-6 h-6 text-white animate-spin" />
                                         </div>
                                     )}
+                                    {media.uploading && (
+                                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+                                            <Loader2 className="w-6 h-6 text-white animate-spin" />
+                                        </div>
+                                    )}
                                     {media.type === 'video' ? (
-                                        <video src={media.url} className="w-full h-full object-cover" />
+                                        media.isEmbed ? (
+                                            <iframe
+                                                src={getEmbedUrl(media.url)}
+                                                className="w-full h-full object-cover pointer-events-none"
+                                                title="Embed"
+                                            />
+                                        ) : (
+                                            <video src={media.url} className="w-full h-full object-cover" />
+                                        )
                                     ) : (
                                         <img src={media.url} className="w-full h-full object-cover" />
                                     )}
@@ -520,7 +558,15 @@ export default function Publisher() {
                             {mediaFiles.length > 0 ? (
                                 <div className="aspect-square bg-slate-100 dark:bg-slate-950 relative">
                                     {mediaFiles[0].type === 'video' ? (
-                                        <video src={mediaFiles[0].url} className="w-full h-full object-cover" />
+                                        mediaFiles[0].isEmbed ? (
+                                            <iframe
+                                                src={getEmbedUrl(mediaFiles[0].url)}
+                                                className="w-full h-full object-cover"
+                                                title="Preview"
+                                            />
+                                        ) : (
+                                            <video src={mediaFiles[0].url} className="w-full h-full object-cover" />
+                                        )
                                     ) : (
                                         <img src={mediaFiles[0].url} className="w-full h-full object-cover" />
                                     )}
