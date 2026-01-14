@@ -493,14 +493,14 @@ export default function Publisher() {
                                     exit={{ height: 0, opacity: 0 }}
                                     className="overflow-hidden"
                                 >
-                                    <div className="pt-4 flex flex-col sm:flex-row gap-4">
+                                    <div className="pt-4 flex flex-col sm:flex-row gap-4 items-end">
                                         <div className="flex-1">
                                             <label className="text-xs font-bold text-slate-500 mb-1 block">Date</label>
                                             <input
                                                 type="date"
                                                 value={scheduleDate}
                                                 onChange={(e) => setScheduleDate(e.target.value)}
-                                                className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm"
+                                                className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                                             />
                                         </div>
                                         <div className="flex-1">
@@ -509,12 +509,23 @@ export default function Publisher() {
                                                 type="time"
                                                 value={scheduleTime}
                                                 onChange={(e) => setScheduleTime(e.target.value)}
-                                                className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm"
+                                                className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                                             />
                                         </div>
+                                        <button
+                                            onClick={() => {
+                                                setScheduleDate('');
+                                                setScheduleTime('');
+                                                setShowSchedule(false);
+                                            }}
+                                            className="px-3 py-2.5 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-600 dark:bg-slate-800 dark:hover:bg-red-900/20 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors flex items-center justify-center"
+                                            title="Clear & Cancel Schedule"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
                                     </div>
                                     {scheduleDate && scheduleTime && (
-                                        <div className="flex items-center gap-2 mt-3 text-xs text-indigo-500 font-medium bg-indigo-50 dark:bg-indigo-500/10 p-2 rounded-lg">
+                                        <div className="flex items-center gap-2 mt-3 text-xs text-indigo-500 font-medium bg-indigo-50 dark:bg-indigo-500/10 p-2 rounded-lg border border-indigo-100 dark:border-indigo-500/20">
                                             <Clock className="w-3 h-3" />
                                             Will be posted on {new Date(`${scheduleDate}T${scheduleTime}`).toLocaleString()}
                                         </div>
@@ -530,11 +541,18 @@ export default function Publisher() {
                         </button>
                         <button
                             onClick={() => handleSubmit()}
-                            disabled={isSubmitting}
-                            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-600/20 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            disabled={isSubmitting || (showSchedule && (!scheduleDate !== !scheduleTime))} // Disable if partially filled
+                            className={`px-6 py-2.5 text-white text-sm font-bold rounded-xl shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] active:scale-[0.98]
+                                ${(showSchedule && scheduleDate && scheduleTime)
+                                    ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/20'
+                                    : 'bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 shadow-slate-900/10'}
+                            `}
                         >
-                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                            {scheduleDate && scheduleTime ? 'Schedule' : 'Publish Now'}
+                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : ((showSchedule && scheduleDate && scheduleTime) ? <Clock className="w-4 h-4" /> : <Send className="w-4 h-4" />)}
+                            {isSubmitting
+                                ? 'Processing...'
+                                : ((showSchedule && scheduleDate && scheduleTime) ? 'Schedule Post' : 'Publish Now')
+                            }
                         </button>
                     </div>
                 </div>
