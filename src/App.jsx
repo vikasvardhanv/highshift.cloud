@@ -7,7 +7,7 @@ import Analytics from './pages/Analytics';
 import Schedule from './pages/Schedule';
 import ScheduleCalendar from './pages/ScheduleCalendar';
 import BrandKit from './pages/BrandKit';
-import Ghostwriter from './pages/Ghostwriter';
+import AiStudio from './pages/AiStudio';
 import MediaLibrary from './pages/MediaLibrary';
 import History from './pages/History';
 import ApiKeys from './pages/ApiKeys';
@@ -116,7 +116,7 @@ function App() {
         <Route path="/ads" element={<DashboardLayout><div className="p-10 text-center text-gray-400">Social Ads Feature Coming Soon</div></DashboardLayout>} />
 
         <Route path="/brand" element={<DashboardLayout><BrandKit /></DashboardLayout>} />
-        <Route path="/ai" element={<DashboardLayout><Ghostwriter /></DashboardLayout>} />
+        <Route path="/ai" element={<DashboardLayout><AiStudio /></DashboardLayout>} />
         <Route path="/media" element={<DashboardLayout><MediaLibrary /></DashboardLayout>} />
         <Route path="/history" element={<DashboardLayout><History /></DashboardLayout>} />
         <Route path="/apikeys" element={<DashboardLayout><ApiKeys /></DashboardLayout>} />

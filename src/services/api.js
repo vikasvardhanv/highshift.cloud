@@ -118,7 +118,7 @@ export const updateBrandKit = async (data) => {
 // AI Ghostwriter
 export const generateContent = async (topic, platform, tone) => {
     const res = await api.post('/ai/generate', { topic, platform, tone });
-    return res.data.result;
+    return res.data;
 };
 
 // ============ NEW: Media Upload ============
