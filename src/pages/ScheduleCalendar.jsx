@@ -73,7 +73,7 @@ export default function ScheduleCalendar() {
             // Backend now returns { calendar: [arrayOfPosts] }
             // We must group by LOCAL date here.
 
-            const rawPosts = data.calendar || []; // Should be an array now
+            const rawPosts = Array.isArray(data) ? data : (data.calendar || []);
             const grouped = {};
 
             if (Array.isArray(rawPosts)) {
