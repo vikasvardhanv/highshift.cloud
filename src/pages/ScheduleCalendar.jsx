@@ -70,7 +70,36 @@ export default function ScheduleCalendar() {
     const loadSchedule = async () => {
         try {
             const data = await getScheduleCalendar();
-            setPosts(data || {});
+            // Backend now returns { calendar: [arrayOfPosts] }
+            // We must group by LOCAL date here.
+
+            const rawPosts = data.calendar || []; // Should be an array now
+            const grouped = {};
+
+            if (Array.isArray(rawPosts)) {
+                rawPosts.forEach(post => {
+                    const d = new Date(post.time); // Parse ISO UTC
+                    // Create local YYYY-MM-DD key
+                    const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+                    if (!grouped[dateKey]) grouped[dateKey] = [];
+
+                    // Format time for display (HH:MM)
+                    const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+
+                    grouped[dateKey].push({
+                        ...post,
+                        time: timeStr, // Override ISO with display time
+                        rawTime: post.time // Keep raw for sorting if needed
+                    });
+                });
+            } else {
+                // Fallback if backend still returns old format (object)
+                console.warn("Received old format from backend", rawPosts);
+                Object.assign(grouped, rawPosts);
+            }
+
+            setPosts(grouped);
         } catch (err) {
             console.error("Failed to load schedule", err);
         } finally {
