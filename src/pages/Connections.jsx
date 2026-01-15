@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getAccounts, getAuthUrl, disconnectAccount, getProfiles } from '../services/api';
 import {
-    Facebook, Twitter, Instagram, Linkedin, Youtube,
+    Facebook, Twitter, Instagram, Linkedin, Youtube, Music,
     Trash2, Plus, Loader2, Globe, CheckCircle2, AlertCircle, ArrowRight, X
 } from 'lucide-react';
 
@@ -51,10 +51,18 @@ const PLATFORMS = [
         border: 'hover:border-red-200 dark:hover:border-red-800',
         desc: 'Upload videos and manage your channel.'
     },
+    {
+        id: 'tiktok',
+        name: 'TikTok',
+        icon: Music,
+        color: 'text-slate-900 dark:text-white',
+        bg: 'bg-slate-100 dark:bg-slate-800',
+        border: 'hover:border-slate-300 dark:hover:border-slate-600',
+        desc: 'Share short-form videos to reach a global audience.'
+    },
 ];
 
 const COMING_SOON = [
-    { name: 'TikTok', icon: Globe },
     { name: 'Pinterest', icon: Globe },
     { name: 'Threads', icon: Globe },
 ];

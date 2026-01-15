@@ -385,7 +385,7 @@ export default function Composer({ accounts = [], selectedAccounts = [], profile
                         </button>
 
                         {isScheduling && (
-                            <div className="flex gap-2 animate-in fade-in slide-in-from-left-2">
+                            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2">
                                 <input
                                     type="date"
                                     value={scheduledDate}
@@ -398,6 +398,9 @@ export default function Composer({ accounts = [], selectedAccounts = [], profile
                                     onChange={e => setScheduledTime(e.target.value)}
                                     className="px-2 py-1 text-xs border border-slate-200 rounded-md outline-none focus:border-indigo-500"
                                 />
+                                <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap" title="Your current system timezone">
+                                    {Intl.DateTimeFormat().resolvedOptions().timeZone.split('/')[1]?.replace(/_/g, ' ') || 'Local'}
+                                </span>
                                 <button
                                     onClick={() => {
                                         setScheduledDate('');
