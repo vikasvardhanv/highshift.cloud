@@ -60,11 +60,47 @@ const PLATFORMS = [
         border: 'hover:border-slate-300 dark:hover:border-slate-600',
         desc: 'Share short-form videos to reach a global audience.'
     },
+    {
+        id: 'pinterest',
+        name: 'Pinterest',
+        icon: Globe, // Fallback, maybe Pin if available
+        color: 'text-red-600',
+        bg: 'bg-red-50 dark:bg-red-900/20',
+        border: 'hover:border-red-200 dark:hover:border-red-800',
+        desc: 'Pin your visual content to boards.'
+    },
+    {
+        id: 'threads',
+        name: 'Threads',
+        icon: Globe, // Fallback, maybe AtSign
+        color: 'text-slate-900 dark:text-white',
+        bg: 'bg-slate-100 dark:bg-slate-800',
+        border: 'hover:border-slate-300 dark:hover:border-slate-600',
+        desc: 'Share text updates and join the conversation.'
+    },
+    {
+        id: 'bluesky',
+        name: 'Bluesky',
+        icon: Globe, // Fallback
+        color: 'text-blue-500',
+        bg: 'bg-blue-50 dark:bg-blue-900/20',
+        border: 'hover:border-blue-200 dark:hover:border-blue-800',
+        desc: 'Post to the AT Protocol network.'
+    },
+    {
+        id: 'mastodon',
+        name: 'Mastodon',
+        icon: Globe, // Fallback
+        color: 'text-indigo-500',
+        bg: 'bg-indigo-50 dark:bg-indigo-900/20',
+        border: 'hover:border-indigo-200 dark:hover:border-indigo-800',
+        desc: 'Decentralized social networking.'
+    }
 ];
 
 const COMING_SOON = [
-    { name: 'Pinterest', icon: Globe },
-    { name: 'Threads', icon: Globe },
+    { name: 'Google Business', icon: Globe },
+    { name: 'Reddit', icon: Globe },
 ];
 
 export default function Connections() {
@@ -108,10 +144,49 @@ export default function Connections() {
 
     const startAuth = async (platformId, profileId) => {
         try {
-            const url = await getAuthUrl(platformId, window.location.origin + '/auth/callback', profileId);
-            window.location.href = url;
+            let extraParams = {};
+
+            if (platformId === 'mastodon') {
+                const instance = prompt("Enter your Mastodon Instance URL (e.g. mastodon.social):");
+                if (!instance) return;
+                // Add protocol if missing
+                let url = instance.trim();
+                if (!url.startsWith('http')) {
+                    url = 'https://' + url;
+                }
+                extraParams.instance_url = url;
+            }
+
+            const data = await getAuthUrl(platformId, window.location.origin + '/auth/callback', profileId, extraParams);
+
+            if (data.authUrl) {
+                window.location.href = data.authUrl;
+            } else if (data.action === 'show_form') {
+                if (platformId === 'bluesky') {
+                    const handle = prompt("Enter Bluesky Handle (e.g. user.bsky.social):");
+                    if (!handle) return;
+                    const password = prompt("Enter Bluesky App Password:");
+                    if (!password) return;
+
+                    setLoading(true);
+                    try {
+                        const { connectBluesky } = await import('../services/api');
+                        await connectBluesky({ handle, app_password: password, profile_id: profileId });
+                        alert("Bluesky connected successfully!");
+                        await loadData();
+                    } catch (e) {
+                        alert("Bluesky connection failed: " + (e.response?.data?.detail || e.message));
+                    } finally {
+                        setLoading(false);
+                    }
+                } else {
+                    alert(`This platform requires manual login details: ${data.fields.join(', ')}. Coming soon to UI.`);
+                }
+            } else {
+                console.log("Unknown auth response:", data);
+            }
         } catch (err) {
-            alert('Failed to get auth URL: ' + err.message);
+            alert('Failed to init auth: ' + (err.response?.data?.detail || err.message));
         }
     };
 

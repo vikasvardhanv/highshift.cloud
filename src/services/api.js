@@ -183,18 +183,19 @@ export const deleteProfile = async (id) => {
     await api.delete(`/profiles/${id}`);
 };
 
-export const getAuthUrl = async (platform, redirectUrl, profileId = null) => {
+export const getAuthUrl = async (platform, redirectUrl, profileId = null, extraParams = {}) => {
     const res = await api.get(`/auth/connect/${platform}`, {
         params: {
-            redirect_uri: redirectUrl,  // NOTE: backend expects 'redirect_uri' in query? No, backend takes 'redirect_uri' in some places, but `auth_routes.py` uses param `platform`.
-            // Wait, existing code used `params: { redirect: redirectUrl }`. BUT `auth_routes.py` didn't have a `redirect` query param in my previous view.
-            // Let's check `auth_routes.py` again.
-            // It reads `redirect_uri` from ENV usually.
-            // BUT, `connect_platform` signature is `connect_platform(platform, profile_id, user)`. It does NOT take Redirect URI from query.
-            // So `redirectUrl` param here might be unused or for legacy. 
-            // I'll pass profile_id.
-            profile_id: profileId
+            redirect_uri: redirectUrl,
+            profile_id: profileId,
+            ...extraParams
         }
     });
-    return res.data.authUrl;
+    return res.data; // Return full object to handle { authUrl, action, fields }
+};
+
+export const connectBluesky = async (data) => {
+    // data: { handle, app_password, profile_id }
+    const res = await api.post('/auth/connect/bluesky', data);
+    return res.data;
 };
