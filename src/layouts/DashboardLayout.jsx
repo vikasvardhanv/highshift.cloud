@@ -6,13 +6,17 @@ import { User, ChevronDown, LogOut, Menu, Settings } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 
 export default function DashboardLayout({ children }) {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false); // Default closed on mobile, logic below handles desktop
     const [user, setUser] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const location = useLocation();
 
     useEffect(() => {
         loadUserInfo();
+        // Set initial sidebar state based on screen size
+        if (window.innerWidth >= 1024) {
+            setSidebarOpen(true);
+        }
     }, []);
 
     const loadUserInfo = async () => {
@@ -45,42 +49,60 @@ export default function DashboardLayout({ children }) {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans flex">
-            {/* Sidebar Component */}
-            <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans flex overflow-x-hidden">
+            {/* Sidebar Component - Mobile Overlays, Desktop stays fixed */}
+            <Sidebar 
+                isOpen={sidebarOpen} 
+                onToggle={() => setSidebarOpen(!sidebarOpen)} 
+                onClose={() => setSidebarOpen(false)}
+            />
+
+            {/* Mobile Sidebar Overlay */}
+            {sidebarOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm animate-in fade-in duration-200"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
 
             {/* Main Content Area */}
-            <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 relative z-10
-                ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
+            <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 relative z-10 w-full
+                ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}>
 
                 {/* Top Bar - Clean Professional */}
                 <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 h-16">
-                    <div className="px-6 h-full flex items-center justify-between">
-                        {/* Title Breadcrumb */}
-                        <div className="flex items-center gap-4">
-                            <h1 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                    <div className="px-4 lg:px-6 h-full flex items-center justify-between">
+                        {/* Title Breadcrumb & Mobile Menu Toggle */}
+                        <div className="flex items-center gap-3 lg:gap-4">
+                            <button 
+                                onClick={() => setSidebarOpen(!sidebarOpen)}
+                                className="p-2 -ml-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden text-slate-600 dark:text-slate-400"
+                            >
+                                <Menu className="w-6 h-6" />
+                            </button>
+                            <h1 className="text-base lg:text-lg font-semibold text-slate-800 dark:text-slate-100 truncate max-w-[150px] md:max-w-none">
                                 {location.pathname.split('/').pop()?.charAt(0).toUpperCase() + location.pathname.split('/').pop()?.slice(1) || 'Dashboard'}
                             </h1>
                         </div>
 
                         {/* Right Actions */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 lg:gap-4">
                             <ThemeToggle />
-                            <div className="h-6 w-px bg-slate-200 dark:bg-slate-800" />
+                            <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden md:block" />
 
                             <div className="relative">
                                 <button
                                     onClick={() => setShowDropdown(!showDropdown)}
-                                    className="flex items-center gap-3 hover:bg-slate-100 dark:hover:bg-slate-800 px-2 py-1.5 rounded-lg transition-colors"
+                                    className="flex items-center gap-2 lg:gap-3 hover:bg-slate-100 dark:hover:bg-slate-800 px-1.5 py-1.5 rounded-lg transition-colors border border-transparent"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-sm font-semibold text-indigo-700 dark:text-indigo-300">
+                                    <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-xs font-semibold text-indigo-700 dark:text-indigo-300 flex-shrink-0">
                                         {user?.avatar ? (
                                             <img src={user.avatar} className="w-full h-full rounded-full object-cover" />
                                         ) : (
                                             user?.initials || 'A'
                                         )}
                                     </div>
-                                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300 hidden md:block">
+                                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300 hidden sm:block truncate max-w-[100px]">
                                         {user?.name || 'Admin'}
                                     </span>
                                     <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
@@ -94,7 +116,7 @@ export default function DashboardLayout({ children }) {
                                         </div>
 
                                         <div className="py-1">
-                                            <Link to="/settings" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
+                                            <Link to="/settings" onClick={() => setShowDropdown(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
                                                 <Settings className="w-4 h-4" /> Settings
                                             </Link>
                                         </div>
@@ -115,8 +137,8 @@ export default function DashboardLayout({ children }) {
                 </header>
 
                 {/* Page Content */}
-                <main className="flex-1 p-8 overflow-y-auto" onClick={() => setShowDropdown(false)}>
-                    <div className="max-w-6xl mx-auto space-y-8">
+                <main className="flex-1 p-4 lg:p-8 overflow-y-auto" onClick={() => setShowDropdown(false)}>
+                    <div className="max-w-6xl mx-auto space-y-6 lg:space-y-8">
                         {children}
                     </div>
                 </main>

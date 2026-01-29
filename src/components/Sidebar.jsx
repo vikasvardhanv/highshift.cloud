@@ -29,20 +29,20 @@ const NAV_ITEMS = [
     { label: 'Settings', path: '/settings', icon: Settings },
 ];
 
-export default function Sidebar({ isOpen, onToggle }) {
+export default function Sidebar({ isOpen, onToggle, onClose }) {
     const location = useLocation();
 
     return (
         <aside
             className={`fixed left-0 top-0 h-screen bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 z-50 flex flex-col
-            ${isOpen ? 'w-64' : 'w-20'}`}
+            ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full lg:translate-x-0 w-20'}`}
         >
             {/* Logo Area */}
             <div className="h-16 flex items-center px-6 border-b border-slate-100 dark:border-slate-800/50">
                 <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0 shadow-sm shadow-indigo-600/20">
                     <span className="text-white font-bold text-lg">H</span>
                 </div>
-                <span className={`ml-3 font-bold text-lg text-slate-800 dark:text-white tracking-tight transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`}>
+                <span className={`ml-3 font-bold text-lg text-slate-800 dark:text-white tracking-tight transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 lg:w-0 overflow-hidden'}`}>
                     HighShift
                 </span>
             </div>
@@ -56,6 +56,9 @@ export default function Sidebar({ isOpen, onToggle }) {
                         <Link
                             key={item.path}
                             to={item.path}
+                            onClick={() => {
+                                if (window.innerWidth < 1024) onClose();
+                            }}
                             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group
                             ${isActive
                                     ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-medium'
@@ -63,7 +66,7 @@ export default function Sidebar({ isOpen, onToggle }) {
                                 }`}
                         >
                             <item.icon className={`w-5 h-5 transition-colors ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} strokeWidth={2} />
-                            <span className={`whitespace-nowrap transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`}>
+                            <span className={`whitespace-nowrap transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 lg:w-0 overflow-hidden'}`}>
                                 {item.label}
                             </span>
 
@@ -74,9 +77,17 @@ export default function Sidebar({ isOpen, onToggle }) {
                 })}
             </nav>
 
-            {/* Footer / Toggle */}
+            {/* Footer / Toggle / Collapse button for Desktop */}
             <div className="p-4 border-t border-slate-100 dark:border-slate-800/50">
-                {/* Could put user here or collapse toggle */}
+                <button
+                    onClick={onToggle}
+                    className="hidden lg:flex w-full items-center justify-center p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                    title={isOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+                >
+                    <div className={`transition-transform duration-300 ${isOpen ? 'rotate-0' : 'rotate-180'}`}>
+                        <ChevronDown className="w-5 h-5 -rotate-90" />
+                    </div>
+                </button>
             </div>
         </aside>
     );
