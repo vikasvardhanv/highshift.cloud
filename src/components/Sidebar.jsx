@@ -12,7 +12,9 @@ import {
     LogOut,
     Network,
     Zap,
-    User
+    User,
+    ChevronDown,
+    ChevronRight
 } from 'lucide-react';
 
 const NAV_ITEMS = [
