@@ -78,7 +78,14 @@ export default function ScheduleCalendar() {
 
             if (Array.isArray(rawPosts)) {
                 rawPosts.forEach(post => {
+                    if (!post.time) return;
+
                     const d = new Date(post.time); // Parse ISO UTC
+                    if (isNaN(d.getTime())) {
+                        console.warn("Invalid date in scheduled post:", post);
+                        return;
+                    }
+
                     // Create local YYYY-MM-DD key
                     const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
@@ -100,6 +107,7 @@ export default function ScheduleCalendar() {
             }
 
             setPosts(grouped);
+            loadActivity(); // Refresh activity log too
         } catch (err) {
             console.error("Failed to load schedule", err);
         } finally {
