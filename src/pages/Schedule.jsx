@@ -45,7 +45,7 @@ export default function Schedule() {
 
     // Group posts by date
     const postsByDate = posts.reduce((acc, post) => {
-        const dateKey = format(new Date(post.scheduled_time || post.scheduledFor), 'yyyy-MM-dd');
+        const dateKey = format(new Date(post.scheduled_time || post.scheduledFor || post.scheduled_for), 'yyyy-MM-dd');
         if (!acc[dateKey]) acc[dateKey] = [];
         acc[dateKey].push(post);
         return acc;
