@@ -14,7 +14,8 @@ import {
     Zap,
     User,
     ChevronDown,
-    ChevronRight
+    ChevronRight,
+    Sparkles
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -26,7 +27,8 @@ const NAV_ITEMS = [
     { label: 'Analytics', path: '/analytics', icon: BarChart2 },
     { label: 'Smart Inbox', path: '/inbox', icon: MessageSquare },
     { label: 'Brand Kit', path: '/brand', icon: Palette },
-    { label: 'HighShift AI', path: '/ai', icon: Zap },
+    { label: 'Social Raven AI', path: '/ai', icon: Zap },
+    { label: 'Instant Publish', path: '/instant', icon: Sparkles },
     { label: 'Developer API', path: '/developer', icon: PenTool },
     { label: 'Settings', path: '/settings', icon: Settings },
 ];
@@ -42,10 +44,10 @@ export default function Sidebar({ isOpen, onToggle, onClose }) {
             {/* Logo Area */}
             <div className="h-16 flex items-center px-6 border-b border-slate-100 dark:border-slate-800/50">
                 <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0 shadow-sm shadow-indigo-600/20">
-                    <span className="text-white font-bold text-lg">H</span>
+                    <span className="text-white font-bold text-lg">R</span>
                 </div>
                 <span className={`ml-3 font-bold text-lg text-slate-800 dark:text-white tracking-tight transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 lg:w-0 overflow-hidden'}`}>
-                    HighShift
+                    Social Raven
                 </span>
             </div>
 

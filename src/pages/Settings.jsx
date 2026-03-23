@@ -5,7 +5,7 @@ export default function Settings() {
     const [activeTab, setActiveTab] = useState('profile');
     const [formData, setFormData] = useState({
         name: 'Neural User',
-        email: 'user@highshift.cloud'
+        email: 'user@socialraven.cloud'
     });
 
     const tabs = [
@@ -21,7 +21,7 @@ export default function Settings() {
                 <div>
                     <h1 className="text-4xl font-extrabold tracking-tight mb-2">System Config</h1>
                     <p className="text-slate-500 font-medium leading-relaxed max-w-xl">
-                        Calibrate your neural interface and manage authentication protocols for the highshift network.
+                        Calibrate your neural interface and manage authentication protocols for the socialraven network.
                     </p>
                 </div>
             </div>

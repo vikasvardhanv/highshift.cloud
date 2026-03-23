@@ -137,7 +137,7 @@ export default function BrandKit() {
                                 onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
                                 type="text"
                                 className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-primary/50 placeholder:text-slate-800 font-medium"
-                                placeholder="e.g. HighShift Cloud"
+                                placeholder="e.g. Social Raven Cloud"
                             />
                         </div>
                         <div className="space-y-3">

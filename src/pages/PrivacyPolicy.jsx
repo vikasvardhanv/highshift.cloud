@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
             <section className="space-y-4">
                 <h2 className="text-xl font-semibold text-slate-800">1. Introduction</h2>
                 <p className="text-slate-600 leading-relaxed">
-                    Welcome to HighShift ("we," "our," or "us"). We are committed to protecting your privacy and ensuring you have a positive experience on our website and in using our products and services (collectively, "Services"). This policy outlines our data handling practices and your rights.
+                    Welcome to Social Raven ("we," "our," or "us"). We are committed to protecting your privacy and ensuring you have a positive experience on our website and in using our products and services (collectively, "Services"). This policy outlines our data handling practices and your rights.
                 </p>
             </section>
 
@@ -55,7 +55,7 @@ export default function PrivacyPolicy() {
             <section className="space-y-4">
                 <h2 className="text-xl font-semibold text-slate-800">6. Contact Us</h2>
                 <p className="text-slate-600 leading-relaxed">
-                    If you have any questions about this Privacy Policy, please contact us at support@highshift.cloud.
+                    If you have any questions about this Privacy Policy, please contact us at support@socialraven.cloud.
                 </p>
             </section>
         </div>

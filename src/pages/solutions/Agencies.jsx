@@ -37,7 +37,7 @@ export default function Agencies() {
 
     return (
         <FeaturePageTemplate
-            title="HighShift for Agencies"
+            title="Social Raven for Agencies"
             subtitle="Manage more clients with less chaos. The operating system for modern social media agencies."
             heroGradient="from-indigo-500 to-purple-500"
             features={features}

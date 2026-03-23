@@ -7,7 +7,7 @@ export default function DeveloperApi() {
             <div>
                 <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Developer API</h1>
                 <p className="text-slate-500 dark:text-slate-400">
-                    Integrate HighShift features directly into your application using our REST API.
+                    Integrate Social Raven features directly into your application using our REST API.
                 </p>
             </div>
 

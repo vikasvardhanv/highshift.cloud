@@ -5,7 +5,7 @@ export default function Docs() {
     const features = [
         {
             title: "REST API",
-            description: "Standard HTTP methods for accessing HighShift resources. JSON responses.",
+            description: "Standard HTTP methods for accessing Social Raven resources. JSON responses.",
             icon: Globe
         },
         {
@@ -38,7 +38,7 @@ export default function Docs() {
     return (
         <FeaturePageTemplate
             title="API Documentation"
-            subtitle="Build powerful integrations and custom workflows on top of the HighShift platform."
+            subtitle="Build powerful integrations and custom workflows on top of the Social Raven platform."
             heroGradient="from-slate-800 to-black"
             features={features}
             ctaTitle="Ready to build?"

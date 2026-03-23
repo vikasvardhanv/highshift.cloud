@@ -10,7 +10,7 @@ export default function Blog() {
         },
         {
             title: "Product Updates",
-            description: "Be the first to know about new features and improvements to HighShift.",
+            description: "Be the first to know about new features and improvements to Social Raven.",
             icon: PenTool
         },
         {
@@ -30,14 +30,14 @@ export default function Blog() {
         },
         {
             title: "Case Studies",
-            description: "See how other brands are using HighShift to achieve massive growth.",
+            description: "See how other brands are using Social Raven to achieve massive growth.",
             icon: BookOpen
         }
     ];
 
     return (
         <FeaturePageTemplate
-            title="HighShift Blog"
+            title="Social Raven Blog"
             subtitle="Insights, trends, and strategies to help you navigate the ever-changing world of social media."
             heroGradient="from-teal-500 to-cyan-500"
             features={features}

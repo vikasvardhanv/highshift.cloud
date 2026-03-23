@@ -9,7 +9,7 @@ export default function FeaturePageTemplate({
     heroGradient = "from-slate-900 via-indigo-950 to-slate-900",
     features = [],
     ctaTitle = "Ready to get started?",
-    ctaText = "Join thousands of brands using HighShift to grow.",
+    ctaText = "Join thousands of brands using Social Raven to grow.",
     targetRoute = "/dashboard" // Default route after login
 }) {
     // Stagger container for grid with enhanced timing

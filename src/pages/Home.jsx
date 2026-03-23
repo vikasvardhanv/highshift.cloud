@@ -6,7 +6,9 @@ import {
 } from 'lucide-react';
 import HowItWorks from '../components/HowItWorks';
 import { SentimentCard, SocialPostCard, AiAssistCard, StatsCard } from '../components/FloatingWidgets';
+import VideoHero from '../components/VideoHero';
 import heroImage from '../assets/hero-person-wide.png';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 export default function Home() {
     return (
@@ -74,8 +76,11 @@ export default function Home() {
                 </div>
             </div>
 
+            {/* Video Forming Section - Taste-Skill Integration */}
+            <VideoHero />
+
             {/* STRATEGIC VALUE SECTION (Formerly Use Cases) */}
-            <div className="py-24 bg-white dark:bg-black">
+            <div className="py-24 bg-white dark:bg-black relative z-10">
                 <div className="container mx-auto px-4 max-w-6xl">
                     <div className="mb-12">
                         <h2 className="text-2xl font-bold text-slate-500 uppercase tracking-widest mb-2 border-b-2 border-slate-100 dark:border-white/10 pb-4 inline-block">Strategic Value</h2>
@@ -206,7 +211,7 @@ export default function Home() {
                                 <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-6">
                                     <Code className="w-6 h-6 text-green-400" />
                                 </div>
-                                <h3 className="text-xl font-bold mb-3">HighShift API</h3>
+                                <h3 className="text-xl font-bold mb-3">Social Raven API</h3>
                                 <p className="text-slate-400 mb-6 text-sm">
                                     Programmatic access to publishing, analytics, and listening data. Build custom dashboards.
                                 </p>

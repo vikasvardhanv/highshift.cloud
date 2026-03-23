@@ -20,7 +20,7 @@ export default function Help() {
         },
         {
             title: "Community Forum",
-            description: "Connect with other HighShift users to share tips, tricks, and best practices.",
+            description: "Connect with other Social Raven users to share tips, tricks, and best practices.",
             icon: Users
         },
         {
@@ -30,7 +30,7 @@ export default function Help() {
         },
         {
             title: "System Status",
-            description: "Check the real-time operational status of all HighShift systems.",
+            description: "Check the real-time operational status of all Social Raven systems.",
             icon: LifeBuoy
         }
     ];

@@ -77,7 +77,7 @@ export default function Login() {
                     </div>
                     <h1 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
                     <p className="text-slate-500 dark:text-gray-400 text-sm">
-                        {isLogin ? 'Sign in to continue to HighShift Cloud' : 'Get started with HighShift Cloud today'}
+                        {isLogin ? 'Sign in to continue to Social Raven Cloud' : 'Get started with Social Raven Cloud today'}
                     </p>
                 </div>
 

@@ -9,7 +9,7 @@ export default function Footer() {
                     {/* Brand Column */}
                     <div className="space-y-4">
                         <Link to="/" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                            HighShift Cloud
+                            Social Raven Cloud
                         </Link>
                         <p className="text-slate-300 text-sm leading-relaxed">
                             Seamlessly share your videos across multiple platforms. Automate your social media presence with our powerful API.
@@ -43,7 +43,7 @@ export default function Footer() {
                         <ul className="space-y-3 text-sm text-slate-400">
                             <li className="flex items-center gap-2">
                                 <Mail className="w-4 h-4 text-blue-400" />
-                                <span>info@highshift.cloud</span>
+                                <span>info@socialraven.cloud</span>
                             </li>
                             <li className="flex items-start gap-2">
                                 <MapPin className="w-4 h-4 mt-0.5 text-blue-400" />
@@ -54,7 +54,7 @@ export default function Footer() {
                 </div>
 
                 <div className="pt-8 border-t border-slate-800 text-center text-slate-500 text-xs">
-                    © {new Date().getFullYear()} HighShift Cloud. All rights reserved. Operado por TONVI TECH SL.
+                    © {new Date().getFullYear()} Social Raven Cloud. All rights reserved. Operado por TONVI TECH SL.
                 </div>
             </div>
         </footer>

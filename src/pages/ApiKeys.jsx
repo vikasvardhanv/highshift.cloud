@@ -97,7 +97,7 @@ export default function ApiKeys() {
                         </div>
                         <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">API Management</h1>
                         <p className="text-slate-400 max-w-lg leading-relaxed">
-                            Integrate HighShift directly into your workflow. Create unique keys for specialized automation and solo upload capabilities.
+                            Integrate Social Raven directly into your workflow. Create unique keys for specialized automation and solo upload capabilities.
                         </p>
                     </div>
 

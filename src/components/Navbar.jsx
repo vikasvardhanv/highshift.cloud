@@ -50,7 +50,7 @@ export default function Navbar() {
         {
             name: 'Resources',
             children: [
-                { name: 'API Docs', icon: Code, desc: 'Build with HighShift', path: '/docs' },
+                { name: 'API Docs', icon: Code, desc: 'Build with Social Raven', path: '/docs' },
                 { name: 'Help Center', icon: LifeBuoy, desc: 'Guides & Support', path: '/help' },
                 { name: 'Get API Key', icon: Key, desc: 'Developer Settings', path: '/dashboard' },
                 { name: 'Blog', icon: BookOpen, desc: 'Tips & Strategy', path: '/blog' },
@@ -72,14 +72,14 @@ export default function Navbar() {
                         <Link to="/" className="flex items-center gap-2">
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center
                                 ${apiKey ? 'bg-gradient-to-br from-primary to-secondary shadow-lg' : 'bg-white shadow-sm'}`}>
-                                <span className={`font-bold ${apiKey ? 'text-white' : 'text-slate-900'}`}>H</span>
+                                <span className={`font-bold ${apiKey ? 'text-white' : 'text-slate-900'}`}>R</span>
                             </div>
                             <span className={`font-bold text-xl tracking-tight
                                 ${apiKey
                                     ? 'bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-gray-400'
                                     : 'text-white'
                                 }`}>
-                                HighShift Cloud
+                                Social Raven Cloud
                             </span>
                         </Link>
                     </div>

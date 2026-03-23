@@ -761,7 +761,7 @@ export function SharableLinksAnimation() {
                         className="text-[10px] text-slate-500 font-mono whitespace-nowrap"
                         animate={status === 'generating' ? { x: [0, -10, 0] } : {}}
                     >
-                        highshift.io/live/analytics/v3_491...
+                        socialraven.io/live/analytics/v3_491...
                     </motion.div>
                 </div>
 

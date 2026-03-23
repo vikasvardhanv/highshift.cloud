@@ -121,6 +121,12 @@ export const generateContent = async (topic, platform, tone) => {
     return res.data;
 };
 
+export const instantPublish = async (data) => {
+    // data: { email, postTopic, targetAudience, date }
+    const res = await api.post('/ai/instant-publish', data);
+    return res.data;
+};
+
 // ============ NEW: Media Upload ============
 export const uploadAndPost = async (accounts, content, files = [], mediaUrls = []) => {
     const formData = new FormData();

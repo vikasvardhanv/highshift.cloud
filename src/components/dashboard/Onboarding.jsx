@@ -20,7 +20,7 @@ export default function Onboarding({ onComplete }) {
                     <span className="text-white font-bold text-3xl">H</span>
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-                    Welcome to HighShift
+                    Welcome to Social Raven
                 </h1>
                 <p className="text-lg text-slate-500 dark:text-slate-400 max-w-lg mx-auto">
                     Connect your social accounts to start publishing, scheduling, and analyzing your content from one place.

@@ -25,7 +25,7 @@ export default function Enterprise() {
         },
         {
             title: "Custom Integrations",
-            description: "Connect HighShift with your existing tech stack: Salesforce, Tableau, Zendesk, and more.",
+            description: "Connect Social Raven with your existing tech stack: Salesforce, Tableau, Zendesk, and more.",
             icon: Building
         },
         {
@@ -37,7 +37,7 @@ export default function Enterprise() {
 
     return (
         <FeaturePageTemplate
-            title="HighShift for Enterprise"
+            title="Social Raven for Enterprise"
             subtitle="Security, scale, and sophistication. The social suite built for the world's largest organizations."
             heroGradient="from-slate-700 to-slate-900"
             features={features}

@@ -31,7 +31,7 @@ export default function Publishing() {
         },
         {
             title: "Asset Library",
-            description: "Store, organize, and edit your images and videos directly within HighShift. No more Google Drive chaos.",
+            description: "Store, organize, and edit your images and videos directly within Social Raven. No more Google Drive chaos.",
             icon: ImageIcon,
             animation: <AssetLibraryAnimation />
         },
