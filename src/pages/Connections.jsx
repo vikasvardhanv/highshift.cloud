@@ -1,113 +1,26 @@
 import { useEffect, useState } from 'react';
-import { getAccounts, getAuthUrl, disconnectAccount, getProfiles } from '../services/api';
+import { getAccounts, getAuthUrl, disconnectAccount, getProfiles, createProfile } from '../services/api';
 import {
     Facebook, Twitter, Instagram, Linkedin, Youtube, Music,
-    Trash2, Plus, Loader2, Globe, CheckCircle2, AlertCircle, ArrowRight, X
+    Trash2, Plus, Loader2, Globe, CheckCircle2, AlertCircle, ArrowRight, X, User, ChevronRight, Zap
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const PLATFORMS = [
-    {
-        id: 'twitter',
-        name: 'Twitter / X',
-        icon: Twitter,
-        color: 'text-sky-500',
-        bg: 'bg-sky-50 dark:bg-sky-900/20',
-        border: 'hover:border-sky-200 dark:hover:border-sky-800',
-        desc: 'Publish tweets, threads, and analyze engagement.'
-    },
-    {
-        id: 'facebook',
-        name: 'Facebook',
-        icon: Facebook,
-        color: 'text-blue-600',
-        bg: 'bg-blue-50 dark:bg-blue-900/20',
-        border: 'hover:border-blue-200 dark:hover:border-blue-800',
-        desc: 'Manage pages, publish posts, and track metrics.'
-    },
-    {
-        id: 'instagram',
-        name: 'Instagram',
-        icon: Instagram,
-        color: 'text-pink-600',
-        bg: 'bg-pink-50 dark:bg-pink-900/20',
-        border: 'hover:border-pink-200 dark:hover:border-pink-800',
-        desc: 'Post photos, reels, and stories to your feed.'
-    },
-    {
-        id: 'linkedin',
-        name: 'LinkedIn',
-        icon: Linkedin,
-        color: 'text-blue-700',
-        bg: 'bg-blue-50 dark:bg-blue-900/20',
-        border: 'hover:border-blue-200 dark:hover:border-blue-800',
-        desc: 'Share professional updates to personal & company pages.'
-    },
-    {
-        id: 'youtube',
-        name: 'YouTube',
-        icon: Youtube,
-        color: 'text-red-600',
-        bg: 'bg-red-50 dark:bg-red-900/20',
-        border: 'hover:border-red-200 dark:hover:border-red-800',
-        desc: 'Upload videos and manage your channel.'
-    },
-    {
-        id: 'tiktok',
-        name: 'TikTok',
-        icon: Music,
-        color: 'text-slate-900 dark:text-white',
-        bg: 'bg-slate-100 dark:bg-slate-800',
-        border: 'hover:border-slate-300 dark:hover:border-slate-600',
-        desc: 'Share short-form videos to reach a global audience.'
-    },
-    {
-        id: 'pinterest',
-        name: 'Pinterest',
-        icon: Globe, // Fallback, maybe Pin if available
-        color: 'text-red-600',
-        bg: 'bg-red-50 dark:bg-red-900/20',
-        border: 'hover:border-red-200 dark:hover:border-red-800',
-        desc: 'Pin your visual content to boards.'
-    },
-    {
-        id: 'threads',
-        name: 'Threads',
-        icon: Globe, // Fallback, maybe AtSign
-        color: 'text-slate-900 dark:text-white',
-        bg: 'bg-slate-100 dark:bg-slate-800',
-        border: 'hover:border-slate-300 dark:hover:border-slate-600',
-        desc: 'Share text updates and join the conversation.'
-    },
-    {
-        id: 'bluesky',
-        name: 'Bluesky',
-        icon: Globe, // Fallback
-        color: 'text-blue-500',
-        bg: 'bg-blue-50 dark:bg-blue-900/20',
-        border: 'hover:border-blue-200 dark:hover:border-blue-800',
-        desc: 'Post to the AT Protocol network.'
-    },
-    {
-        id: 'mastodon',
-        name: 'Mastodon',
-        icon: Globe, // Fallback
-        color: 'text-indigo-500',
-        bg: 'bg-indigo-50 dark:bg-indigo-900/20',
-        border: 'hover:border-indigo-200 dark:hover:border-indigo-800',
-        desc: 'Decentralized social networking.'
-    }
-];
-
-const COMING_SOON = [
-    { name: 'Google Business', icon: Globe },
-    { name: 'Reddit', icon: Globe },
+    { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'text-pink-500', bg: 'bg-pink-500/10' },
+    { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'text-blue-600', bg: 'bg-blue-600/10' },
+    { id: 'twitter', name: 'X / Twitter', icon: Twitter, color: 'text-white', bg: 'bg-white/10' },
+    { id: 'linkedin', name: 'LinkedIn', icon: Linkedin, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+    { id: 'youtube', name: 'YouTube', icon: Youtube, color: 'text-red-600', bg: 'bg-red-600/10' },
 ];
 
 export default function Connections() {
-    const [accounts, setAccounts] = useState([]);
     const [profiles, setProfiles] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [connectingPlatform, setConnectingPlatform] = useState(null); // Platform ID when modal open
+    const [selectedProfile, setSelectedProfile] = useState(null);
+    const [isCreatingProfile, setIsCreatingProfile] = useState(false);
+    const [newProfileName, setNewProfileName] = useState('');
+    const [showPlatformSelect, setShowPlatformSelect] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -115,12 +28,11 @@ export default function Connections() {
 
     const loadData = async () => {
         try {
-            const [accData, profData] = await Promise.all([
-                getAccounts(),
-                getProfiles()
-            ]);
-            setAccounts(accData.accounts || []);
-            setProfiles(profData || []);
+            const data = await getProfiles();
+            setProfiles(data || []);
+            if (data && data.length > 0 && !selectedProfile) {
+                // Keep current selection if refreshing
+            }
         } catch (err) {
             console.error(err);
         } finally {
@@ -128,232 +40,257 @@ export default function Connections() {
         }
     };
 
-    const handleConnectClick = (platformId) => {
-        // Smart Connect: If only 1 profile, use it automatically.
-        if (profiles.length === 1) {
-            startAuth(platformId, profiles[0].id);
-        } else if (profiles.length === 0) {
-            // Should prompt to create profile, but for now alert
-            alert("Please create a profile in 'User Management' first.");
-            window.location.href = '/profiles';
-        } else {
-            // Open Modal
-            setConnectingPlatform(platformId);
+    const handleCreateProfile = async () => {
+        if (!newProfileName.trim()) return;
+        setLoading(true);
+        try {
+            await createProfile(newProfileName);
+            setNewProfileName('');
+            setIsCreatingProfile(false);
+            await loadData();
+        } catch (err) {
+            alert('Failed to create profile');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const startAuth = async (platformId, profileId) => {
+    const startAuth = async (platformId) => {
+        if (!selectedProfile) return;
         try {
-            let extraParams = {};
-
-            if (platformId === 'mastodon') {
-                const instance = prompt("Enter your Mastodon Instance URL (e.g. mastodon.social):");
-                if (!instance) return;
-                // Add protocol if missing
-                let url = instance.trim();
-                if (!url.startsWith('http')) {
-                    url = 'https://' + url;
-                }
-                extraParams.instance_url = url;
-            }
-
-            const data = await getAuthUrl(platformId, window.location.origin + '/auth/callback', profileId, extraParams);
-
+            const data = await getAuthUrl(platformId, window.location.origin + '/auth/callback', selectedProfile.id);
             if (data.authUrl) {
                 window.location.href = data.authUrl;
-            } else if (data.action === 'show_form') {
-                if (platformId === 'bluesky') {
-                    const handle = prompt("Enter Bluesky Handle (e.g. user.bsky.social):");
-                    if (!handle) return;
-                    const password = prompt("Enter Bluesky App Password:");
-                    if (!password) return;
-
-                    setLoading(true);
-                    try {
-                        const { connectBluesky } = await import('../services/api');
-                        await connectBluesky({ handle, app_password: password, profile_id: profileId });
-                        alert("Bluesky connected successfully!");
-                        await loadData();
-                    } catch (e) {
-                        alert("Bluesky connection failed: " + (e.response?.data?.detail || e.message));
-                    } finally {
-                        setLoading(false);
-                    }
-                } else {
-                    alert(`This platform requires manual login details: ${data.fields.join(', ')}. Coming soon to UI.`);
-                }
-            } else {
-                console.log("Unknown auth response:", data);
             }
         } catch (err) {
-            alert('Failed to init auth: ' + (err.response?.data?.detail || err.message));
+            alert('Failed to start authentication');
         }
     };
 
     const handleDisconnect = async (platform, accountId) => {
-        if (!confirm("Are you sure you want to disconnect this account?")) return;
+        if (!confirm("Disconnect this account?")) return;
         try {
             await disconnectAccount(platform, accountId);
             await loadData();
         } catch (err) {
             alert('Failed to disconnect');
         }
+    };
+
+    if (loading && profiles.length === 0) {
+        return <div className="min-h-screen bg-black flex items-center justify-center"><Loader2 className="animate-spin text-indigo-500 w-10 h-10" /></div>;
     }
 
-    if (loading) return <div className="p-20 flex justify-center"><Loader2 className="animate-spin text-indigo-600" /></div>;
-
     return (
-        <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in duration-500 pb-20">
-            {/* Header */}
-            <div>
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Integrations</h1>
-                <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">
-                    Connect your social channels to unlock publishing, analytics, and listening.
-                </p>
-            </div>
-
-            {/* Available Platforms Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {PLATFORMS.map(p => (
-                    <div key={p.id} className={`group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${p.border}`}>
-                        <div className="flex items-start justify-between mb-4">
-                            <div className={`w-14 h-14 rounded-xl ${p.bg} flex items-center justify-center ${p.color}`}>
-                                <p.icon className="w-8 h-8" strokeWidth={1.5} />
-                            </div>
-                            {/* Connection Status Badge */}
-                            {accounts.some(a => a.platform === p.id) && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold ring-1 ring-emerald-100">
-                                    <CheckCircle2 className="w-3 h-3" /> Connected
-                                </span>
-                            )}
-                        </div>
-
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{p.name}</h3>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 min-h-[40px]">
-                            {p.desc}
-                        </p>
-
-                        <button
-                            onClick={() => handleConnectClick(p.id)}
-                            className="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 font-semibold text-slate-700 dark:text-slate-200 hover:border-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 active:scale-95 transition-all flex items-center justify-center gap-2"
-                        >
-                            {accounts.some(a => a.platform === p.id) ? 'Connect Another' : 'Connect'} <ArrowRight className="w-4 h-4 opacity-50 group-hover:translate-x-1 transition-transform" />
-                        </button>
+        <div className="min-h-screen bg-black text-white p-8">
+            <div className="max-w-6xl mx-auto space-y-12">
+                
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div>
+                        <h1 className="text-4xl font-black italic uppercase tracking-tighter mb-2">Social Connections</h1>
+                        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Profile-Based Account Orchestration</p>
                     </div>
-                ))}
+                    <button 
+                        onClick={() => setIsCreatingProfile(true)}
+                        className="flex items-center gap-2 px-6 py-3 bg-white text-black font-black uppercase italic tracking-tighter rounded-xl hover:bg-slate-200 transition-all active:scale-95 shadow-xl shadow-white/5"
+                    >
+                        <Plus className="w-5 h-5" /> New Profile
+                    </button>
+                </div>
 
-                {/* Coming Soon Area */}
-                <div className="xl:col-span-1 bg-slate-50 dark:bg-slate-900/50 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 flex flex-col justify-center">
-                    <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Coming Soon</h3>
-                    <div className="space-y-3">
-                        {COMING_SOON.map(c => (
-                            <div key={c.name} className="flex items-center gap-3 text-slate-500 dark:text-slate-400 opacity-75">
-                                <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
-                                    <c.icon className="w-4 h-4" />
+                {/* Main View: Profile Selection or Account Management */}
+                <div className="grid lg:grid-cols-[350px,1fr] gap-12">
+                    
+                    {/* Left: Profiles List */}
+                    <div className="space-y-4">
+                        <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Select Profile</h3>
+                        {profiles.map(p => (
+                            <button
+                                key={p.id}
+                                onClick={() => { setSelectedProfile(p); setShowPlatformSelect(false); }}
+                                className={`w-full group relative flex items-center justify-between p-6 rounded-2xl border transition-all overflow-hidden ${selectedProfile?.id === p.id ? 'bg-indigo-600 border-indigo-500 shadow-2xl shadow-indigo-600/20' : 'bg-white/5 border-white/5 hover:border-white/20'}`}
+                            >
+                                <div className="flex items-center gap-4 relative z-10">
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black italic text-xl ${selectedProfile?.id === p.id ? 'bg-white text-indigo-600' : 'bg-white/10 text-white'}`}>
+                                        {p.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="text-left">
+                                        <div className="font-black italic uppercase tracking-tighter text-lg">{p.name}</div>
+                                        <div className={`text-[10px] font-bold uppercase tracking-widest ${selectedProfile?.id === p.id ? 'text-indigo-200' : 'text-slate-500'}`}>
+                                            {p.accounts?.length || 0} Accounts
+                                        </div>
+                                    </div>
                                 </div>
-                                <span className="font-medium">{c.name}</span>
-                            </div>
+                                <ChevronRight className={`w-5 h-5 relative z-10 transition-transform ${selectedProfile?.id === p.id ? 'translate-x-1' : 'opacity-0 group-hover:opacity-100'}`} />
+                                {selectedProfile?.id === p.id && (
+                                    <motion.div layoutId="profile-bg" className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-indigo-700" />
+                                )}
+                            </button>
                         ))}
+
+                        {profiles.length === 0 && !isCreatingProfile && (
+                            <div className="p-12 text-center bg-white/5 border border-dashed border-white/10 rounded-2xl">
+                                <User className="w-12 h-12 text-slate-700 mx-auto mb-4" />
+                                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">No Profiles Found</p>
+                            </div>
+                        )}
                     </div>
+
+                    {/* Right: Profile Details & Account Linking */}
+                    <div className="min-h-[500px]">
+                        <AnimatePresence mode="wait">
+                            {selectedProfile ? (
+                                <motion.div 
+                                    key={selectedProfile.id}
+                                    initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+                                    className="space-y-8"
+                                >
+                                    {/* Selected Profile Header */}
+                                    <div className="bg-white/5 rounded-[2.5rem] p-10 border border-white/5 relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 p-10 opacity-5">
+                                            <Zap className="w-48 h-48 text-white fill-white" />
+                                        </div>
+                                        
+                                        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                                            <div className="space-y-2">
+                                                <h2 className="text-5xl font-black italic uppercase tracking-tighter">{selectedProfile.name}</h2>
+                                                <p className="text-slate-400 font-medium">Orchestrate social flows for this profile</p>
+                                            </div>
+                                            <button 
+                                                onClick={() => setShowPlatformSelect(!showPlatformSelect)}
+                                                className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase italic tracking-tighter rounded-2xl shadow-2xl shadow-indigo-600/30 transition-all active:scale-95 flex items-center gap-3"
+                                            >
+                                                {showPlatformSelect ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                                                {showPlatformSelect ? 'Cancel' : 'Link Social Account'}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Action: Platform Select Grid */}
+                                    {showPlatformSelect && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                                            className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4"
+                                        >
+                                            {PLATFORMS.map(p => (
+                                                <button
+                                                    key={p.id}
+                                                    onClick={() => startAuth(p.id)}
+                                                    className="group flex flex-col items-center justify-center p-8 rounded-3xl bg-white/5 border border-white/5 hover:border-white/20 hover:bg-white/[0.07] transition-all"
+                                                >
+                                                    <div className={`w-16 h-16 rounded-2xl ${p.bg} flex items-center justify-center mb-6 ${p.color} group-hover:scale-110 transition-transform`}>
+                                                        <p.icon className="w-8 h-8" />
+                                                    </div>
+                                                    <span className="font-black italic uppercase tracking-tighter text-sm">{p.name}</span>
+                                                </button>
+                                            ))}
+                                        </motion.div>
+                                    )}
+
+                                    {/* Connected Accounts List */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Connected Accounts</h3>
+                                        {(!selectedProfile.accounts || selectedProfile.accounts.length === 0) ? (
+                                            <div className="p-20 text-center bg-white/5 rounded-3xl border border-white/5">
+                                                <Globe className="w-12 h-12 text-slate-700 mx-auto mb-4" />
+                                                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">No Accounts Linked</p>
+                                                <p className="text-slate-600 text-xs mt-2">Link your first account to start publishing</p>
+                                            </div>
+                                        ) : (
+                                            <div className="grid gap-4">
+                                                {selectedProfile.accounts.map(acc => {
+                                                    const platformCfg = PLATFORMS.find(p => p.id === acc.platform);
+                                                    const Icon = platformCfg?.icon || Globe;
+                                                    return (
+                                                        <div 
+                                                            key={acc.accountId}
+                                                            className="flex items-center justify-between p-6 bg-white/5 rounded-2xl border border-white/5 group hover:border-white/10 transition-all"
+                                                        >
+                                                            <div className="flex items-center gap-4">
+                                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${platformCfg?.bg || 'bg-white/10'} ${platformCfg?.color || 'text-white'}`}>
+                                                                    <Icon className="w-6 h-6" />
+                                                                </div>
+                                                                <div>
+                                                                    <div className="font-black italic uppercase tracking-tighter text-lg">@{acc.username}</div>
+                                                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{acc.platform}</div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-4">
+                                                                <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-widest">
+                                                                    <CheckCircle2 className="w-3 h-3" /> Live
+                                                                </span>
+                                                                <button 
+                                                                    onClick={() => handleDisconnect(acc.platform, acc.accountId)}
+                                                                    className="p-3 hover:bg-red-500/10 hover:text-red-500 rounded-xl transition-all text-slate-500"
+                                                                >
+                                                                    <Trash2 className="w-5 h-5" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+                                </motion.div>
+                            ) : (
+                                <div className="h-full flex items-center justify-center p-20 text-center bg-white/5 rounded-[3rem] border border-dashed border-white/10">
+                                    <div className="space-y-6">
+                                        <div className="w-24 h-24 bg-white/5 border border-white/10 rounded-[2rem] flex items-center justify-center mx-auto scale-110">
+                                            <User className="w-10 h-10 text-slate-700" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-2">Select a Profile</h3>
+                                            <p className="text-slate-500 font-medium max-w-xs mx-auto">Click a profile on the left to manage its social accounts or create a new one.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
                 </div>
             </div>
 
-            {/* Active Connections List */}
-            {accounts.length > 0 && (
-                <div className="pt-10 border-t border-slate-200 dark:border-slate-800">
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Active Connections</h2>
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm">
-                                <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 uppercase text-xs font-bold text-slate-500">
-                                    <tr>
-                                        <th className="px-6 py-4">Platform</th>
-                                        <th className="px-6 py-4">Account Name</th>
-                                        <th className="px-6 py-4">Profile</th>
-                                        <th className="px-6 py-4 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                    {accounts.map(acc => {
-                                        const platformCfg = PLATFORMS.find(p => p.id === acc.platform);
-                                        const Icon = platformCfg?.icon || Globe;
-                                        const profileName = profiles.find(p => p.id === acc.profileId)?.name || 'Default';
-
-                                        return (
-                                            <tr key={acc.accountId} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={`p-2 rounded-lg ${platformCfg?.bg || 'bg-slate-100'} ${platformCfg?.color}`}>
-                                                            <Icon className="w-4 h-4" />
-                                                        </div>
-                                                        <span className="font-medium text-slate-700 dark:text-slate-300 capitalize">{acc.platform}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 text-slate-600 dark:text-slate-400 font-medium">
-                                                    @{acc.username}
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-600 text-xs font-bold dark:bg-indigo-900/30 dark:text-indigo-300">
-                                                        {profileName}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <button
-                                                        onClick={() => handleDisconnect(acc.platform, acc.accountId)}
-                                                        className="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
-                                                        title="Disconnect"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Profile Selection Modal */}
-            {connectingPlatform && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 p-6 space-y-6">
-                        <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Select User Profile</h3>
-                            <button onClick={() => setConnectingPlatform(null)} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
-                        </div>
-
-                        <div className="space-y-4">
-                            <p className="text-sm text-slate-500">
-                                Which user profile should this <strong>{connectingPlatform}</strong> account belong to?
-                            </p>
-
-                            <div className="grid gap-2 max-h-[240px] overflow-y-auto pr-1">
-                                {profiles.map(p => (
-                                    <button
-                                        key={p.id}
-                                        onClick={() => startAuth(connectingPlatform, p.id)}
-                                        className="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all text-left"
-                                    >
-                                        <span className="font-bold text-slate-700 dark:text-slate-200">{p.name}</span>
-                                        <span className="text-xs text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full">
-                                            {p.accounts?.length || 0} accounts
-                                        </span>
-                                    </button>
-                                ))}
+            {/* Create Profile Modal */}
+            <AnimatePresence>
+                {isCreatingProfile && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                            className="bg-black border border-white/10 p-12 rounded-[3.5rem] max-w-xl w-full text-center relative shadow-2xl shadow-indigo-600/10"
+                        >
+                            <button onClick={() => setIsCreatingProfile(false)} className="absolute top-8 right-8 text-slate-500 hover:text-white"><X className="w-8 h-8" /></button>
+                            
+                            <div className="w-20 h-20 bg-indigo-600 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-indigo-600/20">
+                                <Plus className="w-10 h-10 text-white" />
                             </div>
-
-                            <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-                                <a href="/profiles" className="flex items-center justify-center gap-2 text-sm text-indigo-600 font-bold hover:underline py-2">
-                                    <Plus className="w-4 h-4" /> Create New Profile
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+                            
+                            <h2 className="text-4xl font-black italic uppercase tracking-tighter mb-4">Create Profile</h2>
+                            <p className="text-slate-500 font-medium mb-10">Profiles group your social accounts for seamless brand management.</p>
+                            
+                            <input 
+                                autoFocus type="text" value={newProfileName} onChange={(e) => setNewProfileName(e.target.value)}
+                                placeholder="e.g. Acme Tech or Client A"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 text-2xl font-black italic uppercase italic tracking-tighter focus:outline-none focus:border-indigo-500 transition-all mb-8 text-center"
+                                onKeyDown={(e) => e.key === 'Enter' && handleCreateProfile()}
+                            />
+                            
+                            <button 
+                                onClick={handleCreateProfile}
+                                disabled={!newProfileName.trim() || loading}
+                                className="w-full bg-white text-black py-6 rounded-2xl font-black italic uppercase italic tracking-tighter text-xl shadow-2xl shadow-white/10 hover:bg-slate-200 transition-all active:scale-95 disabled:opacity-50"
+                            >
+                                {loading ? <Loader2 className="w-8 h-8 animate-spin mx-auto" /> : 'Create Profile'}
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

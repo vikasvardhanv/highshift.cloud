@@ -29,6 +29,7 @@ import SmartInbox from './pages/SmartInbox';
 import DeveloperApi from './pages/DeveloperApi';
 import InstantPublish from './pages/InstantPublish';
 import Profiles from './pages/Profiles';
+import Product from './pages/Product';
 
 import FeaturePublishing from './pages/features/Publishing';
 import FeatureAnalytics from './pages/features/Analytics';
@@ -96,6 +97,7 @@ function App() {
         <Route path="/data-deletion" element={<PublicLayout><DataDeletion /></PublicLayout>} />
         <Route path="/pricing" element={<LandingLayout><Pricing /></LandingLayout>} />
         <Route path="/how-it-works" element={<LandingLayout><HowItWorksPage /></LandingLayout>} />
+        <Route path="/product" element={<LandingLayout><Product /></LandingLayout>} />
         <Route path="/community" element={<LandingLayout><DevelopersPage /></LandingLayout>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Login />} />
