@@ -3,7 +3,7 @@ import { Mail, MapPin } from 'lucide-react';
 
 export default function Footer() {
     return (
-        <footer className="w-full bg-slate-950 border-t border-slate-800 pt-16 pb-8 relative z-50">
+        <footer className="w-full bg-black border-t border-white/5 pt-24 pb-12 relative z-50">
             <div className="container mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                     {/* Brand Column */}
