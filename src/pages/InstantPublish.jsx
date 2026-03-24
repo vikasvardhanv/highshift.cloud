@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
     Zap, Sparkles, Send, Loader2, Info, ChevronRight, Globe, 
     Instagram, Facebook, Twitter, Linkedin, Cloud, Key, Settings, User, Network
@@ -14,13 +14,21 @@ export default function InstantPublish() {
     const [status, setStatus] = useState(null);
     const [apiKey, setApiKey] = useState(localStorage.getItem('social_api_key') || '');
     
-    // Platform handles
+    const [userEmail, setUserEmail] = useState('');
     const [handles, setHandles] = useState({
         instagram: '',
         facebook: '',
         linkedin: '',
         twitter: ''
     });
+    
+    useEffect(() => {
+        const fetchUser = async () => {
+             const user = JSON.parse(localStorage.getItem('user_data') || '{}');
+             if (user.email) setUserEmail(user.email);
+        };
+        fetchUser();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,7 +37,7 @@ export default function InstantPublish() {
 
         try {
             await triggerInstantPublish({
-                email: 'user@example.com', // Placeholder
+                email: userEmail || 'user@example.com',
                 postTopic: topic,
                 targetAudience: audience,
                 date: date,
@@ -126,7 +134,11 @@ export default function InstantPublish() {
                             <div className="flex items-center gap-4 p-2 bg-white/5 rounded-2xl border border-white/5">
                                 <button 
                                     type="button"
-                                    onClick={() => window.location.href = '/connections'}
+                                    onClick={() => {
+                                        if (confirm("Go to Connections/Instances management?")) {
+                                            window.location.href = '/connections';
+                                        }
+                                    }}
                                     className="p-4 rounded-xl hover:bg-white/10 transition-all group relative"
                                     title="Social Raven (Redirect to Connections)"
                                 >
