@@ -750,6 +750,26 @@
               "fieldLabel": "Date",
               "placeholder": "01-01-26",
               "requiredField": true
+            },
+            {
+              "fieldLabel": "Instagram",
+              "placeholder": "@handle",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Facebook",
+              "placeholder": "@handle",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Linkedin",
+              "placeholder": "@handle",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "X",
+              "placeholder": "@handle",
+              "requiredField": false
             }
           ]
         },

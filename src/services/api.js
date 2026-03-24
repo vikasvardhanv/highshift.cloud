@@ -76,6 +76,16 @@ export const deleteKey = async (keyId) => {
     return res.data;
 };
 
+export const getDeveloperKeys = async () => {
+    const res = await api.get('/keys/developer');
+    return res.data.developer_keys;
+};
+
+export const updateDeveloperKeys = async (keys) => {
+    const res = await api.post('/keys/developer', keys);
+    return res.data.developer_keys;
+};
+
 export const regenerateKey = async () => {
     // Legacy support or remove?
     // Keeping for now if needed, but new system prefers createKey
