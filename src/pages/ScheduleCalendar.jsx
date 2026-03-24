@@ -78,9 +78,10 @@ export default function ScheduleCalendar() {
 
             if (Array.isArray(rawPosts)) {
                 rawPosts.forEach(post => {
-                    if (!post.time) return;
+                    const postTime = post.time || post.scheduled_time || post.scheduledFor || post.scheduled_for;
+                    if (!postTime) return;
 
-                    const d = new Date(post.time); // Parse ISO UTC
+                    const d = new Date(postTime); 
                     if (isNaN(d.getTime())) {
                         console.warn("Invalid date in scheduled post:", post);
                         return;
@@ -96,8 +97,8 @@ export default function ScheduleCalendar() {
 
                     grouped[dateKey].push({
                         ...post,
-                        time: timeStr, // Override ISO with display time
-                        rawTime: post.time // Keep raw for sorting if needed
+                        time: timeStr, 
+                        rawTime: postTime
                     });
                 });
             } else {
@@ -107,7 +108,6 @@ export default function ScheduleCalendar() {
             }
 
             setPosts(grouped);
-            loadActivity(); // Refresh activity log too
         } catch (err) {
             console.error("Failed to load schedule", err);
         } finally {
@@ -130,7 +130,6 @@ export default function ScheduleCalendar() {
     const handleDateClick = (day) => {
         const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         // Set up composer with this date? 
-        // For now, simple interaction
     };
 
     const renderCalendar = () => {
@@ -167,9 +166,9 @@ export default function ScheduleCalendar() {
                     </div>
 
                     <div className="space-y-1.5 overflow-y-auto max-h-[calc(100%-2rem)] custom-scrollbar">
-                        {dayPosts.map((post) => (
+                        {dayPosts.map((post, idx) => (
                             <div
-                                key={post.id}
+                                key={post.id || idx}
                                 onClick={(e) => { e.stopPropagation(); setSelectedPost(post); }}
                                 className="group/post relative p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 transition-all cursor-pointer shadow-sm hover:shadow-md"
                             >
@@ -179,7 +178,7 @@ export default function ScheduleCalendar() {
                                 </div>
                                 <div className="text-xs text-slate-600 dark:text-slate-400 truncate font-medium">{post.content}</div>
                                 <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover/post:opacity-100 transition-opacity">
-                                    {post.platforms.slice(0, 3).map((p, i) => (
+                                    {post.platforms?.slice(0, 3).map((p, i) => (
                                         <div key={i} className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
                                     ))}
                                 </div>
@@ -258,7 +257,7 @@ export default function ScheduleCalendar() {
                                 accent = 'emerald';
                             } else if (log.type === 'error') {
                                 icon = <Activity className="w-4 h-4 text-red-500" />;
-                                accent = 'amber'; // amber context for errors? or define red
+                                accent = 'amber'; 
                             }
 
                             if (log.platform === 'Twitter') {
@@ -266,7 +265,7 @@ export default function ScheduleCalendar() {
                             } else if (log.platform === 'Instagram') {
                                 accent = 'purple';
                             } else if (log.platform === 'Facebook') {
-                                accent = 'blue'; // Facebook blue similar to twitter or specific
+                                accent = 'blue'; 
                             }
 
                             return (
@@ -288,7 +287,7 @@ export default function ScheduleCalendar() {
                     )}
                 </div>
 
-                <div className="mt-auto p-6 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden group cursor-pointer">
+                <div className="mt-auto p-6 rounded-2xl bg-indigo-600 text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden group cursor-pointer">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform duration-700 group-hover:scale-110"></div>
                     <h3 className="text-lg font-bold relative z-10">View Full History</h3>
                     <p className="text-indigo-100 text-xs font-medium mt-1 relative z-10">Analyze your transmission logs.</p>
@@ -358,4 +357,18 @@ function ActivityCard({ icon, title, platform, time, accent }) {
             </div>
         </div>
     );
+}
+
+function formatTimeAgo(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) return 'just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return date.toLocaleDateString();
 }

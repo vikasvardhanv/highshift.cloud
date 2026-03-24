@@ -12,7 +12,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 
 export default function Home() {
     return (
-        <div className="bg-white dark:bg-black font-sans">
+        <div className="bg-black font-sans selection:bg-indigo-500/30">
 
             {/* THE EVOLUTION SEQUENCE (Taste-Skill) */}
             <VideoHero />
@@ -134,12 +134,12 @@ export default function Home() {
             </div>
 
             {/* CTA Bottom */}
-            <div className="py-20 bg-primary">
+            <div className="py-32 bg-black border-t border-white/5">
                 <div className="container mx-auto px-4 text-center">
-                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-8">Ready to modernize your social stack?</h2>
-                    <Link to="/login" className="inline-flex items-center gap-2 px-10 py-5 bg-white text-primary font-bold text-xl rounded-2xl hover:bg-slate-50 transition-colors shadow-2xl">
-                        Start 30-Day Free Trial
-                        <ArrowRight className="w-6 h-6" />
+                    <h2 className="text-4xl md:text-7xl font-black text-white mb-12 uppercase italic tracking-tighter">Ready to scale?</h2>
+                    <Link to="/login" className="inline-flex items-center gap-4 px-12 py-6 bg-white text-black font-black text-2xl rounded-2xl hover:bg-slate-200 transition-all shadow-2xl hover:scale-105">
+                        Start Free Trial
+                        <ArrowRight className="w-8 h-8" />
                     </Link>
                 </div>
             </div>
