@@ -8,9 +8,10 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                     {/* Brand Column */}
                     <div className="space-y-4">
-                        <Link to="/" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                            Social Raven Cloud
-                        </Link>
+                    <div className="flex items-center gap-4 group">
+                        <img src="/images/image.png" alt="Social Raven Logo" className="w-10 h-10 object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" />
+                        <span className="text-xl font-black text-white italic uppercase tracking-tighter">Social Raven</span>
+                    </div>
                         <p className="text-slate-300 text-sm leading-relaxed">
                             Seamlessly share your videos across multiple platforms. Automate your social media presence with our powerful API.
                         </p>
@@ -54,7 +55,7 @@ export default function Footer() {
                 </div>
 
                 <div className="pt-8 border-t border-slate-800 text-center text-slate-500 text-xs">
-                    © {new Date().getFullYear()} Social Raven Cloud. All rights reserved. Operado por TONVI TECH SL.
+                    © {new Date().getFullYear()} Social Raven. All rights reserved. Operado por TONVI TECH SL.
                 </div>
             </div>
         </footer>

@@ -58,19 +58,12 @@ export default function Navbar() {
 
                     {/* Logo Area */}
                     <div className="flex-shrink-0">
-                        <Link to="/" className="flex items-center gap-2">
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center
-                                ${apiKey ? 'bg-gradient-to-br from-primary to-secondary shadow-lg' : 'bg-white shadow-sm'}`}>
-                                <span className={`font-bold ${apiKey ? 'text-white' : 'text-slate-900'}`}>R</span>
-                            </div>
-                            <span className={`font-bold text-xl tracking-tight
-                                ${apiKey
-                                    ? 'bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-gray-400'
-                                    : 'text-white'
-                                }`}>
-                                Social Raven Cloud
-                            </span>
-                        </Link>
+                        <Link to="/" className="flex items-center gap-3 group">
+                        <div className="w-12 h-12 flex items-center justify-center">
+                            <img src="/images/image.png" alt="Social Raven Logo" className="w-full h-full object-contain" />
+                        </div>
+                        <span className="text-2xl font-black text-white italic uppercase tracking-tighter">Social Raven</span>
+                    </Link>
                     </div>
 
                     {/* Desktop Navigation */}
