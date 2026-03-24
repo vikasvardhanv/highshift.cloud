@@ -121,8 +121,8 @@ export const generateContent = async (topic, platform, tone) => {
     return res.data;
 };
 
-export const instantPublish = async (data) => {
-    // data: { email, postTopic, targetAudience, date }
+export const triggerInstantPublish = async (data) => {
+    // data: { email, postTopic, targetAudience, date, system, apiKey, ...handles }
     const res = await api.post('/ai/instant-publish', data);
     return res.data;
 };
