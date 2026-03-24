@@ -30,14 +30,8 @@ export default function Navbar() {
 
     const publicNavItems = [
         {
-            name: 'Platform',
-            children: [
-                { name: 'Publishing', icon: Calendar, desc: 'Schedule & Publish', path: '/features/publishing' },
-                { name: 'Analytics', icon: BarChart3, desc: 'Measure Performace', path: '/features/analytics' },
-                { name: 'Engagement', icon: MessageSquare, desc: 'Social Inbox', path: '/features/engagement' },
-                { name: 'Listening', icon: Activity, desc: 'Monitor Trends', path: '/features/listening' },
-                { name: 'Advocacy', icon: Users, desc: 'Employee Advocacy', path: '/features/advocacy' },
-            ]
+            name: 'How It Works',
+            path: '/how-it-works'
         },
         {
             name: 'Solutions',
@@ -48,13 +42,8 @@ export default function Navbar() {
             ]
         },
         {
-            name: 'Resources',
-            children: [
-                { name: 'API Docs', icon: Code, desc: 'Build with Social Raven', path: '/docs' },
-                { name: 'Help Center', icon: LifeBuoy, desc: 'Guides & Support', path: '/help' },
-                { name: 'Get API Key', icon: Key, desc: 'Developer Settings', path: '/dashboard' },
-                { name: 'Blog', icon: BookOpen, desc: 'Tips & Strategy', path: '/blog' },
-            ]
+            name: 'Community',
+            path: '/community'
         },
     ];
 
@@ -107,30 +96,36 @@ export default function Navbar() {
                             <div className="flex items-center gap-2">
                                 {publicNavItems.map((item) => (
                                     <div key={item.name} className="group relative">
-                                        <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">
-                                            {item.name} <ChevronDown className="w-4 h-4 opacity-50 group-hover:rotate-180 transition-transform" />
-                                        </button>
+                                        {item.path ? (
+                                            <Link to={item.path} className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors block">
+                                                {item.name}
+                                            </Link>
+                                        ) : (
+                                            <>
+                                                <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">
+                                                    {item.name} <ChevronDown className="w-4 h-4 opacity-50 group-hover:rotate-180 transition-transform" />
+                                                </button>
 
-                                        {/* Dropdown */}
-                                        {/* Dropdown - Fixed Hover Bridge */}
-                                        <div className="hidden group-hover:block absolute top-full left-1/2 -translate-x-1/2 w-72 pt-2 z-50 animate-fade-in-up">
-                                            <div className="bg-slate-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden p-2">
-                                                <div className="px-3 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-white/5 mb-1">{item.name}</div>
-                                                <div className="space-y-1">
-                                                    {item.children.map(child => (
-                                                        <Link key={child.name} to={child.path} className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/10 transition-colors group/link">
-                                                            <div className="mt-1 p-1.5 bg-white/5 rounded-lg group-hover/link:bg-primary group-hover/link:text-white transition-all text-slate-400">
-                                                                <child.icon className="w-4 h-4" />
-                                                            </div>
-                                                            <div>
-                                                                <div className="text-sm font-bold text-slate-200 group-hover/link:text-white">{child.name}</div>
-                                                                <div className="text-xs text-slate-500 group-hover/link:text-slate-400 leading-snug">{child.desc}</div>
-                                                            </div>
-                                                        </Link>
-                                                    ))}
+                                                <div className="hidden group-hover:block absolute top-full left-1/2 -translate-x-1/2 w-72 pt-2 z-50 animate-fade-in-up">
+                                                    <div className="bg-slate-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden p-2">
+                                                        <div className="px-3 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-white/5 mb-1">{item.name}</div>
+                                                        <div className="space-y-1">
+                                                            {item.children.map(child => (
+                                                                <Link key={child.name} to={child.path} className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/10 transition-colors group/link">
+                                                                    <div className="mt-1 p-1.5 bg-white/5 rounded-lg group-hover/link:bg-primary group-hover/link:text-white transition-all text-slate-400">
+                                                                        <child.icon className="w-4 h-4" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="text-sm font-bold text-slate-200 group-hover/link:text-white">{child.name}</div>
+                                                                        <div className="text-xs text-slate-500 group-hover/link:text-slate-400 leading-snug">{child.desc}</div>
+                                                                    </div>
+                                                                </Link>
+                                                            ))}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
+                                            </>
+                                        )}
                                     </div>
                                 ))}
                                 <Link to="/pricing" className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">Plans & Pricing</Link>
@@ -187,20 +182,32 @@ export default function Navbar() {
                             <>
                                 {publicNavItems.map(item => (
                                     <div key={item.name} className="border-b border-white/5 pb-4">
-                                        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{item.name}</div>
-                                        <div className="grid grid-cols-1 gap-2">
-                                            {item.children.map(child => (
-                                                <Link
-                                                    key={child.name}
-                                                    to={child.path}
-                                                    onClick={() => setIsMenuOpen(false)}
-                                                    className="flex items-center gap-3 p-2 rounded-lg text-slate-300 hover:bg-white/5 hover:text-white"
-                                                >
-                                                    <child.icon className="w-4 h-4 text-slate-500" />
-                                                    {child.name}
-                                                </Link>
-                                            ))}
-                                        </div>
+                                        {item.path ? (
+                                            <Link
+                                                to={item.path}
+                                                onClick={() => setIsMenuOpen(false)}
+                                                className="block py-2 text-slate-300 hover:text-white"
+                                            >
+                                                {item.name}
+                                            </Link>
+                                        ) : (
+                                            <>
+                                                <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{item.name}</div>
+                                                <div className="grid grid-cols-1 gap-2">
+                                                    {item.children.map(child => (
+                                                        <Link
+                                                            key={child.name}
+                                                            to={child.path}
+                                                            onClick={() => setIsMenuOpen(false)}
+                                                            className="flex items-center gap-3 p-2 rounded-lg text-slate-300 hover:bg-white/5 hover:text-white"
+                                                        >
+                                                            <child.icon className="w-4 h-4 text-slate-500" />
+                                                            {child.name}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 ))}
                                 <Link to="/pricing" onClick={() => setIsMenuOpen(false)} className="block py-2 text-slate-300 font-bold">Pricing</Link>

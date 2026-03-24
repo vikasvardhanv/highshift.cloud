@@ -21,6 +21,9 @@ import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
+import DevelopersPage from './pages/DevelopersPage';
+import HowItWorksPage from './pages/HowItWorksPage';
+import RavenCursor from './components/RavenCursor';
 import DashboardLayout from './layouts/DashboardLayout';
 import SmartInbox from './pages/SmartInbox';
 import DeveloperApi from './pages/DeveloperApi';
@@ -69,6 +72,7 @@ function PublicLayout({ children }) {
 function App() {
   return (
     <Router>
+      <RavenCursor />
       <Routes>
         {/* Marketing Routes */}
         <Route path="/" element={<LandingLayout><Home /></LandingLayout>} />
@@ -91,7 +95,8 @@ function App() {
         <Route path="/privacy" element={<PublicLayout><PrivacyPolicy /></PublicLayout>} />
         <Route path="/data-deletion" element={<PublicLayout><DataDeletion /></PublicLayout>} />
         <Route path="/pricing" element={<LandingLayout><Pricing /></LandingLayout>} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/how-it-works" element={<LandingLayout><HowItWorksPage /></LandingLayout>} />
+        <Route path="/community" element={<LandingLayout><DevelopersPage /></LandingLayout>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

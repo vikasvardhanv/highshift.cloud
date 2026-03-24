@@ -14,72 +14,10 @@ export default function Home() {
     return (
         <div className="bg-white dark:bg-black font-sans">
 
-            {/* HERO SECTION */}
-            <div className="relative bg-slate-950 pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-col lg:flex-row items-center gap-16">
-
-                        {/* Text Content */}
-                        <div className="flex-1 text-center lg:text-left z-10">
-                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6 tracking-tight">
-                                The Intelligent OS for <br />
-                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-300 via-indigo-300 to-slate-500">
-                                    Social Growth
-                                </span>
-                            </h1>
-                            <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                                Stop manually posting. Start dominating. Automate scheduling, unify your inbox, and prove ROI with AI-powered precision across every channel.
-                            </p>
-
-                            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                                <Link
-                                    to={localStorage.getItem('token') || localStorage.getItem('social_api_key') ? "/publishing" : "/login"}
-                                    className="px-8 py-4 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl text-lg transition-all shadow-xl hover:shadow-primary/10 flex items-center gap-2"
-                                >
-                                    {localStorage.getItem('token') || localStorage.getItem('social_api_key') ? 'Enter Command Center' : 'Start Free Trial'}
-                                    <ArrowRight className="w-5 h-5" />
-                                </Link>
-                                <button className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl text-lg transition-all border border-white/5">
-                                    Live Product Tour
-                                </button>
-                            </div>
-                            <p className="mt-4 text-xs text-slate-500 uppercase tracking-widest font-bold">No credit card required • GDPR Compliant • 99.9% Uptime</p>
-                        </div>
-
-                        {/* Hero Image & Widgets */}
-                        <div className="flex-1 relative w-full max-w-xl lg:max-w-none">
-                            {/* Updated Container */}
-                            <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-slate-950 group border border-white/5">
-                                <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent opacity-50 mix-blend-overlay z-10"></div>
-                                <img
-                                    src={heroImage}
-                                    alt="Social Media Manager optimizing workflow"
-                                    className="w-full h-auto object-cover opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
-                                />
-
-                                {/* Floating Widgets Overlay */}
-                                <div className="absolute inset-0 z-20 pointer-events-none">
-                                    <div className="relative w-full h-full">
-                                        <SentimentCard />
-                                        <SocialPostCard />
-                                        <AiAssistCard />
-                                        <StatsCard />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Glow effects */}
-                            <div className="absolute -top-20 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
-                            <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-slate-500/5 rounded-full blur-[100px] pointer-events-none -z-10"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Video Forming Section - Taste-Skill Integration */}
+            {/* THE EVOLUTION SEQUENCE (Taste-Skill) */}
             <VideoHero />
 
-            {/* STRATEGIC VALUE SECTION (Formerly Use Cases) */}
+            {/* STRATEGIC VALUE SECTION */}
             <div className="py-24 bg-white dark:bg-black relative z-10">
                 <div className="container mx-auto px-4 max-w-6xl">
                     <div className="mb-12">
@@ -186,69 +124,6 @@ export default function Home() {
                             </div>
                         </div>
 
-                    </div>
-                </div>
-            </div>
-
-            {/* HOW IT WORKS (Animated) */}
-            <HowItWorks />
-
-            {/* DEVELOPER & COMMUNITY */}
-            <div className="py-24 bg-white dark:bg-black">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Developers & Community</h2>
-                        <p className="text-slate-500">Extensible infrastructure for scaling teams.</p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                        {/* API Card */}
-                        <div className="group bg-slate-950 rounded-3xl p-8 relative overflow-hidden text-white hover:scale-[1.02] transition-transform duration-300">
-                            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                                <Boxes className="w-32 h-32" />
-                            </div>
-                            <div className="relative z-10">
-                                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-6">
-                                    <Code className="w-6 h-6 text-green-400" />
-                                </div>
-                                <h3 className="text-xl font-bold mb-3">Social Raven API</h3>
-                                <p className="text-slate-400 mb-6 text-sm">
-                                    Programmatic access to publishing, analytics, and listening data. Build custom dashboards.
-                                </p>
-                                <div className="bg-black/50 rounded-lg p-3 font-mono text-xs text-green-400 mb-6 border border-white/10">
-                                    curl -X POS /api/v1/schedule
-                                </div>
-                                <Link to="/docs" className="inline-flex items-center gap-2 text-sm font-bold hover:text-green-400 transition-colors">
-                                    Read API Docs <ArrowRight className="w-4 h-4" />
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="bg-slate-50 dark:bg-white/5 rounded-3xl p-8 border border-slate-100 dark:border-white/10 hover:border-primary/50 transition-colors hover:shadow-lg">
-                            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
-                                <Globe className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Strategy Hub</h3>
-                            <p className="text-slate-500 dark:text-gray-400 mb-6 text-sm">
-                                Masterclasses, case studies, and templates from top social strategists.
-                            </p>
-                            <Link to="/blog" className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
-                                Browse Resources <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </div>
-
-                        <div className="bg-slate-50 dark:bg-white/5 rounded-3xl p-8 border border-slate-100 dark:border-white/10 hover:border-primary/50 transition-colors hover:shadow-lg">
-                            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-500/20 rounded-xl flex items-center justify-center mb-6">
-                                <Zap className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Knowledge Base</h3>
-                            <p className="text-slate-500 dark:text-gray-400 mb-6 text-sm">
-                                24/7 self-service support, video tutorials, and implementation guides.
-                            </p>
-                            <Link to="/help" className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
-                                Visit Help Center <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </div>
                     </div>
                 </div>
             </div>
