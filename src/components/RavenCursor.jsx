@@ -1,6 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { motion, useSpring, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useSpring, useMotionValue } from 'framer-motion';
 
+/**
+ * RavenCursor: High-performance cinematic cursor.
+ * Uses rotation and simplified wing flap (via scale/rotate) to avoid 
+ * SVG path interpolation errors in some environments.
+ */
 export default function RavenCursor() {
     const [isVisible, setIsVisible] = useState(false);
     
@@ -16,9 +21,6 @@ export default function RavenCursor() {
     // For rotation relative to movement
     const [rotation, setRotation] = useState(0);
     const lastPos = useRef({ x: 0, y: 0 });
-
-    // hooks must be called before conditional returns
-    const RavenScale = useTransform(x, [0, 1000], [0.8, 1.2]);
 
     useEffect(() => {
         const handleMouseMove = (e) => {
@@ -67,12 +69,11 @@ export default function RavenCursor() {
                 rotate: rotation,
                 translateX: '-50%',
                 translateY: '-50%',
-                scale: RavenScale
             }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
         >
-            {/* The Raven Silhouette */}
+            {/* The Raven Silhouette (Simplified for stability) */}
             <svg 
                 width="60" 
                 height="60" 
@@ -86,31 +87,25 @@ export default function RavenCursor() {
                     d="M50 40C55 40 60 45 60 50C60 55 55 60 50 60C45 60 40 55 40 50C40 45 45 40 50 40Z" 
                     fill="currentColor" 
                 />
-                {/* Wings with flap animation */}
+                
+                {/* Left Wing (Simplified Rotate instead of path morph) */}
                 <motion.path
                     d="M40 50C20 40 10 20 5 10C10 30 20 45 40 50Z"
                     fill="currentColor"
-                    animate={{ 
-                        d: [
-                            "M40 50C20 40 10 20 5 10C10 30 20 45 40 50Z",
-                            "M40 50C20 55 10 70 5 85C10 65 20 55 40 50Z",
-                            "M40 50C20 40 10 20 5 10C10 30 20 45 40 50Z"
-                        ] 
-                    }}
-                    transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }}
+                    style={{ originX: '40px', originY: '50px' }}
+                    animate={{ rotate: [0, 15, 0] }}
+                    transition={{ repeat: Infinity, duration: 0.4, ease: "easeInOut" }}
                 />
+
+                {/* Right Wing (Simplified Rotate instead of path morph) */}
                 <motion.path
                     d="M60 50C80 40 90 20 95 10C90 30 80 45 60 50Z"
                     fill="currentColor"
-                    animate={{ 
-                        d: [
-                            "M60 50C80 40 90 20 95 10C90 30 80 45 60 50Z",
-                            "M60 50C80 55 90 70 95 85C90 65 80 55 60 50Z",
-                            "M60 50C80 40 90 20 95 10C90 30 80 45 60 50Z"
-                        ] 
-                    }}
-                    transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }}
+                    style={{ originX: '60px', originY: '50px' }}
+                    animate={{ rotate: [0, -15, 0] }}
+                    transition={{ repeat: Infinity, duration: 0.4, ease: "easeInOut" }}
                 />
+
                 {/* Beak */}
                 <path d="M50 60L50 65L48 62L50 60Z" fill="#FBBF24" />
                 {/* Eye */}
