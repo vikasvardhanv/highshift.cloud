@@ -17,6 +17,9 @@ export default function RavenCursor() {
     const [rotation, setRotation] = useState(0);
     const lastPos = useRef({ x: 0, y: 0 });
 
+    // hooks must be called before conditional returns
+    const RavenScale = useTransform(x, [0, 1000], [0.8, 1.2]);
+
     useEffect(() => {
         const handleMouseMove = (e) => {
             if (!isVisible) setIsVisible(true);
@@ -64,7 +67,7 @@ export default function RavenCursor() {
                 rotate: rotation,
                 translateX: '-50%',
                 translateY: '-50%',
-                scale: useTransform(x, [0, 1000], [0.8, 1.2]) // Subtle scale change based on position
+                scale: RavenScale
             }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
