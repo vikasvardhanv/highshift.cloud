@@ -54,50 +54,50 @@ export default function InstantPublish() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white p-8">
+        <div className="min-h-screen bg-slate-50 text-slate-900 p-8">
             <div className="max-w-4xl mx-auto">
                 
                 {/* Header */}
                 <div className="mb-12">
-                    <h1 className="text-6xl font-black italic uppercase tracking-tighter mb-4">Instant Publish</h1>
+                    <h1 className="text-6xl font-black italic uppercase tracking-tighter mb-4 text-slate-900">Instant Publish</h1>
                     <p className="text-slate-500 font-bold uppercase tracking-[0.2em] text-xs">Autonomous Content Distribution Engine</p>
                 </div>
 
-                <div className="bg-white/5 border border-white/5 rounded-[3rem] p-12 backdrop-blur-3xl shadow-2xl space-y-12">
+                <div className="bg-white border border-slate-200 rounded-[3rem] p-12 shadow-2xl space-y-12">
                     
                     {/* Main Form */}
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="grid md:grid-cols-2 gap-8">
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2">Core Topic</label>
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Core Topic</label>
                                 <textarea
                                     required
                                     value={topic}
                                     onChange={(e) => setTopic(e.target.value)}
                                     placeholder="What's the story today?"
-                                    className="w-full h-40 bg-white/5 border border-white/5 rounded-3xl p-6 text-xl font-black italic uppercase italic tracking-tighter focus:outline-none focus:border-indigo-500 transition-all resize-none"
+                                    className="w-full h-40 bg-slate-50 border border-slate-100 rounded-3xl p-6 text-xl font-black italic uppercase italic tracking-tighter focus:outline-none focus:border-indigo-500 transition-all resize-none text-slate-800"
                                 />
                             </div>
                             <div className="space-y-8">
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2">Target Audience</label>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Target Audience</label>
                                     <input
                                         type="text"
                                         required
                                         value={audience}
                                         onChange={(e) => setAudience(e.target.value)}
                                         placeholder="e.g. Tech Founders"
-                                        className="w-full bg-white/5 border border-white/5 rounded-2xl p-6 font-black italic uppercase italic tracking-tighter focus:outline-none focus:border-indigo-500 transition-all"
+                                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-6 font-black italic uppercase italic tracking-tighter focus:outline-none focus:border-indigo-500 transition-all text-slate-800"
                                     />
                                 </div>
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2">Publish Date</label>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Publish Date</label>
                                     <input
                                         type="date"
                                         required
                                         value={date}
                                         onChange={(e) => setDate(e.target.value)}
-                                        className="w-full bg-white/5 border border-white/5 rounded-2xl p-6 font-black italic uppercase italic tracking-tighter focus:outline-none focus:border-indigo-500 transition-all"
+                                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-6 font-black italic uppercase italic tracking-tighter focus:outline-none focus:border-indigo-500 transition-all text-slate-800"
                                     />
                                 </div>
                             </div>
@@ -128,10 +128,10 @@ export default function InstantPublish() {
                         </div>
 
                         {/* Choice Bar & API Key */}
-                        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center gap-8">
+                        <div className="pt-12 border-t border-slate-100 flex flex-col md:flex-row items-center gap-8">
                             
                             {/* System Choice Icons */}
-                            <div className="flex items-center gap-4 p-2 bg-white/5 rounded-2xl border border-white/5">
+                            <div className="flex items-center gap-4 p-2 bg-slate-50 rounded-2xl border border-slate-100">
                                 <button 
                                     type="button"
                                     onClick={() => {
@@ -139,26 +139,26 @@ export default function InstantPublish() {
                                             window.location.href = '/connections';
                                         }
                                     }}
-                                    className="p-4 rounded-xl hover:bg-white/10 transition-all group relative"
+                                    className="p-4 rounded-xl hover:bg-indigo-600/10 transition-all group relative"
                                     title="Social Raven (Redirect to Connections)"
                                 >
                                     <img src="/images/image.png" alt="R" className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-black border border-white/10 px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Social Raven</div>
+                                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-800 px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-white">Social Raven</div>
                                 </button>
-                                <div className="w-px h-8 bg-white/10" />
+                                <div className="w-px h-8 bg-slate-200" />
                                 <button 
                                     type="button"
-                                    className="p-4 rounded-xl hover:bg-white/10 transition-all group relative bg-indigo-600/20 text-indigo-400"
+                                    className="p-4 rounded-xl transition-all group relative bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
                                     title="Upload Post System"
                                 >
                                     <Cloud className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-black border border-white/10 px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Upload Post</div>
+                                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-800 px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-white">Upload Post</div>
                                 </button>
                             </div>
 
                             {/* API Key Input */}
                             <div className="flex-1 w-full relative group">
-                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-500 transition-colors">
+                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors">
                                     <Key className="w-5 h-5" />
                                 </div>
                                 <input
@@ -169,11 +169,11 @@ export default function InstantPublish() {
                                         localStorage.setItem('social_api_key', e.target.value);
                                     }}
                                     placeholder="Enter System API Key for Upload Post"
-                                    className="w-full bg-white/5 border border-white/5 rounded-2xl pl-16 pr-6 py-6 font-bold italic text-sm tracking-widest focus:outline-none focus:border-indigo-500 transition-all"
+                                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-16 pr-6 py-6 font-bold italic text-sm tracking-widest focus:outline-none focus:border-indigo-500 transition-all text-slate-800"
                                 />
                                 <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active</span>
-                                    <div className={`w-2 h-2 rounded-full ${apiKey ? 'bg-emerald-500 shadow-lg shadow-emerald-500/50' : 'bg-slate-700'}`} />
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active</span>
+                                    <div className={`w-2 h-2 rounded-full ${apiKey ? 'bg-emerald-500 shadow-lg shadow-emerald-500/50' : 'bg-slate-300'}`} />
                                 </div>
                             </div>
                         </div>
@@ -182,7 +182,7 @@ export default function InstantPublish() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full h-24 bg-white text-black rounded-3xl flex items-center justify-center gap-4 hover:bg-slate-200 transition-all active:scale-[0.98] shadow-2xl shadow-white/10 group overflow-hidden relative"
+                            className="w-full h-24 bg-indigo-600 text-white rounded-3xl flex items-center justify-center gap-4 hover:bg-indigo-700 transition-all active:scale-[0.98] shadow-2xl shadow-indigo-600/20 group overflow-hidden relative"
                         >
                             {loading ? (
                                 <Loader2 className="w-10 h-10 animate-spin" />

@@ -147,9 +147,9 @@ export default function ScheduleCalendar() {
             const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
 
             days.push(
-                <div key={day} className={`h-32 border border-white/5 p-2 transition-all hover:bg-white/5 relative group ${isToday ? 'bg-indigo-600/10' : 'bg-black'}`}>
+                <div key={day} className={`h-32 border border-slate-100 p-2 transition-all hover:bg-slate-50 relative group ${isToday ? 'bg-indigo-50/30' : 'bg-white'}`}>
                     <div className="flex justify-between items-start mb-2">
-                        <span className={`text-sm font-black italic uppercase tracking-tighter w-7 h-7 flex items-center justify-center rounded-lg ${isToday ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'text-slate-500'}`}>
+                        <span className={`text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-lg ${isToday ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'text-slate-500'}`}>
                             {day}
                         </span>
                         {dayPosts.length > 0 && (
@@ -197,19 +197,19 @@ export default function ScheduleCalendar() {
             <div className="flex-1 flex flex-col space-y-6 overflow-hidden">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-1">
                     <div>
-                        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Temporal Command</h1>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">Orchestrate your global transmission capability.</p>
+                        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Temporal Command</h1>
+                        <p className="text-slate-500 text-sm font-medium mt-1">Orchestrate your global transmission capability.</p>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 bg-white/5 p-1.5 rounded-xl border border-white/5 shadow-sm">
-                            <button onClick={() => navigateMonth(-1)} className="p-2 hover:bg-white/10 rounded-lg text-slate-400 transition-colors">
+                        <div className="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
+                            <button onClick={() => navigateMonth(-1)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
                                 <ChevronLeft className="w-5 h-5" />
                             </button>
-                            <span className="text-sm font-black italic uppercase tracking-widest text-white min-w-[120px] text-center">
+                            <span className="text-sm font-bold text-slate-900 min-w-[120px] text-center uppercase tracking-wider">
                                 {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
                             </span>
-                            <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-white/10 rounded-lg text-slate-400 transition-colors">
+                            <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
                                 <ChevronRight className="w-5 h-5" />
                             </button>
                         </div>
@@ -223,10 +223,10 @@ export default function ScheduleCalendar() {
                     </div>
                 </div>
 
-                <div className="flex-1 bg-black rounded-[2rem] border border-white/5 shadow-2xl overflow-hidden flex flex-col">
-                    <div className="grid grid-cols-7 border-b border-white/5 bg-black/50 backdrop-blur-sm z-10">
+                <div className="flex-1 bg-white rounded-[2rem] border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
+                    <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50/50 backdrop-blur-sm z-10">
                         {DAYS.map(day => (
-                            <div key={day} className="py-4 text-center text-xs font-black text-slate-500 uppercase tracking-[0.2em]">
+                            <div key={day} className="py-4 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
                                 {day}
                             </div>
                         ))}

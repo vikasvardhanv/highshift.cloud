@@ -78,17 +78,17 @@ export default function Connections() {
     };
 
     if (loading && profiles.length === 0) {
-        return <div className="min-h-screen bg-black flex items-center justify-center"><Loader2 className="animate-spin text-indigo-500 w-10 h-10" /></div>;
+        return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-indigo-600 w-10 h-10" /></div>;
     }
 
     return (
-        <div className="min-h-screen bg-black text-white p-8">
+        <div className="min-h-screen bg-slate-50 text-slate-900 p-8">
             <div className="max-w-6xl mx-auto space-y-12">
                 
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
-                        <h1 className="text-4xl font-black italic uppercase tracking-tighter mb-2">Social Connections</h1>
+                        <h1 className="text-4xl font-black italic uppercase tracking-tighter mb-2 text-slate-900">Social Connections</h1>
                         <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Profile-Based Account Orchestration</p>
                     </div>
                     <button 
@@ -109,7 +109,7 @@ export default function Connections() {
                             <button
                                 key={p.id}
                                 onClick={() => { setSelectedProfile(p); setShowPlatformSelect(false); }}
-                                className={`w-full group relative flex items-center justify-between p-6 rounded-2xl border transition-all overflow-hidden ${selectedProfile?.id === p.id ? 'bg-indigo-600 border-indigo-500 shadow-2xl shadow-indigo-600/20' : 'bg-white/5 border-white/5 hover:border-white/20'}`}
+                                className={`w-full group relative flex items-center justify-between p-6 rounded-2xl border transition-all overflow-hidden ${selectedProfile?.id === p.id ? 'bg-indigo-600 border-indigo-600 shadow-2xl shadow-indigo-600/20' : 'bg-white border-slate-200 hover:border-indigo-300'}`}
                             >
                                 <div className="flex items-center gap-4 relative z-10">
                                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black italic text-xl ${selectedProfile?.id === p.id ? 'bg-white text-indigo-600' : 'bg-white/10 text-white'}`}>
@@ -147,15 +147,15 @@ export default function Connections() {
                                     className="space-y-8"
                                 >
                                     {/* Selected Profile Header */}
-                                    <div className="bg-white/5 rounded-[2.5rem] p-10 border border-white/5 relative overflow-hidden">
+                                    <div className="bg-white rounded-[2.5rem] p-10 border border-slate-200 relative overflow-hidden shadow-sm">
                                         <div className="absolute top-0 right-0 p-10 opacity-5">
-                                            <Zap className="w-48 h-48 text-white fill-white" />
+                                            <Zap className="w-48 h-48 text-indigo-600 fill-indigo-600" />
                                         </div>
                                         
                                         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                                             <div className="space-y-2">
-                                                <h2 className="text-5xl font-black italic uppercase tracking-tighter">{selectedProfile.name}</h2>
-                                                <p className="text-slate-400 font-medium">Orchestrate social flows for this profile</p>
+                                                <h2 className="text-5xl font-black italic uppercase tracking-tighter text-slate-900">{selectedProfile.name}</h2>
+                                                <p className="text-slate-500 font-medium">Orchestrate social flows for this profile</p>
                                             </div>
                                             <button 
                                                 onClick={() => setShowPlatformSelect(!showPlatformSelect)}
@@ -205,7 +205,7 @@ export default function Connections() {
                                                     return (
                                                         <div 
                                                             key={acc.accountId}
-                                                            className="flex items-center justify-between p-6 bg-white/5 rounded-2xl border border-white/5 group hover:border-white/10 transition-all"
+                                                            className="flex items-center justify-between p-6 bg-white rounded-2xl border border-slate-100 group hover:border-indigo-200 transition-all shadow-sm"
                                                         >
                                                             <div className="flex items-center gap-4">
                                                                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${platformCfg?.bg || 'bg-white/10'} ${platformCfg?.color || 'text-white'}`}>
@@ -235,13 +235,13 @@ export default function Connections() {
                                     </div>
                                 </motion.div>
                             ) : (
-                                <div className="h-full flex items-center justify-center p-20 text-center bg-white/5 rounded-[3rem] border border-dashed border-white/10">
+                                <div className="h-full flex items-center justify-center p-20 text-center bg-white rounded-[3rem] border border-dashed border-slate-200 shadow-sm">
                                     <div className="space-y-6">
-                                        <div className="w-24 h-24 bg-white/5 border border-white/10 rounded-[2rem] flex items-center justify-center mx-auto scale-110">
-                                            <User className="w-10 h-10 text-slate-700" />
+                                        <div className="w-24 h-24 bg-slate-50 border border-slate-100 rounded-[2rem] flex items-center justify-center mx-auto scale-110">
+                                            <User className="w-10 h-10 text-slate-400" />
                                         </div>
                                         <div>
-                                            <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-2">Select a Profile</h3>
+                                            <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-2 text-slate-800">Select a Profile</h3>
                                             <p className="text-slate-500 font-medium max-w-xs mx-auto">Click a profile on the left to manage its social accounts or create a new one.</p>
                                         </div>
                                     </div>
