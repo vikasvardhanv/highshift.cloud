@@ -128,97 +128,105 @@ export default function InstantPublish() {
                             </div>
                         </div>
 
-                        {/* Platform Handles - Minimal Grid */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 pt-12 border-t border-slate-100">
-                            {['instagram', 'facebook', 'linkedin', 'twitter'].map((p) => (
-                                <div key={p} className="space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                            p === 'instagram' ? 'bg-pink-50 text-pink-500' :
-                                            p === 'facebook' ? 'bg-blue-50 text-blue-600' :
-                                            p === 'linkedin' ? 'bg-sky-50 text-sky-600' :
-                                            'bg-slate-900 text-white'
-                                        }`}>
-                                            {p === 'instagram' && <Instagram className="w-4 h-4" />}
-                                            {p === 'facebook' && <Facebook className="w-4 h-4" />}
-                                            {p === 'linkedin' && <Linkedin className="w-4 h-4" />}
-                                            {p === 'twitter' && <Twitter className="w-4 h-4" />}
+                        {/* Social Handles Section */}
+                        <div className="pt-12 border-t border-slate-100">
+                            <div className="flex items-center gap-4 mb-8">
+                                <Network className="w-5 h-5 text-indigo-600" />
+                                <h3 className="text-xl font-black italic uppercase tracking-tighter text-slate-900">Distribution Points</h3>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {['instagram', 'facebook', 'linkedin', 'twitter'].map((p) => (
+                                    <div key={p} className="space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                                                p === 'instagram' ? 'bg-pink-50 text-pink-500' :
+                                                p === 'facebook' ? 'bg-blue-50 text-blue-600' :
+                                                p === 'linkedin' ? 'bg-sky-50 text-sky-600' :
+                                                'bg-slate-900 text-white'
+                                            }`}>
+                                                {p === 'instagram' && <Instagram className="w-4 h-4" />}
+                                                {p === 'facebook' && <Facebook className="w-4 h-4" />}
+                                                {p === 'linkedin' && <Linkedin className="w-4 h-4" />}
+                                                {p === 'twitter' && <Twitter className="w-4 h-4" />}
+                                            </div>
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{p}</span>
                                         </div>
-                                        <span className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">{p}</span>
-                                    </div>
-                                    <div className="relative group">
-                                        <input
-                                            type="text"
-                                            value={handles[p]}
-                                            onChange={(e) => setHandles({...handles, [p]: e.target.value})}
-                                            placeholder="@handle"
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-800 focus:outline-none focus:border-indigo-500 transition-all placeholder:text-slate-300"
-                                        />
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-focus-within:opacity-100 transition-opacity">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-lg shadow-indigo-500/50" />
+                                        <div className="relative group">
+                                            <input
+                                                type="text"
+                                                value={handles[p]}
+                                                onChange={(e) => setHandles({...handles, [p]: e.target.value})}
+                                                placeholder="@handle"
+                                                className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-800 focus:outline-none focus:border-indigo-500 transition-all placeholder:text-slate-300"
+                                            />
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
 
                         {/* Engine Configuration Section */}
-                        <div className="pt-12 border-t border-slate-100 space-y-8">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                <div>
-                                    <h3 className="text-xl font-black italic uppercase tracking-tighter text-slate-900">Engine Configuration</h3>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Select your distribution backbone</p>
+                        <div className="pt-12 border-t border-slate-100">
+                            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-10">
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-4">
+                                        <Settings className="w-5 h-5 text-indigo-600" />
+                                        <h3 className="text-xl font-black italic uppercase tracking-tighter text-slate-900">Engine Configuration</h3>
+                                    </div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-9">Distribution Strategy & Authentication</p>
                                 </div>
                                 
-                                {/* System Choice Icons */}
-                                <div className="flex items-center gap-4 p-2 bg-slate-50 rounded-2xl border border-slate-100 self-start md:self-center">
-                                    <button 
-                                        type="button"
-                                        onClick={() => {
-                                            if (confirm("Go to Connections/Instances management?")) {
-                                                window.location.href = '/connections';
-                                            }
-                                        }}
-                                        className={`p-4 rounded-xl transition-all group relative ${apiKey ? 'hover:bg-slate-200' : 'bg-slate-200 shadow-inner'}`}
-                                        title="Social Raven"
-                                    >
-                                        <img src="/images/image.png" alt="R" className="w-6 h-6 group-hover:scale-110 transition-transform grayscale opacity-50" />
-                                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-800 px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-white">Social Raven</div>
-                                    </button>
-                                    <div className="w-px h-8 bg-slate-200" />
-                                    <button 
-                                        type="button"
-                                        className="p-4 rounded-xl transition-all group relative bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-                                        title="Upload Post System"
-                                    >
-                                        <Cloud className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-800 px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-white">Upload Post</div>
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* API Key Input Row */}
-                            <div className="flex flex-col md:flex-row gap-4">
-                                <div className="flex-1 relative group">
-                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors">
-                                        <Key className="w-5 h-5" />
+                                <div className="flex-1 flex flex-col sm:flex-row items-center gap-6">
+                                    {/* System Choice Icons */}
+                                    <div className="flex items-center gap-3 p-2 bg-slate-100 rounded-[2rem] border border-slate-200">
+                                        <button 
+                                            type="button"
+                                            onClick={() => {
+                                                if (confirm("Go to Connections/Instances management?")) {
+                                                    window.location.href = '/connections';
+                                                }
+                                            }}
+                                            className={`p-4 rounded-full transition-all group relative ${apiKey ? 'hover:bg-white bg-white/50' : 'bg-white shadow-lg'}`}
+                                            title="Social Raven"
+                                        >
+                                            <img src="/images/image.png" alt="R" className={`w-6 h-6 group-hover:scale-110 transition-transform ${apiKey ? 'grayscale opacity-30' : ''}`} />
+                                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-800 px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-white z-[100]">Social Raven</div>
+                                        </button>
+                                        <button 
+                                            type="button"
+                                            className={`p-4 rounded-full transition-all group relative ${apiKey ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/40' : 'hover:bg-white'}`}
+                                            title="Upload Post System"
+                                        >
+                                            <Cloud className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-800 px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-white z-[100]">Upload Post</div>
+                                        </button>
                                     </div>
-                                    <input
-                                        type="password"
-                                        value={apiKey}
-                                        onChange={(e) => setApiKey(e.target.value)}
-                                        placeholder="Upload Post API Key (Paste here to save)"
-                                        className="w-full bg-slate-50 border border-slate-100 rounded-3xl pl-16 pr-6 py-6 font-bold text-sm tracking-widest focus:outline-none focus:border-indigo-500 transition-all text-slate-800"
-                                    />
+
+                                    {/* API Key Row */}
+                                    <div className="flex-1 w-full flex gap-3">
+                                        <div className="flex-1 relative group">
+                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                                                <Key className="w-5 h-5" />
+                                            </div>
+                                            <input
+                                                type="password"
+                                                value={apiKey}
+                                                onChange={(e) => setApiKey(e.target.value)}
+                                                placeholder="Paste Key to persist..."
+                                                className="w-full bg-white border border-slate-200 rounded-3xl pl-16 pr-6 py-5 font-bold text-xs tracking-widest focus:outline-none focus:border-indigo-500 transition-all text-slate-800 shadow-sm"
+                                            />
+                                        </div>
+                                        <button 
+                                            type="button"
+                                            onClick={handleSaveApiKey}
+                                            disabled={loading || !apiKey}
+                                            className="px-10 py-5 bg-slate-900 text-white rounded-3xl font-black italic uppercase italic tracking-tighter hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap shadow-xl shadow-slate-900/10 flex items-center gap-3 text-sm"
+                                        >
+                                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-amber-400" />}
+                                            Persist
+                                        </button>
+                                    </div>
                                 </div>
-                                <button 
-                                    type="button"
-                                    onClick={handleSaveApiKey}
-                                    disabled={loading || !apiKey}
-                                    className="px-12 py-6 bg-slate-900 text-white rounded-3xl font-black italic uppercase italic tracking-tighter hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap shadow-xl shadow-slate-900/10"
-                                >
-                                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Persist Key'}
-                                </button>
                             </div>
                         </div>
 
