@@ -4,6 +4,7 @@ import {
     ChevronDown, Globe, Zap, MessageSquare, Briefcase, Building, Code, BookOpen, LifeBuoy, Key, PieChart, Users, Activity
 } from 'lucide-react';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from '../components/ThemeToggle';
 
 export default function Navbar() {
