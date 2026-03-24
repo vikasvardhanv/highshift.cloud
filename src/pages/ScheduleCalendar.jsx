@@ -147,9 +147,9 @@ export default function ScheduleCalendar() {
             const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
 
             days.push(
-                <div key={day} className={`h-32 border border-slate-100 dark:border-slate-800/80 p-2 transition-all hover:bg-slate-50 dark:hover:bg-white/5 relative group ${isToday ? 'bg-indigo-50/20 dark:bg-indigo-500/5' : 'bg-white/50 dark:bg-slate-900/50'}`}>
+                <div key={day} className={`h-32 border border-white/5 p-2 transition-all hover:bg-white/5 relative group ${isToday ? 'bg-indigo-600/10' : 'bg-black'}`}>
                     <div className="flex justify-between items-start mb-2">
-                        <span className={`text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-lg ${isToday ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'text-slate-500 dark:text-slate-400'}`}>
+                        <span className={`text-sm font-black italic uppercase tracking-tighter w-7 h-7 flex items-center justify-center rounded-lg ${isToday ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'text-slate-500'}`}>
                             {day}
                         </span>
                         {dayPosts.length > 0 && (
@@ -202,14 +202,14 @@ export default function ScheduleCalendar() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                            <button onClick={() => navigateMonth(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400 transition-colors">
+                        <div className="flex items-center gap-2 bg-white/5 p-1.5 rounded-xl border border-white/5 shadow-sm">
+                            <button onClick={() => navigateMonth(-1)} className="p-2 hover:bg-white/10 rounded-lg text-slate-400 transition-colors">
                                 <ChevronLeft className="w-5 h-5" />
                             </button>
-                            <span className="text-sm font-bold text-slate-900 dark:text-white min-w-[120px] text-center uppercase tracking-wider">
+                            <span className="text-sm font-black italic uppercase tracking-widest text-white min-w-[120px] text-center">
                                 {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
                             </span>
-                            <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400 transition-colors">
+                            <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-white/10 rounded-lg text-slate-400 transition-colors">
                                 <ChevronRight className="w-5 h-5" />
                             </button>
                         </div>
@@ -223,10 +223,10 @@ export default function ScheduleCalendar() {
                     </div>
                 </div>
 
-                <div className="flex-1 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
-                    <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/50 backdrop-blur-sm z-10">
+                <div className="flex-1 bg-black rounded-[2rem] border border-white/5 shadow-2xl overflow-hidden flex flex-col">
+                    <div className="grid grid-cols-7 border-b border-white/5 bg-black/50 backdrop-blur-sm z-10">
                         {DAYS.map(day => (
-                            <div key={day} className="py-4 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
+                            <div key={day} className="py-4 text-center text-xs font-black text-slate-500 uppercase tracking-[0.2em]">
                                 {day}
                             </div>
                         ))}
