@@ -9,6 +9,24 @@ export const api = axios.create({
     baseURL: API_URL,
 });
 
+const normalizeAccount = (acc = {}) => ({
+    ...acc,
+    accountId: acc.accountId || acc.account_id,
+    profileId: acc.profileId || acc.profile_id || null,
+});
+
+const normalizeScheduledPost = (post = {}) => {
+    const accounts = (post.accounts || post.target_accounts || []).map(normalizeAccount);
+    return {
+        ...post,
+        id: post.id || post._id,
+        accounts,
+        target_accounts: accounts,
+        scheduledFor: post.scheduledFor || post.scheduled_for || post.scheduled_time,
+        scheduled_for: post.scheduledFor || post.scheduled_for || post.scheduled_time,
+    };
+};
+
 api.interceptors.request.use((config) => {
     const apiKey = localStorage.getItem('social_api_key');
     const token = localStorage.getItem('token');
@@ -27,8 +45,10 @@ api.interceptors.request.use((config) => {
 
 export const getAccounts = async () => {
     const res = await api.get('/linked-accounts');
-    // Backend returns JSON with list of accounts
-    return res.data;
+    return {
+        ...res.data,
+        accounts: (res.data?.accounts || []).map(normalizeAccount),
+    };
 };
 
 export const getCurrentUser = async () => {
@@ -107,7 +127,7 @@ export const schedulePost = async (accounts, content, scheduledFor, media = []) 
 
 export const getScheduledPosts = async () => {
     const res = await api.get('/schedule');
-    return res.data.posts;
+    return (res.data?.posts || []).map(normalizeScheduledPost);
 };
 
 export const cancelScheduledPost = async (id) => {
@@ -187,7 +207,10 @@ export const getActivityLog = async () => {
 // ============ NEW: User Profiles ============
 export const getProfiles = async () => {
     const res = await api.get('/profiles');
-    return res.data.profiles;
+    return (res.data?.profiles || []).map((p) => ({
+        ...p,
+        accounts: (p.accounts || []).map(normalizeAccount),
+    }));
 };
 
 export const createProfile = async (name) => {

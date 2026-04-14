@@ -45,7 +45,7 @@ export default function Schedule() {
 
     // Group posts by date
     const postsByDate = posts.reduce((acc, post) => {
-        const dateKey = format(new Date(post.scheduled_time || post.scheduledFor || post.scheduled_for), 'yyyy-MM-dd');
+        const dateKey = format(new Date(post.scheduledFor || post.scheduled_for || post.scheduled_time), 'yyyy-MM-dd');
         if (!acc[dateKey]) acc[dateKey] = [];
         acc[dateKey].push(post);
         return acc;
@@ -123,7 +123,7 @@ export default function Schedule() {
 
                         {/* Real scheduled posts */}
                         {dayPosts.slice(0, 2).map((post, idx) => {
-                            const platform = post.target_accounts?.[0]?.platform || 'twitter';
+                            const platform = post.target_accounts?.[0]?.platform || post.accounts?.[0]?.platform || 'twitter';
                             const colorClass = PLATFORM_COLORS[platform] || PLATFORM_COLORS.twitter;
                             const icon = PLATFORM_ICONS[platform] || '📝';
                             return (
@@ -185,8 +185,8 @@ export default function Schedule() {
                             <div key={post.id || post._id || idx} className="p-3 bg-white/5 rounded-lg">
                                 <p className="text-sm">{post.content}</p>
                                 <p className="text-xs text-gray-500 mt-1">
-                                    {format(new Date(post.scheduled_time || post.scheduledFor), 'h:mm a')} •
-                                    {post.target_accounts?.map(a => a.platform).join(', ')}
+                                    {format(new Date(post.scheduledFor || post.scheduled_for || post.scheduled_time), 'h:mm a')} •
+                                    {(post.target_accounts || post.accounts || []).map(a => a.platform).join(', ')}
                                 </p>
                             </div>
                         ))}
@@ -196,4 +196,3 @@ export default function Schedule() {
         </motion.div>
     );
 }
-
